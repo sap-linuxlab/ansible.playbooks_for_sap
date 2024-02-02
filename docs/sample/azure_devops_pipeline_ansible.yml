@@ -1,0 +1,256 @@
+---
+
+parameters:
+
+  - name: azure_devops_service_connection_to_arm
+    displayName: Azure DevOps Service Connection - to Azure Resource Manager
+    type: string
+  - name: ansible_playbook_scenario_sandbox
+    displayName: Ansible Playbook for SAP - Selected Scenario (Sandbox, e.g. sap_bw4hana_sandbox)
+    type: string
+  - name: sap_vm_provision_host_specification_plan
+    displayName: Ansible Playbook for SAP - sap_vm_provision_host_specification_plan (e.g. xsmall_256gb)
+    type: string
+  - name: sap_vm_provision_dns_root_domain
+    displayName: Ansible Playbook for SAP - sap_vm_provision_dns_root_domain
+    type: string
+  - name: sap_vm_provision_msazure_resource_group_name
+    displayName: Ansible Playbook for SAP - sap_vm_provision_msazure_resource_group_name
+    type: string
+  - name: sap_vm_provision_msazure_location_region
+    displayName: Ansible Playbook for SAP - sap_vm_provision_msazure_location_region
+    type: string
+  - name: sap_vm_provision_msazure_location_availability_zone_no
+    displayName: Ansible Playbook for SAP - sap_vm_provision_msazure_location_availability_zone_no
+    type: string
+  - name: sap_vm_provision_msazure_vnet_name
+    displayName: Ansible Playbook for SAP - sap_vm_provision_msazure_vnet_name
+    type: string
+  - name: sap_vm_provision_msazure_vnet_subnet_name
+    displayName: Ansible Playbook for SAP - sap_vm_provision_msazure_vnet_subnet_name
+    type: string
+  - name: sap_vm_provision_msazure_vm_host_os_image
+    displayName: Ansible Playbook for SAP - sap_vm_provision_msazure_vm_host_os_image
+    type: string
+  - name: sap_vm_provision_bastion_user
+    displayName: Ansible Playbook for SAP - sap_vm_provision_bastion_user
+    type: string
+  - name: sap_vm_provision_bastion_ssh_port
+    displayName: Ansible Playbook for SAP - sap_vm_provision_bastion_ssh_port
+    type: string
+  - name: sap_vm_provision_bastion_public_ip
+    displayName: Ansible Playbook for SAP - sap_vm_provision_bastion_public_ip
+    type: string
+  - name: sap_id_user
+    displayName: Ansible Playbook for SAP - sap_id_user
+    type: string
+  - name: sap_id_user_password
+    displayName: Ansible Playbook for SAP - sap_id_user_password
+    type: string
+  - name: sap_software_download_directory
+    displayName: Ansible Playbook for SAP - sap_software_download_directory (e.g. /software)
+    type: string
+  - name: sap_hana_install_master_password
+    displayName: Ansible Playbook for SAP - sap_hana_install_master_password
+    type: string
+  - name: sap_swpm_templates_product_input
+    displayName: Ansible Playbook for SAP - sap_swpm_templates_product_input (e.g. sap_bw4hana_2023_sandbox)
+    type: string
+
+
+stages:
+
+  - stage: ansible_execute
+    displayName: Execute Ansible Playbooks for SAP
+    # dependsOn:
+    jobs: # By default, jobs executed are 'Initialize Job' and 'Checkout repo@branch' before any others
+
+      - job: ansible_deploy_scenario
+        displayName: Ansible Playbook for SAP - ${{ parameters.ansible_playbook_scenario_sandbox }}
+        # For Azure DevOps Pipeline Agent Pool, use Hosted Agent
+        pool:
+          vmImage: ubuntu-latest
+
+        steps:
+
+          # Must be included in same stage as the ansible-playbook execution
+          - task: UsePythonVersion@0
+            inputs:
+              versionSpec: 3.11
+            displayName: Python 3.11
+
+          # Must be included in same stage as the ansible-playbook execution
+          - script: |
+              sudo apt update
+              sudo apt install curl
+              python -m pip install --upgrade pip
+              python -m pip install ansible-core beautifulsoup4 lxml requests passlib jmespath
+              python -m pip install -r https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt
+            displayName: Python Package dependencies for MS Azure
+
+          # Must be included in same stage as the ansible-playbook execution
+          # - script: |
+          #     curl https://packages.cloud.google.com/apt/doc/apt-key.gpg | sudo gpg --dearmor -o /usr/share/keyrings/cloud.google.gpg
+          #     echo "deb [signed-by=/usr/share/keyrings/cloud.google.gpg] https://packages.cloud.google.com/apt cloud-sdk main" | sudo tee -a /etc/apt/sources.list.d/google-cloud-sdk.list
+          #     sudo apt update
+          #     sudo apt install apt-transport-https ca-certificates gnupg curl
+          #     sudo apt install awscli
+          #     sudo apt install google-cloud-cli
+          #     sudo apt install terraform
+          #     curl -fsSL https://clis.cloud.ibm.com/install/linux | sh
+          #     python -m pip install --upgrade pip
+          #     python -m pip install ansible-core beautifulsoup4 lxml requests passlib jmespath boto3 google-auth openstacksdk ovirt-engine-sdk-python aiohttp
+          #     python -m pip install -r https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt
+          #   displayName: Python Package dependencies for all target Infrastructure Platforms
+
+          - task: DownloadSecureFile@1
+            name: ssh_key_private_hosts
+            displayName: SSH Key - Private - Hosts
+            inputs:
+              secureFile: hosts_rsa
+
+          - task: DownloadSecureFile@1
+            name: ssh_key_public_hosts
+            displayName: SSH Key - Public - Hosts
+            inputs:
+              secureFile: hosts_rsa.pub
+
+          - task: DownloadSecureFile@1
+            name: ssh_key_private_bastion
+            displayName: SSH Key - Private - Bastion
+            inputs:
+              secureFile: bastion_rsa
+
+          - task: AzureCLI@2
+            displayName: Prepare credential shell env var using Azure CLI
+            inputs:
+              # Access service principal details in script
+              addSpnToEnvironment: true
+              # Use container env var to access Azure DevOps Service Connection for ARM via Service Principal (automatic)
+              connectedServiceNameARM: ${{ parameters.azure_devops_service_connection_to_arm }}
+              scriptType: bash
+              scriptLocation: inlineScript
+              inlineScript: |
+                az account show
+                echo "##vso[task.setvariable variable=AZ_SUBSCRIPTION_ID]$(az account show --query="id" -o tsv)"
+                echo "##vso[task.setvariable variable=AZ_TENANT_ID]$tenantId"
+                echo "##vso[task.setvariable variable=AZ_CLIENT_ID]$servicePrincipalId"
+                echo "##vso[task.setvariable variable=AZ_CLIENT_SECRET]$servicePrincipalKey"
+
+          # - bash: |
+          #     touch ~/.azure/credentials
+          #     echo "[default]" >> ~/.azure/credentials
+          #     echo "subscription_id=$(AZ_SUBSCRIPTION_ID)" >> ~/.azure/credentials
+          #     echo "tenant=$(AZ_TENANT_ID)" >> ~/.azure/credentials
+          #     echo "client_id=$(AZ_CLIENT_ID)" >> ~/.azure/credentials
+          #     echo "secret=$(AZ_CLIENT_SECRET)" >> ~/.azure/credentials
+          #   displayName: Copy credentials from shell env var to file
+
+
+          # Copy and directly reuse the editable non-interactive extravars file
+          # This approach will work with any of the Sandbox scenarios
+          # By appending the variable to the end of the file, the last defined value will be used
+          # However, this approach should not be used for DevOps Pipelines long-term or for any non-Sandbox Ansible Playbooks for SAP
+          - script: |
+              cp "./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/optional/ansible_extravars_noninteractive.yml" ./generate_ansible_extravars_noninteractive.yml
+
+              # Avoid error "Permissions 0644 for '/home/vsts/work/_temp/*_rsa' are too open"
+              chmod 400 $(ssh_key_private_bastion.secureFilePath)
+              chmod 400 $(ssh_key_private_hosts.secureFilePath)
+              chmod 400 $(ssh_key_public_hosts.secureFilePath)
+
+              VAR_AZ_SUBSCRIPTION_ID=$(echo "$(AZ_SUBSCRIPTION_ID)")
+              VAR_AZ_TENANT_ID=$(echo "$(AZ_TENANT_ID)")
+              VAR_AZ_CLIENT_ID=$(echo "$(AZ_CLIENT_ID)")
+              VAR_AZ_CLIENT_SECRET=$(echo "$(AZ_CLIENT_SECRET)")
+
+              sed -i "s/sap_vm_provision_iac_type.*/sap_vm_provision_iac_type: ansible/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_iac_platform.*/sap_vm_provision_iac_platform: msazure_vm/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_host_specification_plan.*/sap_vm_provision_host_specification_plan: ${{ parameters.sap_vm_provision_host_specification_plan }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_dns_root_domain:.*/sap_vm_provision_dns_root_domain: ${{ parameters.sap_vm_provision_dns_root_domain }}/g" ./generate_ansible_extravars_noninteractive.yml
+
+              sed -i "s/sap_vm_provision_msazure_subscription_id.*/sap_vm_provision_msazure_subscription_id: "$VAR_AZ_SUBSCRIPTION_ID"/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_tenant_id.*/sap_vm_provision_msazure_tenant_id: "$VAR_AZ_TENANT_ID"/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_app_client_id.*/sap_vm_provision_msazure_app_client_id: "$VAR_AZ_CLIENT_ID"/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_app_client_secret.*/sap_vm_provision_msazure_app_client_secret: "$VAR_AZ_CLIENT_SECRET"/g" ./generate_ansible_extravars_noninteractive.yml
+
+              sed -i "s/sap_vm_provision_msazure_resource_group_name.*/sap_vm_provision_msazure_resource_group_name: ${{ parameters.sap_vm_provision_msazure_resource_group_name }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_location_region.*/sap_vm_provision_msazure_location_region: ${{ parameters.sap_vm_provision_msazure_location_region }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_location_availability_zone_no.*/sap_vm_provision_msazure_location_availability_zone_no: ${{ parameters.sap_vm_provision_msazure_location_availability_zone_no }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_vnet_name.*/sap_vm_provision_msazure_vnet_name: ${{ parameters.sap_vm_provision_msazure_vnet_name }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_vnet_subnet_name.*/sap_vm_provision_msazure_vnet_subnet_name: ${{ parameters.sap_vm_provision_msazure_vnet_subnet_name }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_vm_host_os_image.*/sap_vm_provision_msazure_vm_host_os_image: ${{ parameters.sap_vm_provision_msazure_vm_host_os_image }}/g" ./generate_ansible_extravars_noninteractive.yml
+
+              sed -i "s/sap_vm_provision_bastion_user.*/sap_vm_provision_bastion_user: ${{ parameters.sap_vm_provision_bastion_user }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_bastion_ssh_port.*/sap_vm_provision_bastion_ssh_port: ${{ parameters.sap_vm_provision_bastion_ssh_port }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_bastion_public_ip.*/sap_vm_provision_bastion_public_ip: ${{ parameters.sap_vm_provision_bastion_public_ip }}/g" ./generate_ansible_extravars_noninteractive.yml
+
+              sed -i "s|sap_vm_provision_ssh_bastion_private_key_file_path.*|sap_vm_provision_ssh_bastion_private_key_file_path: $(ssh_key_private_bastion.secureFilePath)|g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s|sap_vm_provision_ssh_host_private_key_file_path.*|sap_vm_provision_ssh_host_private_key_file_path: $(ssh_key_private_hosts.secureFilePath)|g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s|sap_vm_provision_ssh_host_public_key_file_path.*|sap_vm_provision_ssh_host_public_key_file_path: $(ssh_key_public_hosts.secureFilePath)|g" ./generate_ansible_extravars_noninteractive.yml
+
+              sed -i "s/sap_id_user_password:.*/sap_id_user_password: ${{ parameters.sap_id_user_password }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_id_user:.*/sap_id_user: ${{ parameters.sap_id_user }}/g" ./generate_ansible_extravars_noninteractive.yml
+
+              sed -i "s|sap_software_download_directory.*|sap_software_download_directory: ${{ parameters.sap_software_download_directory }}|g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_hana_install_master_password.*/sap_hana_install_master_password: ${{ parameters.sap_hana_install_master_password }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_swpm_templates_product_input.*/sap_swpm_templates_product_input: ${{ parameters.sap_swpm_templates_product_input }}/g" ./generate_ansible_extravars_noninteractive.yml
+
+            displayName: Copy non-interactive extravars file and edit
+
+          # - task: CopyFiles@2
+          #   inputs:
+          #     Contents: |
+          #       sap_vm_provision_iac_type: ""
+          #       sap_vm_provision_iac_platform: ""
+          #       sap_vm_provision_host_specification_plan: ""
+          #       sap_vm_provision_dns_root_domain: ""
+          #
+          #       sap_vm_provision_msazure_subscription_id: ""
+          #       sap_vm_provision_msazure_tenant_id: ""
+          #       sap_vm_provision_msazure_app_client_id: ""
+          #       sap_vm_provision_msazure_app_client_secret: ""
+          #
+          #       sap_vm_provision_msazure_resource_group_name: ""
+          #       sap_vm_provision_msazure_location_region: ""
+          #       sap_vm_provision_msazure_location_availability_zone_no: ""
+          #       sap_vm_provision_msazure_vnet_name: ""
+          #       sap_vm_provision_msazure_vnet_subnet_name: ""
+          #       sap_vm_provision_msazure_vm_host_os_image: ""
+          #
+          #       sap_vm_provision_bastion_user: ""
+          #       sap_vm_provision_bastion_ssh_port: ""
+          #       sap_vm_provision_bastion_public_ip: ""
+          #       sap_vm_provision_ssh_bastion_private_key_file_path: ""
+          #       sap_vm_provision_ssh_host_private_key_file_path: ""
+          #       sap_vm_provision_ssh_host_public_key_file_path: ""
+          #
+          #       sap_id_user: ""
+          #       sap_id_user_password: ""
+          #
+          #       sap_software_download_directory: ""
+          #       sap_hana_install_master_password: ""
+          #       sap_swpm_templates_product_input: ""
+          #     TargetFolder: './templated_ansible_extravars_noninteractive.yml'
+          #   displayName: Create non-interactive extravars file from template contents
+
+
+          - bash: |
+              ansible-galaxy collection install -r ./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/ansible_requirements.yml
+            displayName: Install Ansible Collections
+
+          - bash: |
+              ansible-playbook ./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/ansible_playbook.yml \
+              --extra-vars "@./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/ansible_extravars.yml" \
+              --extra-vars "@./generate_ansible_extravars_noninteractive.yml"
+            displayName: Execute Ansible Playbook for SAP
+
+          # - task: Ansible@0
+          #   inputs:
+          #     ansibleInterface: 'agentMachine'
+          #     playbookPathOnAgentMachine: './azure/storage/storage.yml'
+          #     inventoriesAgentMachine: 'noInventory'
+          #     inventoryFileOnAgentMachine: ''
+          #     args: '--extra-vars "storage_location=$(storageLocation)"'
+          #     failOnStdErr: false
+          #   displayName: Execute Ansible Playbook for SAP

@@ -1,0 +1,714 @@
+---
+
+####
+# Mandatory parameters : Ansible Defaults
+####
+
+# Default Ansible Facts populate into default variables for all Ansible Roles
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
+
+####
+# Mandatory parameters : Preconfigure OS for SAP Software
+####
+
+# Configuration of Ansible Roles for preconfigure SAP (general, hana, netweaver)
+sap_general_preconfigure_modify_etc_hosts: false
+sap_general_preconfigure_reboot_ok: true
+sap_general_preconfigure_fail_if_reboot_required: false
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
+
+
+
+####
+# Mandatory parameters : SAP Software installation media downloads
+####
+
+# SAP ONE Support Launchpad credentials
+#sap_id_user: "SET_IN_VAR_PROMPT"
+#sap_id_user_password: 'SET_IN_VAR_PROMPT'
+
+# Directory for SAP installation media
+#sap_software_download_directory: "SET_IN_VAR_PROMPT"
+
+# Configuration for SAP installation media detection
+# sap_install_media_detect_** variables are set for each Ansible Task to the respective host
+
+# SAP Note 908097 - SAP Web Dispatcher: Release, Installation, Patches, Documentation
+# Maintenance Software Component Category - https://me.sap.com/softwarecenter/template/products/ENR=01200314690100001804&EVENT=TREE&NE=NAVIGATE&V=MAINT
+# Maintenance Software Component (Archive View) Category - https://me.sap.com/softwarecenter/template/products/ENR=01200314690100001804&EVENT=TREE&NE=NAVIGATE&V=MAINT&TA=ARCHIVE
+softwarecenter_search_list_x86_64:
+
+  sap_webdispatcher_7_20ext:
+    - 'sapwebdisp_718-20008610.sar'  # SAP Web Dispatcher 7.20 EXT Linux
+
+  sap_webdispatcher_7_21ext:
+    - 'SAPWEBDISP_SP_1319-20009463.SAR'  # SAP Web Dispatcher 7.21 EXT Linux
+
+  sap_webdispatcher_7_22ext:
+    - 'SAPWEBDISP_SP_1315-70006466.SAR'  # SAP Web Dispatcher 7.22 EXT Linux. Released for NW AS ABAP 7.0
+
+  sap_webdispatcher_7_40:
+    - 'SAPWEBDISP_SP_77-10012399.SAR'  # SAP Web Dispatcher 7.40 Linux
+
+  sap_webdispatcher_7_41:
+    - 'SAPWEBDISP_SP_227-20012445.SAR'  # SAP Web Dispatcher 7.41 Linux
+
+  # sap_webdispatcher_7_42:
+  #   - 'SAPWEBDISP_SP_446-80000041.SAR'  # SAP Web Dispatcher 7.42 Linux (out of maintenance). Released for NW AS ABAP 7.4x
+
+  # sap_webdispatcher_7_45:
+  #   - 'SAPWEBDISP_SP_900-80000900.SAR'  # SAP Web Dispatcher 7.45 Linux (out of maintenance). Released for NW AS ABAP 7.50
+
+  # sap_webdispatcher_7_49:
+  #   - 'SAPWEBDISP_SP_1129-80001734.SAR'  # SAP Web Dispatcher 7.49 Linux (out of maintenance). Released foror NW AS ABAP 7.51
+
+  sap_webdispatcher_7_53:
+    - 'SAPWEBDISP_SP_1236-80002353.SAR'  # SAP Web Dispatcher 7.53 Linux, original release 06-2017. Released for NW AS ABAP 7.52
+
+  sap_webdispatcher_7_54:
+    - 'SAPWEBDISP_SP_235-80007304.SAR'  # SAP Web Dispatcher 7.54 Linux. Released for NW AS ABAP 7.52
+
+  # sap_webdispatcher_7_73:
+  #   - 'SAPWEBDISP_SP_334-80003389.SAR'  # SAP Web Dispatcher 7.73 Linux (out of maintenance). Released for SAP S/4HANA 1809
+
+  sap_webdispatcher_7_77:
+    - 'SAPCAR_1115-70006178.EXE'
+    - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753 Patch 1000)
+    - 'SAPEXEDB_1000-80002572.SAR' # Kernel Part II (753 Patch 1000), SAP HANA 2.0
+    - 'SWPM20SP16_2-80003424.SAR'
+    - 'SAPHOSTAGENT56_56-80004822.SAR' # SAP Host Agent 7.22
+    - 'igsexe_13-80003187.sar' # IGS 7.53
+    - 'igshelper_17-10010245.sar'
+    - 'SAPWEBDISP_SP_630-80004425.SAR'  # SAP Web Dispatcher 7.77 Linux, original release 05-2019. Released for SAP S/4HANA 1909
+
+  # sap_webdispatcher_7_81:
+  #   - 'SAPWEBDISP_SP_313-70005393.SAR'  # SAP Web Dispatcher 7.81 Linux (out of maintenance). Released for SAP S/4HANA 2020
+
+  sap_webdispatcher_7_85:
+    - 'SAPCAR_1115-70006178.EXE'
+    - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753 Patch 1000)
+    - 'SAPEXEDB_1000-80002572.SAR' # Kernel Part II (753 Patch 1000), SAP HANA 2.0
+    - 'SWPM20SP16_2-80003424.SAR'
+    - 'SAPHOSTAGENT56_56-80004822.SAR' # SAP Host Agent 7.22
+    - 'igsexe_13-80003187.sar' # IGS 7.53
+    - 'igshelper_17-10010245.sar'
+    - 'SAPWEBDISP_SP_328-80005553.SAR'  # SAP Web Dispatcher 7.85 Linux, original release 06-2021. Released for SAP S/4HANA 2021
+
+  sap_webdispatcher_7_89:
+    - 'SAPCAR_1115-70006178.EXE'
+    - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753 Patch 1000)
+    - 'SAPEXEDB_1000-80002572.SAR' # Kernel Part II (753 Patch 1000), SAP HANA 2.0
+    - 'SWPM20SP16_2-80003424.SAR'
+    - 'SAPHOSTAGENT56_56-80004822.SAR' # SAP Host Agent 7.22
+    - 'igsexe_13-80003187.sar' # IGS 7.53
+    - 'igshelper_17-10010245.sar'
+    - 'SAPWEBDISP_SP_226-70007278.SAR'  # SAP Web Dispatcher 7.89 Linux, original release 06-2022. Released for SAP S/4HANA 2022
+
+  sap_webdispatcher_7_93:
+    - 'SAPCAR_1115-70006178.EXE'
+    - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753 Patch 1000)
+    - 'SAPEXEDB_1000-80002572.SAR' # Kernel Part II (753 Patch 1000), SAP HANA 2.0
+    - 'SWPM20SP16_2-80003424.SAR'
+    - 'SAPHOSTAGENT56_56-80004822.SAR' # SAP Host Agent 7.22
+    - 'igsexe_13-80003187.sar' # IGS 7.53
+    - 'igshelper_17-10010245.sar'
+    - 'SAPWEBDISP_SP_68-80008274.SAR'  # SAP Web Dispatcher 7.93 Linux, original release 06-2023. Released for SAP S/4HANA 2023
+
+
+
+####
+# Mandatory parameters : SAP SWPM installation using Default Templates mode of the Ansible Role
+####
+
+sap_swpm_ansible_role_mode: default_templates
+#sap_swpm_templates_product_input: "SET_IN_VAR_PROMPT"
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# NW Passwords
+sap_swpm_master_password: "NewPass$321"
+sap_swpm_ddic_000_password: "NewPass$321"
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# Unix User ID
+sap_swpm_sapadm_uid: '3000'
+sap_swpm_sapsys_gid: '3001'
+sap_swpm_sidadm_uid: '3001'
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# Other
+sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_update_etchosts: 'false'
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# WebDisp Configuration
+sap_swpm_wd_virtual_host: "{{ ansible_hostname }}"
+sap_swpm_wd_instance_nr: "{{ sap_system_wd_instance_nr }}"
+
+sap_swpm_wd_system_connectivity: 'true'
+sap_swpm_wd_backend_sid: "{{ sap_system_sid }}"
+sap_swpm_wd_backend_ms_host: "{{ sap_swpm_ascs_instance_hostname }}"
+sap_swpm_wd_backend_ms_http_port: '80{{ sap_swpm_ascs_instance_nr }}'
+sap_swpm_wd_backend_scenario_size: '500'
+
+sap_swpm_wd_activate_icf: 'true'
+sap_swpm_wd_backend_rfc_host: "{{ sap_swpm_pas_instance_hostname }}"
+sap_swpm_wd_backend_rfc_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
+# sap_swpm_wd_backend_rfc_client_nr: "000" # 000 default
+# sap_swpm_wd_backend_rfc_user: "DDIC" # DDIC default
+# sap_swpm_wd_backend_rfc_user_password: "NewPass$321"
+
+
+
+####
+# Mandatory parameters : Ansible Dictionary for SAP SWPM installation using Default Templates mode of the Ansible Role
+####
+
+# Templates and default values
+sap_swpm_templates_install_dictionary:
+
+  sap_webdispatcher_standalone:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_Webdispatcher:NW750.IND.PD
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - credentials
+      - nw_config_other
+      - nw_config_webdisp_generic
+      - nw_config_host_agent
+      - sap_os_linux_user
+      - solman_credentials_swpm1 # use ICM Auth Web Admin password
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'false'
+
+
+  sap_webdispatcher_pre_7_5x_standalone_swpm1:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_Webdispatcher:GENERIC.IND.PD
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm1
+      - credentials
+      - nw_config_other
+      - nw_config_webdisp_generic
+      - nw_config_host_agent
+      - sap_os_linux_user
+      - solman_credentials_swpm1 # use ICM Auth Web Admin password
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'false'
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - AWS
+####
+
+sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
+  rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
+  rhel-8-2: "*RHEL-8.2*_HVM*x86_64*"
+  rhel-8-4: "*RHEL-8.4*_HVM*x86_64*"
+  rhel-8-6: "*RHEL-8.6*_HVM*x86_64*"
+  rhel-7-7-sap-ha: "*RHEL-SAP-7.7*"
+  rhel-7-9-sap-ha: "*RHEL-SAP-7.9*"
+  rhel-8-1-sap-ha: "*RHEL-SAP-8.1.0*"
+  rhel-8-2-sap-ha: "*RHEL-SAP-8.2.0*"
+  rhel-8-4-sap-ha: "*RHEL-SAP-8.4.0*"
+  rhel-8-6-sap-ha: "*RHEL-SAP-8.6.0*"
+  sles-15-2: "*suse-sles-15-sp2-v202*-hvm-ssd-x86_64*"
+  sles-15-3: "*suse-sles-15-sp3-v202*-hvm-ssd-x86_64*"
+  sles-15-4: "*suse-sles-15-sp4-v202*-hvm-ssd-x86_64*"
+  sles-12-5-sap-ha: "*suse-sles-sap-12-sp5-v202*-hvm-ssd-x86_64*"
+  sles-15-1-sap-ha: "*suse-sles-sap-15-sp1-v202*-hvm-ssd-x86_64*"
+  sles-15-2-sap-ha: "*suse-sles-sap-15-sp2-v202*-hvm-ssd-x86_64*"
+  sles-15-3-sap-ha: "*suse-sles-sap-15-sp3-v202*-hvm-ssd-x86_64*"
+  sles-15-4-sap-ha: "*suse-sles-sap-15-sp4-v202*-hvm-ssd-x86_64*"
+
+
+sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "r5.8xlarge"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 256                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - Google Cloud
+####
+
+sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
+
+  rhel-8-latest:
+    project: "rhel-cloud"
+    family: "rhel-8"
+
+  rhel-7-7-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-7-7-sap-ha"
+
+  rhel-7-9-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-7-9-sap-ha"
+
+  rhel-8-1-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-1-sap-ha"
+
+  rhel-8-2-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-2-sap-ha"
+
+  rhel-8-4-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-4-sap-ha"
+
+  rhel-8-6-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-6-sap-ha"
+
+  sles-15-latest:
+    project: "suse-cloud"
+    family: "sles-15"
+
+  sles-15-sp3-sap:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp3-sap"
+
+  sles-15-sp4-sap:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp4-sap"
+
+  sles-15-sp5-sap:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp5-sap"
+
+
+sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-highmem-32"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                  # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - IBM Cloud
+####
+
+sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:
+  rhel-8-4: ".*redhat.*8-4.*minimal.*amd64.*"
+  rhel-8-6: ".*redhat.*8-6.*minimal.*amd64.*"
+  rhel-9-0: ".*redhat.*9-0.*minimal.*amd64.*"
+  rhel-7-9-sap-ha: ".*redhat.*7-9.*amd64.*hana.*"
+  rhel-8-4-sap-ha: ".*redhat.*8-4.*amd64.*hana.*"
+  rhel-8-6-sap-ha: ".*redhat.*8-6.*amd64.*hana.*"
+  sles-15-3-sap-ha: ".*sles.*15-3.*amd64.*hana.*"
+  sles-15-4-sap-ha: ".*sles.*15-4.*amd64.*hana.*"
+  sles-15-5-sap-ha: ".*sles.*15-5.*amd64.*hana.*"
+
+
+sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "bx2-32x128"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: general-purpose
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                  # size in GB, integer
+          disk_type: general-purpose
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: 5iops-tier
+          filesystem_type: xfs           # default: xfs
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - IBM Cloud, IBM Power VS
+####
+
+# Full Linux subscription ppc64le OS Images with support and activation keys
+sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
+  rhel-8-4: ".*RHEL.*8.*4"
+  rhel-8-6: ".*RHEL.*8.*6"
+  rhel-9-2: ".*RHEL.*9.*2"
+  sles-15-3: ".*SLES.*15.*3"
+  sles-15-4: ".*SLES.*15.*4"
+  rhel-8-4-sap-ha: ".*RHEL.*8.*4.*SAP$" # ensure string suffix using $
+  rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
+  sles-15-2-sap-ha: ".*SLES.*15.*2.*SAP$" # ensure string suffix using $
+  sles-15-3-sap-ha: ".*SLES.*15.*3.*SAP$" # ensure string suffix using $
+  sles-15-4-sap-ha: ".*SLES.*15.*4.*SAP$" # ensure string suffix using $
+
+
+sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          disk_type: tier3
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - MS Azure
+####
+
+sap_vm_provision_msazure_vm_host_os_image_dictionary:
+
+  rhel-8-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "84-gen2"
+
+  rhel-8-1-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "81sapha-gen2"
+
+  rhel-8-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "82sapha-gen2"
+
+  rhel-8-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "84sapha-gen2"
+
+  rhel-8-1-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "81sapapps-gen2"
+
+  rhel-8-2-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "82sapapps-gen2"
+
+  rhel-8-4-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "84sapapps-gen2"
+
+  sles-15-sp3-sap:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3"
+    sku: "gen2"
+
+  sles-15-sp4-sap:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4"
+    sku: "gen2"
+
+  sles-15-sp5-sap:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5"
+    sku: "gen2"
+
+
+sap_vm_provision_msazure_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_M32ls"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        - name: swap
+          disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
+          disk_type: P10
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - IBM PowerVM
+####
+
+sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - OVirt
+####
+
+sap_vm_provision_ovirt_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 256
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - VMware
+####
+
+sap_vm_provision_vmware_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 8
+      vmware_vm_memory_gib: 64
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs

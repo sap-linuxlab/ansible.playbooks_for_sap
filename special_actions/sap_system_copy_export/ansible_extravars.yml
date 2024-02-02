@@ -1,0 +1,48 @@
+---
+
+####
+# Mandatory parameters : Ansible Dictionary for lookup of pretty name to SAP SWPM database reference codes
+####
+
+sap_db_ref_code_dictionary:
+  saphana: HDB
+  sapase: SYB
+  sapmaxdb: ADA
+  ibmdb2: DB6
+  oracledb: ORA
+
+
+####
+# Mandatory parameters : Ansible Dictionary for SAP SWPM installation using Default Templates mode of the Ansible Role
+####
+
+sap_swpm_ansible_role_mode: advanced_templates
+
+# Templates and default values
+sap_swpm_templates_install_dictionary:
+
+  # SAP Business Suite 7i 2016 > EHP8 for SAP ERP 6.0 ABAP > IBM Db2 for Linux, UNIX, and Windows > System Copy > Source System > Based on AS ABAP > Database Instance Export
+  sap_ecc6_ehp8_anydb_ibmdb2_distributed_syscopy_export:
+
+    sap_swpm_product_catalog_id: NW_Export:BS2016.ERP608.DB6.CP
+
+    sap_swpm_inifile_custom_values_dictionary:
+      NW_ABAP_Export_Dialog.migmonJobNum: 3
+      NW_ABAP_Export_Dialog.migmonLoadArgs: -stop_on_error
+      NW_ABAP_Export_Dialog.parallelR3szchkExecution: "true"
+      NW_ABAP_Export_Dialog.r3szchkDetermineSizeValue: DB
+      NW_ABAP_Export_Dialog.repeatExport: COMPLETE
+      NW_ABAP_Export_Dialog.splitPackageLimitVal: 5000
+      NW_ABAP_Export_Dialog.targetDbType: "{{ sap_db_ref_code_dictionary[sap_export_db_type_target] }}"
+      NW_ABAP_Export_Dialog.targetHardwarePlatform: LITTLE_ENDIAN
+      NW_ABAP_Export_Dialog.useSqlFiles: NOSQL
+      NW_ABAP_Export_Dialog.useUnsortedUnload: "true"
+      NW_Export.mainExportDir: "{{ sap_export_directory }}"
+      NW_Export.stopRunningSystem: "false"
+      NW_Export.accessLevel4ExportDir: DEFAULT
+      NW_Export.choiceSepKernel: "false"
+      NW_readProfileDir.profileDir: "{{ sap_export_profile_path }}"
+      NW_getLoadType.importManuallyExecuted: false
+      NW_getLoadType.loadType: STD
+      NW_DB6_DB.db6.abap.connect.user: "{{ sap_export_db_connect_user }}"
+      NW_DB6_DB.db6.abap.schema: "{{ sap_export_db_schema_abap }}"

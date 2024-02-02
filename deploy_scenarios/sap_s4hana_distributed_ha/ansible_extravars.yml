@@ -1,0 +1,3691 @@
+---
+
+####
+# Mandatory parameters : Ansible Defaults
+####
+
+# Default Ansible Facts populate into default variables for all Ansible Roles
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
+
+####
+# Mandatory parameters : Virtual instance names
+####
+
+# See virtual hostname information in SAP Note 2279110 and 962955
+# Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
+# sap_swpm_virtual_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_ascs_hostname }}-ha"
+sap_swpm_ascs_instance_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_ascs_hostname }}-ha"
+sap_swpm_ers_instance_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_ers_hostname }}-ha"
+sap_swpm_db_host: "{{ sap_vm_provision_dynamic_inventory_hana_primary_hostname }}-ha" # Must be SAP HANA Virtual Hostname
+
+# However we are not using the PAS or AAS in a High Availability setup, only the Database and ASCS/ERS are.
+# Therefore, override the virtual hostname with the local hostname.
+sap_swpm_pas_instance_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_pas_hostname }}"
+sap_swpm_aas_instance_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_aas_hostname }}"
+
+####
+# Mandatory parameters : Preconfigure OS for SAP Software
+####
+
+# Configuration of Ansible Roles for preconfigure SAP (general, hana, netweaver)
+sap_general_preconfigure_modify_etc_hosts: false
+sap_general_preconfigure_reboot_ok: true
+sap_general_preconfigure_fail_if_reboot_required: false
+sap_hana_preconfigure_reboot_ok: true # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true
+sap_hana_preconfigure_fail_if_reboot_required: false
+sap_hana_preconfigure_update: true
+sap_hana_update_etchosts: true
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
+
+
+
+####
+# Mandatory parameters : SAP Software installation media downloads
+####
+
+# SAP ONE Support Launchpad credentials
+#sap_id_user: "SET_IN_VAR_PROMPT"
+#sap_id_user_password: 'SET_IN_VAR_PROMPT'
+
+# Directory for SAP installation media
+#sap_software_download_directory: "SET_IN_VAR_PROMPT"
+
+# Configuration for SAP installation media detection
+# sap_install_media_detect_** variables are set for each Ansible Task to the respective host
+
+
+
+####
+# Mandatory parameters : SAP HANA installation
+####
+
+# SAP HANA master password
+#sap_hana_install_use_master_password: "SET_IN_VAR_PROMPT"
+#sap_hana_install_master_password: "SET_IN_VAR_PROMPT"
+
+# SAP HANA database server instance details
+#sap_hana_sid: "SET_IN_VAR_PROMPT"
+#sap_hana_install_instance_nr: "SET_IN_VAR_PROMPT"
+
+# SAP HANA log mode (set to overwrite for Sandbox only, HA cannot use overwrite)
+#sap_hana_install_log_mode: overwrite
+
+
+####
+# Mandatory parameters : SAP HANA System Replication (HSR) installation
+####
+
+# Mandatory, defines which SAP HANA cluster to target
+#sap_hana_sid: "SET_IN_VAR_PROMPT"
+#sap_hana_install_instance_nr: "SET_IN_VAR_PROMPT"
+#sap_hana_hacluster_password: "SET_IN_PLAYBOOK"
+
+# Populate dynamically from hostvars when executing Ansible Play
+#sap_hana_cluster_nodes:
+#  - node_name: node1
+#    node_ip: 192.168.1.11
+#    node_role: primary
+#    hana_site: DC01
+#  - node_name: node2
+#    node_ip: 192.168.1.12
+#    node_role: secondary
+#    hana_site: DC02
+
+
+####
+# Mandatory parameters : Virtual IPs (VIPs)
+####
+#sap_ha_pacemaker_cluster_vip_hana_primary_ip_address: "SET_IN_VAR_PROMPT"
+#sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "SET_IN_VAR_PROMPT"
+#sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "SET_IN_VAR_PROMPT"
+
+
+####
+# Mandatory parameters : Linux Pacemaker cluster setup for SAP
+####
+
+# For debug, set config stdout to true
+#sap_ha_pacemaker_cluster_create_config_varfile: true
+
+# Populate dynamically from hostvars when executing Ansible Play on specific target
+#ha_cluster_cluster_name: awsclus1
+#ha_cluster_hacluster_password: 'clusterpass'
+#ha_cluster:
+#  node_name: "{{ ansible_hostname }}"
+#  pcs_address: "{{ ansible_default_ipv4.address }}"
+
+
+####
+# Optional parameters : SAP HANA installation
+####
+
+# List of components to be installed, default 'all'
+# Components should be comma separated
+# sap_hana_install_components: 'all'
+
+# Unix User
+# Leave this blank if you want this set automatically by hdblcm
+# For production systems, it's highly advisable to set this manually according to your environment's Unix ID policies
+# sap_hana_install_userid:
+# sap_hana_install_groupid:
+
+# Adjust these accordingly for your installation type
+# sap_hana_install_env_type: 'production'
+# sap_hana_install_mem_restrict: 'n'
+# sap_hana_install_max_mem:
+# sap_hana_install_system_restart: 'n'
+
+# Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
+# sap_hana_install_hdblcm_extraargs:
+
+# Update hosts file
+sap_hana_install_update_etchosts: 'false'
+
+# For more optional parameters please consult the documentation or
+# Check the file <role path>/defaults/main.yml
+
+
+
+####
+# Mandatory parameters : Ansible Dictionary for SAP HANA installation media
+####
+
+sap_hana_install_media_dictionary:
+
+  sap_hana_2_install:
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
+
+####
+# Mandatory parameters : SAP SWPM installation using Default Templates mode of the Ansible Role
+####
+
+sap_swpm_ansible_role_mode: default_templates
+#sap_swpm_templates_product_input_prefix: "SET_IN_VAR_PROMPT"
+#sap_swpm_templates_product_input: # Set for each Ansible Task to the respective host
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# NW Passwords
+sap_swpm_master_password: "NewPass$321"
+sap_swpm_ddic_000_password: "NewPass$321"
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# HDB Configuration
+sap_swpm_db_schema_abap: "SAPHANADB"
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# HDB Passwords
+sap_swpm_db_schema_abap_password: "NewPass$321"
+sap_swpm_db_sidadm_password: "NewPass$321"
+sap_swpm_db_system_password: "NewPass$321"
+sap_swpm_db_systemdb_password: "NewPass$321"
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# ASCS and PAS hosts
+#sap_swpm_ascs_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ascs[0] }}"
+#sap_swpm_ers_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ers[0] }}"
+#sap_swpm_pas_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}"
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# Unix User ID
+sap_swpm_sapadm_uid: '3000'
+sap_swpm_sapsys_gid: '3001'
+sap_swpm_sidadm_uid: '3001'
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# Other
+sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_update_etchosts: 'false'
+
+
+
+####
+# Mandatory parameters : Ansible Dictionary for SAP SWPM installation using Default Templates mode of the Ansible Role
+####
+
+# Templates and default values
+sap_swpm_templates_install_dictionary:
+
+  sap_s4hana_2023_distributed_installation_media:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1115-70006178.EXE'
+      - 'IMDB_SERVER20_075_0-80002031.SAR'
+      - 'IMDB_LCAPPS_2075_0-20010426.SAR'
+      - 'IMDB_AFL20_075_0-80001894.SAR'
+      - 'IMDB_CLIENT20_019_21-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP16_2-80003424.SAR'
+      - 'igsexe_4-70005417.sar'
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent
+      - 'S4CORE108_INST_EXPORT_1.zip'
+      - 'S4CORE108_INST_EXPORT_2.zip'
+      - 'S4CORE108_INST_EXPORT_3.zip'
+      - 'S4CORE108_INST_EXPORT_4.zip'
+      - 'S4CORE108_INST_EXPORT_5.zip'
+      - 'S4CORE108_INST_EXPORT_6.zip'
+      - 'S4CORE108_INST_EXPORT_7.zip'
+      - 'S4CORE108_INST_EXPORT_8.zip'
+      - 'S4CORE108_INST_EXPORT_9.zip'
+      - 'S4CORE108_INST_EXPORT_10.zip'
+      - 'S4CORE108_INST_EXPORT_11.zip'
+      - 'S4CORE108_INST_EXPORT_12.zip'
+      - 'S4CORE108_INST_EXPORT_13.zip'
+      - 'S4CORE108_INST_EXPORT_14.zip'
+      - 'S4CORE108_INST_EXPORT_15.zip'
+      - 'S4CORE108_INST_EXPORT_16.zip'
+      - 'S4CORE108_INST_EXPORT_17.zip'
+      - 'S4CORE108_INST_EXPORT_18.zip'
+      - 'S4CORE108_INST_EXPORT_19.zip'
+      - 'S4CORE108_INST_EXPORT_20.zip'
+      - 'S4CORE108_INST_EXPORT_21.zip'
+      - 'S4CORE108_INST_EXPORT_22.zip'
+      - 'S4CORE108_INST_EXPORT_23.zip'
+      - 'S4CORE108_INST_EXPORT_24.zip'
+      - 'S4CORE108_INST_EXPORT_25.zip'
+      - 'S4CORE108_INST_EXPORT_26.zip'
+      - 'S4CORE108_INST_EXPORT_27.zip'
+      - 'S4CORE108_INST_EXPORT_28.zip'
+      - 'S4CORE108_INST_EXPORT_29.zip'
+      - 'S4CORE108_INST_EXPORT_30.zip'
+      - 'S4HANAOP108_ERP_LANG_EN.SAR'
+#      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
+#      - 'SUM20SP18_8-80002456.SAR' # SUM 2.0
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1115-70006238.EXE'
+      - 'IMDB_SERVER20_075_0-80002046.SAR'
+      - 'IMDB_LCAPPS_2075_0-80002183.SAR'
+      - 'IMDB_AFL20_075_0-80002045.SAR'
+      - 'IMDB_CLIENT20_019_21-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP16_2-80003426.SAR'
+      - 'igsexe_4-70005446.sar'
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent
+      - 'S4CORE108_INST_EXPORT_1.zip'
+      - 'S4CORE108_INST_EXPORT_2.zip'
+      - 'S4CORE108_INST_EXPORT_3.zip'
+      - 'S4CORE108_INST_EXPORT_4.zip'
+      - 'S4CORE108_INST_EXPORT_5.zip'
+      - 'S4CORE108_INST_EXPORT_6.zip'
+      - 'S4CORE108_INST_EXPORT_7.zip'
+      - 'S4CORE108_INST_EXPORT_8.zip'
+      - 'S4CORE108_INST_EXPORT_9.zip'
+      - 'S4CORE108_INST_EXPORT_10.zip'
+      - 'S4CORE108_INST_EXPORT_11.zip'
+      - 'S4CORE108_INST_EXPORT_12.zip'
+      - 'S4CORE108_INST_EXPORT_13.zip'
+      - 'S4CORE108_INST_EXPORT_14.zip'
+      - 'S4CORE108_INST_EXPORT_15.zip'
+      - 'S4CORE108_INST_EXPORT_16.zip'
+      - 'S4CORE108_INST_EXPORT_17.zip'
+      - 'S4CORE108_INST_EXPORT_18.zip'
+      - 'S4CORE108_INST_EXPORT_19.zip'
+      - 'S4CORE108_INST_EXPORT_20.zip'
+      - 'S4CORE108_INST_EXPORT_21.zip'
+      - 'S4CORE108_INST_EXPORT_22.zip'
+      - 'S4CORE108_INST_EXPORT_23.zip'
+      - 'S4CORE108_INST_EXPORT_24.zip'
+      - 'S4CORE108_INST_EXPORT_25.zip'
+      - 'S4CORE108_INST_EXPORT_26.zip'
+      - 'S4CORE108_INST_EXPORT_27.zip'
+      - 'S4CORE108_INST_EXPORT_28.zip'
+      - 'S4CORE108_INST_EXPORT_29.zip'
+      - 'S4CORE108_INST_EXPORT_30.zip'
+      - 'S4HANAOP108_ERP_LANG_EN.SAR'
+#      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
+#      - 'SUM20SP18_9-80002470.SAR' # SUM 2.0
+
+
+  sap_s4hana_2023_distributed_nwas_ascs_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2023.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2023_distributed_nwas_ers_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ERS:S4HANA2023.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - credentials
+      - nw_config_other
+      - nw_config_ers
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_ers_instance_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ers_instance_nr: ""
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2023_distributed_nwas_pas_dbload_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2023.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+      - 'S4CORE*'
+      - 'S4HANAOP*'
+      - 'HANAUMML*'
+      - 'K-*'
+      - 'KD*'
+      - 'KE*'
+      - 'KIT*'
+      - 'SAPPAAPL*'
+      - 'SAP_BASIS*'
+
+
+  sap_s4hana_2023_distributed_nwas_pas:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2023.CORE.HDB.ABAP
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2023_distributed_nwas_aas:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_DI:S4HANA2023.CORE.HDB.PD
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_ports
+      - nw_config_other
+      - nw_config_additional_application_server_instance
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # Product ID suffix is not .ABAP, therefore set variables manually for sap_swpm Ansible Role to populate inifile.params
+      sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
+      sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2022_distributed_installation_media:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1115-70006178.EXE'
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_AFL20_067P_400-80001894.SAR'
+      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP16_2-80003424.SAR'
+      - 'igsexe_1-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70006642.SAR' # Kernel Part I (789)
+      - 'SAPEXEDB_51-70006641.SAR' # Kernel Part II (789)
+      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
+      - 'S4CORE107_INST_EXPORT_1.zip'
+      - 'S4CORE107_INST_EXPORT_2.zip'
+      - 'S4CORE107_INST_EXPORT_3.zip'
+      - 'S4CORE107_INST_EXPORT_4.zip'
+      - 'S4CORE107_INST_EXPORT_5.zip'
+      - 'S4CORE107_INST_EXPORT_6.zip'
+      - 'S4CORE107_INST_EXPORT_7.zip'
+      - 'S4CORE107_INST_EXPORT_8.zip'
+      - 'S4CORE107_INST_EXPORT_9.zip'
+      - 'S4CORE107_INST_EXPORT_10.zip'
+      - 'S4CORE107_INST_EXPORT_11.zip'
+      - 'S4CORE107_INST_EXPORT_12.zip'
+      - 'S4CORE107_INST_EXPORT_13.zip'
+      - 'S4CORE107_INST_EXPORT_14.zip'
+      - 'S4CORE107_INST_EXPORT_15.zip'
+      - 'S4CORE107_INST_EXPORT_16.zip'
+      - 'S4CORE107_INST_EXPORT_17.zip'
+      - 'S4CORE107_INST_EXPORT_18.zip'
+      - 'S4CORE107_INST_EXPORT_19.zip'
+      - 'S4CORE107_INST_EXPORT_20.zip'
+      - 'S4CORE107_INST_EXPORT_21.zip'
+      - 'S4CORE107_INST_EXPORT_22.zip'
+      - 'S4CORE107_INST_EXPORT_23.zip'
+      - 'S4CORE107_INST_EXPORT_24.zip'
+      - 'S4CORE107_INST_EXPORT_25.zip'
+      - 'S4CORE107_INST_EXPORT_26.zip'
+      - 'S4CORE107_INST_EXPORT_27.zip'
+      - 'S4CORE107_INST_EXPORT_28.zip'
+      - 'S4CORE107_INST_EXPORT_29.zip'
+      - 'S4CORE107_INST_EXPORT_30.zip'
+      - 'S4HANAOP107_ERP_LANG_EN.SAR'
+#      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
+#      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
+#      - 'SAPPAAPL4_2203_2-80004547.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
+#      - 'SUM20SP15_0-80002456.SAR' # SUM 2.0
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1115-70006238.EXE'
+      - 'IMDB_SERVER20_067_4-80002046.SAR'
+      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
+      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP16_2-80003426.SAR'
+      - 'igsexe_1-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70006667.SAR' # Kernel Part I (789)
+      - 'SAPEXEDB_51-70006666.SAR' # Kernel Part II (789)
+      - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
+      - 'S4CORE107_INST_EXPORT_1.zip'
+      - 'S4CORE107_INST_EXPORT_2.zip'
+      - 'S4CORE107_INST_EXPORT_3.zip'
+      - 'S4CORE107_INST_EXPORT_4.zip'
+      - 'S4CORE107_INST_EXPORT_5.zip'
+      - 'S4CORE107_INST_EXPORT_6.zip'
+      - 'S4CORE107_INST_EXPORT_7.zip'
+      - 'S4CORE107_INST_EXPORT_8.zip'
+      - 'S4CORE107_INST_EXPORT_9.zip'
+      - 'S4CORE107_INST_EXPORT_10.zip'
+      - 'S4CORE107_INST_EXPORT_11.zip'
+      - 'S4CORE107_INST_EXPORT_12.zip'
+      - 'S4CORE107_INST_EXPORT_13.zip'
+      - 'S4CORE107_INST_EXPORT_14.zip'
+      - 'S4CORE107_INST_EXPORT_15.zip'
+      - 'S4CORE107_INST_EXPORT_16.zip'
+      - 'S4CORE107_INST_EXPORT_17.zip'
+      - 'S4CORE107_INST_EXPORT_18.zip'
+      - 'S4CORE107_INST_EXPORT_19.zip'
+      - 'S4CORE107_INST_EXPORT_20.zip'
+      - 'S4CORE107_INST_EXPORT_21.zip'
+      - 'S4CORE107_INST_EXPORT_22.zip'
+      - 'S4CORE107_INST_EXPORT_23.zip'
+      - 'S4CORE107_INST_EXPORT_24.zip'
+      - 'S4CORE107_INST_EXPORT_25.zip'
+      - 'S4CORE107_INST_EXPORT_26.zip'
+      - 'S4CORE107_INST_EXPORT_27.zip'
+      - 'S4CORE107_INST_EXPORT_28.zip'
+      - 'S4CORE107_INST_EXPORT_29.zip'
+      - 'S4CORE107_INST_EXPORT_30.zip'
+      - 'S4HANAOP107_ERP_LANG_EN.SAR'
+#      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
+#      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
+#      - 'SAPPAAPL4_2203_2-80004546.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
+#      - 'SUM20SP15_0-80002470.SAR' # SUM 2.0
+
+
+  sap_s4hana_2022_distributed_nwas_ascs_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2022.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2022_distributed_nwas_ers_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ERS:S4HANA2022.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - credentials
+      - nw_config_other
+      - nw_config_ers
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_ers_instance_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ers_instance_nr: ""
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2022_distributed_nwas_pas_dbload_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2022.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+      - 'S4CORE*'
+      - 'S4HANAOP*'
+      - 'HANAUMML*'
+      - 'K-*'
+      - 'KD*'
+      - 'KE*'
+      - 'KIT*'
+      - 'SAPPAAPL*'
+      - 'SAP_BASIS*'
+
+
+  sap_s4hana_2022_distributed_nwas_pas:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2022.CORE.HDB.ABAP
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2022_distributed_nwas_aas:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_DI:S4HANA2022.CORE.HDB.PD
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_ports
+      - nw_config_other
+      - nw_config_additional_application_server_instance
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # Product ID suffix is not .ABAP, therefore set variables manually for sap_swpm Ansible Role to populate inifile.params
+      sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
+      sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2021_distributed_installation_media:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1115-70006178.EXE'
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_AFL20_067P_400-80001894.SAR'
+      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP16_2-80003424.SAR'
+      - 'igsexe_1-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_100-80005374.SAR' # Kernel Part I (785)
+      - 'SAPEXEDB_100-80005373.SAR' # Kernel Part II (785)
+      - 'SAPHOSTAGENT61_61-80004822.SAR'
+      - 'S4CORE106_INST_EXPORT_1.zip'
+      - 'S4CORE106_INST_EXPORT_2.zip'
+      - 'S4CORE106_INST_EXPORT_3.zip'
+      - 'S4CORE106_INST_EXPORT_4.zip'
+      - 'S4CORE106_INST_EXPORT_5.zip'
+      - 'S4CORE106_INST_EXPORT_6.zip'
+      - 'S4CORE106_INST_EXPORT_7.zip'
+      - 'S4CORE106_INST_EXPORT_8.zip'
+      - 'S4CORE106_INST_EXPORT_9.zip'
+      - 'S4CORE106_INST_EXPORT_10.zip'
+      - 'S4CORE106_INST_EXPORT_11.zip'
+      - 'S4CORE106_INST_EXPORT_12.zip'
+      - 'S4CORE106_INST_EXPORT_13.zip'
+      - 'S4CORE106_INST_EXPORT_14.zip'
+      - 'S4CORE106_INST_EXPORT_15.zip'
+      - 'S4CORE106_INST_EXPORT_16.zip'
+      - 'S4CORE106_INST_EXPORT_17.zip'
+      - 'S4CORE106_INST_EXPORT_18.zip'
+      - 'S4CORE106_INST_EXPORT_19.zip'
+      - 'S4CORE106_INST_EXPORT_20.zip'
+      - 'S4CORE106_INST_EXPORT_21.zip'
+      - 'S4CORE106_INST_EXPORT_22.zip'
+      - 'S4CORE106_INST_EXPORT_23.zip'
+      - 'S4CORE106_INST_EXPORT_24.zip'
+      - 'S4CORE106_INST_EXPORT_25.zip'
+      - 'S4CORE106_INST_EXPORT_26.zip'
+      - 'S4CORE106_INST_EXPORT_27.zip'
+      - 'S4CORE106_INST_EXPORT_28.zip'
+      - 'S4HANAOP106_ERP_LANG_EN.SAR'
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1115-70006238.EXE'
+      - 'IMDB_SERVER20_067_4-80002046.SAR'
+      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
+      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP16_2-80003426.SAR'
+      - 'igsexe_1-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_100-80005509.SAR' # Kernel Part I (785)
+      - 'SAPEXEDB_100-80005508.SAR' # Kernel Part II (785)
+      - 'SAPHOSTAGENT61_61-80004831.SAR'
+      - 'S4CORE106_INST_EXPORT_1.zip'
+      - 'S4CORE106_INST_EXPORT_2.zip'
+      - 'S4CORE106_INST_EXPORT_3.zip'
+      - 'S4CORE106_INST_EXPORT_4.zip'
+      - 'S4CORE106_INST_EXPORT_5.zip'
+      - 'S4CORE106_INST_EXPORT_6.zip'
+      - 'S4CORE106_INST_EXPORT_7.zip'
+      - 'S4CORE106_INST_EXPORT_8.zip'
+      - 'S4CORE106_INST_EXPORT_9.zip'
+      - 'S4CORE106_INST_EXPORT_10.zip'
+      - 'S4CORE106_INST_EXPORT_11.zip'
+      - 'S4CORE106_INST_EXPORT_12.zip'
+      - 'S4CORE106_INST_EXPORT_13.zip'
+      - 'S4CORE106_INST_EXPORT_14.zip'
+      - 'S4CORE106_INST_EXPORT_15.zip'
+      - 'S4CORE106_INST_EXPORT_16.zip'
+      - 'S4CORE106_INST_EXPORT_17.zip'
+      - 'S4CORE106_INST_EXPORT_18.zip'
+      - 'S4CORE106_INST_EXPORT_19.zip'
+      - 'S4CORE106_INST_EXPORT_20.zip'
+      - 'S4CORE106_INST_EXPORT_21.zip'
+      - 'S4CORE106_INST_EXPORT_22.zip'
+      - 'S4CORE106_INST_EXPORT_23.zip'
+      - 'S4CORE106_INST_EXPORT_24.zip'
+      - 'S4CORE106_INST_EXPORT_25.zip'
+      - 'S4CORE106_INST_EXPORT_26.zip'
+      - 'S4CORE106_INST_EXPORT_27.zip'
+      - 'S4CORE106_INST_EXPORT_28.zip'
+      - 'S4HANAOP106_ERP_LANG_EN.SAR'
+
+
+  sap_s4hana_2021_distributed_nwas_ascs_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2021.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2021_distributed_nwas_ers_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ERS:S4HANA2021.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - credentials
+      - nw_config_other
+      - nw_config_ers
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_ers_instance_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ers_instance_nr: ""
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2021_distributed_nwas_pas_dbload_ha:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2021.CORE.HDB.ABAPHA
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+      - 'S4CORE*'
+      - 'S4HANAOP*'
+      - 'HANAUMML*'
+      - 'K-*'
+      - 'KD*'
+      - 'KE*'
+      - 'KIT*'
+      - 'SAPPAAPL*'
+      - 'SAP_BASIS*'
+
+
+  sap_s4hana_2021_distributed_nwas_pas:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2021.CORE.HDB.ABAP
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_2021_distributed_nwas_aas:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_DI:S4HANA2021.CORE.HDB.PD
+
+    sap_swpm_inifile_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_ports
+      - nw_config_other
+      - nw_config_additional_application_server_instance
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    sap_swpm_inifile_dictionary:
+
+      # NW Instance Parameters
+      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
+      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
+      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # HDB Instance Parameters
+      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
+      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
+
+      # Product ID suffix is not .ABAP, therefore set variables manually for sap_swpm Ansible Role to populate inifile.params
+      sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
+      sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
+
+      # SAP Host Agent
+      sap_swpm_install_saphostagent: 'true'
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - AWS
+####
+
+sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
+  rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
+  rhel-8-2: "*RHEL-8.2*_HVM*x86_64*"
+  rhel-8-4: "*RHEL-8.4*_HVM*x86_64*"
+  rhel-8-6: "*RHEL-8.6*_HVM*x86_64*"
+  rhel-7-7-sap-ha: "*RHEL-SAP-7.7*"
+  rhel-7-9-sap-ha: "*RHEL-SAP-7.9*"
+  rhel-8-1-sap-ha: "*RHEL-SAP-8.1.0*"
+  rhel-8-2-sap-ha: "*RHEL-SAP-8.2.0*"
+  rhel-8-4-sap-ha: "*RHEL-SAP-8.4.0*"
+  rhel-8-6-sap-ha: "*RHEL-SAP-8.6.0*"
+  sles-15-2: "*suse-sles-15-sp2-v202*-hvm-ssd-x86_64*"
+  sles-15-3: "*suse-sles-15-sp3-v202*-hvm-ssd-x86_64*"
+  sles-15-4: "*suse-sles-15-sp4-v202*-hvm-ssd-x86_64*"
+  sles-12-5-sap-ha: "*suse-sles-sap-12-sp5-v202*-hvm-ssd-x86_64*"
+  sles-15-1-sap-ha: "*suse-sles-sap-15-sp1-v202*-hvm-ssd-x86_64*"
+  sles-15-2-sap-ha: "*suse-sles-sap-15-sp2-v202*-hvm-ssd-x86_64*"
+  sles-15-3-sap-ha: "*suse-sles-sap-15-sp3-v202*-hvm-ssd-x86_64*"
+  sles-15-4-sap-ha: "*suse-sles-sap-15-sp4-v202*-hvm-ssd-x86_64*"
+
+
+sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "r5.8xlarge"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          #disk_count: 1                 # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          #disk_type: gp3                # default: gp3, for AWS EBS disk type
+          #disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "r5.8xlarge"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "m5.8xlarge"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ers: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ers # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "m5.8xlarge"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ers
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-pas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "m5.8xlarge"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-aas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "m5.8xlarge"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - Google Cloud
+####
+
+sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
+
+  rhel-8-latest:
+    project: "rhel-cloud"
+    family: "rhel-8"
+
+  rhel-7-7-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-7-7-sap-ha"
+
+  rhel-7-9-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-7-9-sap-ha"
+
+  rhel-8-1-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-1-sap-ha"
+
+  rhel-8-2-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-2-sap-ha"
+
+  rhel-8-4-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-4-sap-ha"
+
+  rhel-8-6-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-6-sap-ha"
+
+  sles-15-latest:
+    project: "suse-cloud"
+    family: "sles-15"
+
+  sles-15-sp3-sap:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp3-sap"
+
+  sles-15-sp4-sap:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp4-sap"
+
+  sles-15-sp5-sap:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp5-sap"
+
+
+sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-highmem-32"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: pd-ssd              # default: gp3, for AWS EBS disk type
+          #disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 128                 # size in GB, integer
+          disk_type: pd-ssd
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-highmem-32"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: pd-ssd              # default: gp3, for AWS EBS disk type
+          #disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 128                 # size in GB, integer
+          disk_type: pd-ssd
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ers: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ers # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ers
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-pas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-aas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - IBM Cloud
+####
+
+sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:
+  rhel-8-4: ".*redhat.*8-4.*minimal.*amd64.*"
+  rhel-8-6: ".*redhat.*8-6.*minimal.*amd64.*"
+  rhel-9-0: ".*redhat.*9-0.*minimal.*amd64.*"
+  rhel-7-9-sap-ha: ".*redhat.*7-9.*amd64.*hana.*"
+  rhel-8-4-sap-ha: ".*redhat.*8-4.*amd64.*hana.*"
+  rhel-8-6-sap-ha: ".*redhat.*8-6.*amd64.*hana.*"
+  sles-15-3-sap-ha: ".*sles.*15-3.*amd64.*hana.*"
+  sles-15-4-sap-ha: ".*sles.*15-4.*amd64.*hana.*"
+  sles-15-5-sap-ha: ".*sles.*15-5.*amd64.*hana.*"
+
+
+sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "mx2-32x256"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 3                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 128                 # size in GB, integer
+          disk_type: 10iops-tier         # default: gp3, for AWS EBS disk type
+          #disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 3
+          disk_size: 48                  # size in GB, integer
+          disk_type: 10iops-tier
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320
+          disk_type: 10iops-tier         # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: 5iops-tier
+          filesystem_type: xfs           # default: xfs
+
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "mx2-32x256"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 3                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 128                 # size in GB, integer
+          disk_type: 10iops-tier         # default: gp3, for AWS EBS disk type
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 3
+          disk_size: 48                  # size in GB, integer
+          disk_type: 10iops-tier
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320
+          disk_type: 10iops-tier         # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: 5iops-tier
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cx2-32x64"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ers: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ers # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cx2-32x64"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ers
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-pas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cx2-32x64"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 150                 # size in GB, integer
+          disk_type: 5iops-tier
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-aas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cx2-32x64"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - IBM Cloud, IBM Power VS
+####
+
+# Full Linux subscription ppc64le OS Images with support and activation keys
+sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
+  rhel-8-4: ".*RHEL.*8.*4"
+  rhel-8-6: ".*RHEL.*8.*6"
+  rhel-9-2: ".*RHEL.*9.*2"
+  sles-15-3: ".*SLES.*15.*3"
+  sles-15-4: ".*SLES.*15.*4"
+  rhel-8-4-sap-ha: ".*RHEL.*8.*4.*SAP$" # ensure string suffix using $
+  rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
+  sles-15-2-sap-ha: ".*SLES.*15.*2.*SAP$" # ensure string suffix using $
+  sles-15-3-sap-ha: ".*SLES.*15.*3.*SAP$" # ensure string suffix using $
+  sles-15-4-sap-ha: ".*SLES.*15.*4.*SAP$" # ensure string suffix using $
+
+
+sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 144                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          disk_type: tier3
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 144                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          disk_type: tier3
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ascs # hana_primary, nwas_ascs, nwas_pas, nwas_aas
+      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+    nwas-ers: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ers # hana_primary, nwas_ascs, nwas_pas, nwas_aas
+      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ers
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+    nwas-pas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
+      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+    nwas-aas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
+      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - MS Azure
+####
+
+sap_vm_provision_msazure_vm_host_os_image_dictionary:
+
+  rhel-8-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "84-gen2"
+
+  rhel-8-1-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "81sapha-gen2"
+
+  rhel-8-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "82sapha-gen2"
+
+  rhel-8-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "84sapha-gen2"
+
+  rhel-8-1-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "81sapapps-gen2"
+
+  rhel-8-2-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "82sapapps-gen2"
+
+  rhel-8-4-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "84sapapps-gen2"
+
+  sles-15-sp3-sap:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3"
+    sku: "gen2"
+
+  sles-15-sp4-sap:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4"
+    sku: "gen2"
+
+  sles-15-sp5-sap:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5"
+    sku: "gen2"
+
+
+sap_vm_provision_msazure_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_M32ls"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 4                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6                  # default: gp3, for AWS EBS disk type
+          #disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 3
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          disk_type: P15
+          filesystem_type: xfs           # default: xfs
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        - name: swap
+          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 4                 # size in GB, integer
+          disk_type: P1
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_M32ls"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 4                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6                  # default: gp3, for AWS EBS disk type
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 3
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          disk_type: P15
+          filesystem_type: xfs           # default: xfs
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        - name: swap
+          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 4                 # size in GB, integer
+          disk_type: P1
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_DS4_v2"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-ers: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ers # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_DS4_v2"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ers
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-pas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_DS4_v2"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+    nwas-aas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_DS4_v2"
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - IBM PowerVM
+####
+
+sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 512                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2                   # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 512                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2                   # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96                  # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-ers: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ers # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ers
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96                  # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-pas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96                  # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-aas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96                  # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - OVirt
+####
+
+sap_vm_provision_ovirt_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 256
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 144                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 256
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 144                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 64
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-ers: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_ers # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 64
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ers
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-pas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 64
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas-aas: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 64
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+
+####
+# Mandatory parameters : Infrastructure provisioning definitions - VMware
+####
+
+sap_vm_provision_vmware_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 256
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 144                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+    hana-s: # Hostname, must be 13 characters or less
+
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 256
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 144                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: swap
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+    nwas-ascs: # Hostname, must be 13 characters or less
+
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 64
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+    nwas-pas: # Hostname, must be 13 characters or less
+
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 64
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+    nwas-aas: # Hostname, must be 13 characters or less
+
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 64
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_aas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          nfs_path: /usr/sap                                              # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap_trans
+          mountpoint: /usr/sap/trans
+          nfs_path: /usr/sap/trans                                                       # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | default('') }}"   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}"                # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"                  # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          nfs_path: /sapmnt                                               # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: swap
+          disk_size: 96
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs

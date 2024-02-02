@@ -1,0 +1,139 @@
+---
+
+- name: Ansible Play for SAP SolMan Diagnostics Agent (SDA) installation
+  hosts: all
+  gather_facts: true
+  become: true
+  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  max_fail_percentage: 0
+
+  vars_prompt:
+
+    - name: ansible_prompt_sap_id_user
+      prompt: Please enter your SAP ID user (e.g. S-User)
+      private: false
+
+    - name: ansible_prompt_sap_id_user_password
+      prompt: Please enter your SAP ID password
+      private: true
+      unsafe: true
+
+    - name: ansible_prompt_sap_sda_version_selected
+      private: false
+      prompt: |
+        Please enter which SAP Software installation media to download, select from options (separate with comma - for example sap_s4hana_2022,sap_ecc6_ehp6_hana)...
+
+        sap_diag_agent_753_for_solman72_sp12 (for SAP SolMan 7.2 SP12)
+        sap_diag_agent_753_for_solman72_sp0_sp11 (for SAP SolMan >= 7.2 SP0 and <= 7.2 SP11)
+
+    - name: ansible_prompt_sap_install_media_detect_directory
+      prompt: Please enter the directory path (on target) to download install media to and scan for SAP Software (e.g. /software)
+      private: false
+
+    - name: ansible_prompt_sap_sda_system_id
+      prompt: Please enter desired SAP Diagnostics Agent System ID (e.g. DAA)
+      private: false
+
+    - name: ansible_prompt_sap_sda_instance_nr
+      prompt: Please enter desired SAP Diagnostics Agent System Number (e.g. 98)
+      private: false
+
+    - name: ansible_prompt_sap_sda_adm_password
+      prompt: Please enter desired SAP Diagnostics Agent <sid>adm Password
+      private: true
+      unsafe: true
+
+    - name: ansible_prompt_sap_system_virtual_hostname
+      prompt: Please enter the Virtual Host Name (short) of the target SAP System (e.g. s4h01)
+      private: false
+
+
+# Use include_role inside Task block, instead of using roles declaration or Task block with import_roles.
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation
+  tasks:
+
+    - name: Set facts for all hosts
+      ansible.builtin.set_fact:
+        sap_id_user: "{{ ansible_prompt_sap_id_user }}"
+        sap_id_user_password: "{{ ansible_prompt_sap_id_user_password }}"
+        sap_sda_version_selected: "{{ ansible_prompt_sap_sda_version_selected }}"
+        sap_install_media_detect_directory: "{{ ansible_prompt_sap_install_media_detect_directory }}"
+        sap_sda_system_id: "{{ ansible_prompt_sap_sda_system_id }}"
+        sap_sda_instance_nr: "{{ ansible_prompt_sap_sda_instance_nr }}"
+        sap_sda_adm_password: "{{ ansible_prompt_sap_sda_adm_password }}"
+        sap_system_virtual_hostname: "{{ ansible_prompt_sap_system_virtual_hostname }}"
+
+    # Set facts based on the install dictionary and the default template selected
+    - name: Set fact x86_64 softwarecenter_search_list
+      ansible.builtin.set_fact:
+        softwarecenter_search_list: "{{ sap_software_templates_dictionary[sap_sda_version_selected].softwarecenter_search_list_x86_64 }}"
+      when: ansible_architecture == "x86_64"
+
+    # Set facts based on the install dictionary and the default template selected
+    - name: Set fact ppc64le softwarecenter_search_list
+      ansible.builtin.set_fact:
+        softwarecenter_search_list: "{{ sap_software_templates_dictionary[sap_sda_version_selected].softwarecenter_search_list_ppc64le }}"
+      when: ansible_architecture == "ppc64le"
+
+    - name: Create directories if does not exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "/software"
+
+    - name: Execute Ansible Module with system Python to download installation media for SAP Diagnostics Agent on Linux
+      community.sap_launchpad.software_center_download:
+        suser_id: "{{ sap_id_user }}"
+        suser_password: "{{ sap_id_user_password }}"
+        softwarecenter_search_query: "{{ item }}"
+        dest: "/software"
+      loop: "{{ softwarecenter_search_list }}"
+      loop_control:
+        label: "{{ item }} : {{ download_task.msg }}"
+      register: download_task
+
+    - name: Execute Ansible Role sap_install_media_detect
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_install_media_detect
+      vars:
+        sap_install_media_detect_source_directory: "/software"
+        sap_install_media_detect_swpm: true
+        sap_install_media_detect_hostagent: true
+        sap_install_media_detect_kernel: true
+
+    - name: Execute Ansible Role sap_swpm
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_swpm
+      vars:
+        sap_swpm_generic: true # tech debt, force override of the SAP NetWeaver install media files detection by sap_swpm itself
+        sap_swpm_ansible_role_mode: advanced_templates
+        sap_swpm_templates_product_input: sap_diagnostics_agent_753
+
+        sap_swpm_templates_install_dictionary:
+          sap_diagnostics_agent_753:
+            sap_swpm_product_catalog_id: NW_DiagnosticsAgent:GENERIC.IND.PD
+            sap_swpm_inifile_custom_values_dictionary:
+              archives.downloadBasket: "{{ sap_swpm_software_path }}" # From detected path in sap_install_media_detect
+              hostAgent.sapAdmPassword: "{{ sap_sda_adm_password }}"
+              DiagnosticsAgent.LogicalHostName: "{{ sap_system_virtual_hostname }}"
+              DiagnosticsAgent.SID: "{{ sap_sda_system_id }}"
+              DiagnosticsAgent.InstanceNumber: "{{ sap_sda_instance_nr | int }}"
+              DiagnosticsAgent.dasidAdmPassword: "{{ sap_sda_adm_password }}"
+              DiagnosticsAgent.SAPJVMVersion: SAPJVM8
+              DiagnosticsAgent.installSAPHostAgent: true
+              DiagnosticsAgent.SolMan.Connection: none # solman or none to skip Connection of the Diagnostics Agent to Diagnostics in SAP Solution Manager
+              DiagnosticsAgent.SolMan.UseSSL: false # true or false to skip Connection of the Diagnostics Agent to Diagnostics in SAP Solution Manager
+              # DiagnosticsAgent.SolMan.HostName: solman01.example.com
+              # DiagnosticsAgent.SolMan.PortNumber: 44401
+              # DiagnosticsAgent.SolMan.UserName: SOLMAN_ADMIN
+              # DiagnosticsAgent.SolMan.Password: "NewPass$321"
+              # DiagnosticsAgent.SAProuter.RouteString:
+              # DiagnosticsAgent.SAProuter.Password:
+              DiagnosticsAgent.SLD.Connection: "no"
+              # DiagnosticsAgent.SLD.HostName:
+              # DiagnosticsAgent.SLD.Password:
+              # DiagnosticsAgent.SLD.PortNumber:
+              # DiagnosticsAgent.SLD.UseHTTPS:
+              # DiagnosticsAgent.SLD.UserName:

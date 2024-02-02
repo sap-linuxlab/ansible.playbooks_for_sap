@@ -1,0 +1,61 @@
+---
+
+# ---- Mandatory parameters : Ansible Dictionary for SAP software install media ---- #
+
+# SAP Note 2253383 - Diagnostics Agent - SWPM Archive-Based Installation
+# SAP Note 1858920 - Diagnostics Agent installation with Software Provisioning Manager
+
+# SAP Diagnostics Agent 7.53, OS Independent (SUPPORT PACKAGES AND PATCHES)
+# https://me.sap.com/softwarecenter/template/products/EVENT=TREE&NE=NAVIGATE&ENR=AINS0120061532490001174401200615320900006067&V=MAINT&TA=ACTUAL
+
+# SAP JVM 8.1 (SUPPORT PACKAGES AND PATCHES)
+# https://me.sap.com/softwarecenter/template/products/EVENT=TREE&NE=NAVIGATE&ENR=73554900100200000247&V=MAINT
+
+# SAP JVM 6.1 (SUPPORT PACKAGES AND PATCHES)
+# https://me.sap.com/softwarecenter/template/products/EVENT=TREE&NE=NAVIGATE&ENR=01200615320200012982&V=MAINT
+
+# SAP Kernel 7.54 64-BIT, UNICODE, DATABASE INDEPENDENT (SUPPORT PACKAGES AND PATCHES)
+# https://me.sap.com/softwarecenter/template/products/EVENT=TREE&NE=NAVIGATE&ENR=73554900100200019168&V=MAINT
+
+sap_software_templates_dictionary:
+
+  sap_diag_agent_753_for_solman72_sp12:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1115-70006178.EXE'
+      - 'SWPM10SP39_4-20009701.SAR'
+      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22 Linux x86_64
+      - 'SMDA720_SP14_15-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan 7.2 SP12
+      - 'SAPJVM8_96-80000202.SAR' # SAP JVM 8.1
+      - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1115-70006238.EXE'
+      - 'SWPM10SP39_4-70002492.SAR'
+      - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22 Linux x86_64
+      - 'SMDA720_SP14_15-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan 7.2 SP12
+      - 'SAPJVM8_96-70001621.SAR' # SAP JVM 8.1
+      - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
+
+
+  sap_diag_agent_753_for_solman72_sp0_sp11:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1115-70006178.EXE'
+      - 'SWPM10SP39_4-20009701.SAR'
+      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22 Linux x86_64
+      - 'SMDA720_SP11_22-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan >= 7.2 SP0 and <= 7.2 SP11
+      - 'SAPJVM8_96-80000202.SAR' # SAP JVM 8.1
+      - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1115-70006238.EXE'
+      - 'SWPM10SP39_4-70002492.SAR'
+      - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22 Linux x86_64
+      - 'SMDA720_SP11_22-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan >= 7.2 SP0 and <= 7.2 SP11
+      - 'SAPJVM8_96-70001621.SAR' # SAP JVM 8.1
+      - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA

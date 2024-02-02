@@ -1,0 +1,36 @@
+# Ansible Playbook - SAP NetWeaver (ABAP) with SAP HANA Sandbox installation
+
+This Ansible Playbook can be executed with:
+- Ansible to provision hosts
+- Ansible + Terraform to provision hosts
+- Existing hosts
+
+This Ansible Playbook can be targeted at the following Infrastructure Platforms:
+- Amazon Web Services (aws)
+- Google Cloud Platform (gcp)
+- Microsoft Azure (msazure)
+
+SAP NetWeaver (ABAP) with SAP HANA Sandbox installation:
+- Sandbox System definition by SAP: all SAP HANA and SAP NetWeaver instances run on a single host.
+- System Topology/Architecture: a Sandbox System is commonly referred as Two-Tier Architecture, may also be known as OneHost or Central System.
+
+SAP NetWeaver (ABAP) software versions:
+7.52 SP00, 7.50 SP00
+
+---
+
+## Execution of Ansible Playbook
+
+Prior to execution, please read the [full documentation of the Ansible Playbooks for SAP](../docs/README.md) for the capabilities and different execution methods.
+
+## Execution outcome
+
+When executing this Ansible Playbook for SAP, the following hosts are provisioned (unless an Ansible Inventory is provided for existing hosts):
+1. Host for SAP HANA Database Server and SAP NetWeaver Application Server (ABAP) - Central Services (ASCS) and Primary Application Server (PAS)
+
+The sequence of a Standard System installation is:
+- `hdblcm`: Install SAP HANA database server
+- `SWPM`: Install SAP NetWeaver Application Server (ABAP)
+
+This therefore matches to the SAP SWPM Product ID prefixes that are executed in sequence:
+- `NW_ABAP_OneHost`, Central Services, Primary Application Server

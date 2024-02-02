@@ -1,0 +1,196 @@
+---
+
+# This GitHub Action requires the repository to have GitHub Action 'Read and write permissions' under Settings -> Action -> General -> Workflow permissions.
+
+name: SAP Software Availability Tests
+
+on:
+  # * is a special character in YAML, quote string to avoid
+  # schedule uses UTC
+  # only uses the main branch, to alter use 'with: ref: branch_name' for the step using actions/checkout
+  # At 05:00 on every day-of-week from Monday through Friday
+  schedule:
+    - cron: '0 5 * * 1-5'
+
+  push:
+    branches:
+      - main
+
+jobs:
+  sap_software_availability:
+    name: 'SAP software availability CRON job'
+    runs-on: ubuntu-latest
+    strategy:
+      fail-fast: false
+      max-parallel: 1
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          path: gh_repo
+      - name: Ansible setup
+        id: local_setup
+        run: |
+          python --version
+          python -m pip install ansible-core requests beautifulsoup4 lxml
+          ansible --version
+          ansible-galaxy collection install git+https://github.com/sap-linuxlab/community.sap_launchpad.git,main -p ./ansible_collections
+      - name: Ansible Playbooks for SAP - check SAP software availability
+        id: identify_software_list
+        env:
+          sap_user_id: ${{ secrets.SAP_USER_ID }}
+          sap_user_id_password: ${{ secrets.SAP_USER_ID_PASSWORD }}
+        run: |
+          export ANSIBLE_COLLECTIONS_PATH="$PWD/ansible_collections"
+          cd "./gh_repo/"
+          # Extract from softwarecenter_search_list_.* until first empty line, then remove yaml formatting and sort for unique
+          export software_list=$(cat ./**/**/ansible_extravars.yml | awk '!NF{f=0} /^.*softwarecenter_search_list.*/{f=1} f{print}' | awk '!/.*softwarecenter_search_list.*/' | awk '{sub(/#.*/,""); print}' | awk '{sub(/ .*- '\''/,""); print}' | sed '/^ *$/d' | sed '/^---*$/d' | tr -d "'" | sort | uniq)
+          #echo "DEBUG - Software List:"
+          #echo $software_list
+          export errors_list=""
+          for item in $software_list
+          do
+            shell_exit_code=0
+            echo "Checking availability of SAP Software: $item"
+            ansible all --inventory 'localhost,' --connection 'local' --module-name community.sap_launchpad.software_center_download \
+            --args "suser_id='$sap_user_id' suser_password='$sap_user_id_password' softwarecenter_search_query='$item' dest='.' dry_run=True" \
+            || shell_exit_code=$?
+            if [ $shell_exit_code -ne 0 ]; then
+                errors_list="$errors_list $item"
+                continue
+            fi
+          done
+          cd ../
+          if [ -z "$errors_list" ]
+          then
+            exit 0
+          else
+            echo "### ERRORS identified ####"
+            echo "Ansible Playbooks for SAP require updating,"
+            echo "as the following SAP Software are no longer available:"
+            echo "$errors_list" | tr " " "\n"
+            echo ""
+            cd ./ansible_collections/community/sap_launchpad/plugins
+            touch python_module_fuzzy_call_script.py
+            echo '#!/usr/bin/env python3' >> python_module_fuzzy_call_script.py
+            echo 'import sys' >> python_module_fuzzy_call_script.py
+            echo 'input_search_file=sys.argv[1]' >> python_module_fuzzy_call_script.py
+            echo 'input_search_file_name_and_version_only=sys.argv[2]' >> python_module_fuzzy_call_script.py
+            echo 'from module_utils.sap_id_sso import sap_sso_login' >> python_module_fuzzy_call_script.py
+            echo 'from module_utils.sap_launchpad_software_center_download_search_fuzzy import *' >> python_module_fuzzy_call_script.py
+            echo "username='$sap_user_id'" >> python_module_fuzzy_call_script.py
+            echo "password='$sap_user_id_password'" >> python_module_fuzzy_call_script.py
+            echo 'sap_sso_login(username, password)' >> python_module_fuzzy_call_script.py
+            echo 'query_result = search_software_fuzzy(input_search_file)' >> python_module_fuzzy_call_script.py
+            echo 'if len(query_result) >= 2:' >> python_module_fuzzy_call_script.py
+            echo "    if '70SWPM' in query_result[0]['Title']:" >> python_module_fuzzy_call_script.py
+            echo "        print(query_result[-1]['Title'])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('DBATL' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith('DBATL'):" >> python_module_fuzzy_call_script.py
+            echo "                print(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('_NW_LANG_' in sublist['Description'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        # Skip _NW_LANG_ files which may have duplicates that are filtered automatically when downloaded" >> python_module_fuzzy_call_script.py
+            echo "        print('')" >> python_module_fuzzy_call_script.py
+            echo "    elif any('SYBCTRL' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith('SYBCTRL'):" >> python_module_fuzzy_call_script.py
+            echo "                print(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('IMDB_CLIENT20' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        input_imdb_client = input_search_file_name_and_version_only[:-2]" >> python_module_fuzzy_call_script.py
+            echo "        list_imdb_client = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith(input_imdb_client):" >> python_module_fuzzy_call_script.py
+            echo "                list_imdb_client.append(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "        list_imdb_client.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        print(list_imdb_client[0])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('IMDB_AFL' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        input_imdb_afl = input_search_file_name_and_version_only[:-1]" >> python_module_fuzzy_call_script.py
+            echo "        list_imdb_afl = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith(input_imdb_afl):" >> python_module_fuzzy_call_script.py
+            echo "                list_imdb_afl.append(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "        list_imdb_afl.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        print(list_imdb_afl[0])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('IMDB_LCAPPS' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        input_imdb_lcapps = input_search_file_name_and_version_only[:-1]" >> python_module_fuzzy_call_script.py
+            echo "        list_imdb_lcapps = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith(input_imdb_lcapps):" >> python_module_fuzzy_call_script.py
+            echo "                list_imdb_lcapps.append(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "        list_imdb_lcapps.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        print(list_imdb_lcapps[0])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('IMDB_SERVER' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            input_imdb_server = input_search_file_name_and_version_only[:-1]" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith(input_imdb_server):" >> python_module_fuzzy_call_script.py
+            echo "                print(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('SAPWEBDISP' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        # As SAP WebDisp file name numbering does not use preceeding 0's, manually filter out v7 which is older than v69:" >> python_module_fuzzy_call_script.py
+            echo "        input_webdisp = input_search_file_name_and_version_only[:-2]" >> python_module_fuzzy_call_script.py
+            echo "        list_webdisp = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith(input_webdisp) and not sublist['Title'].startswith('SAPWEBDISP_SP_7'):" >> python_module_fuzzy_call_script.py
+            echo "                list_webdisp.append(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "        list_webdisp.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        print(list_webdisp[0])" >> python_module_fuzzy_call_script.py
+            echo "    else:" >> python_module_fuzzy_call_script.py
+            echo '        print("\nERROR. More than 1 result, manual intervention required....")' >> python_module_fuzzy_call_script.py
+            echo '        for item in query_result:' >> python_module_fuzzy_call_script.py
+            echo "            print('Identified ' + item['Title'] + ' : ' + item['Description'] + ', ' + item['Infotype'],end='\n')" >> python_module_fuzzy_call_script.py
+            echo 'else:' >> python_module_fuzzy_call_script.py
+            echo "    print(query_result[0]['Title'])" >> python_module_fuzzy_call_script.py
+            export exit1_check=0
+            cd ../../../../
+            #echo "DEBUG - Errors List:"
+            #echo $errors_list
+            for filename in $errors_list
+            do
+              filename_noext="${filename%.*}"
+              filename_id_only="${filename_noext##*-}"
+              filename_name_and_version_only="${filename_noext%_*}"
+              #echo "DEBUG - Filename"
+              #echo $filename
+              #echo "DEBUG - Filename NO EXT"
+              #echo $filename_noext
+              #echo "DEBUG - Filename ID ONLY"
+              #echo $filename_id_only
+              #echo "DEBUG - Filename NAME AND VERSION ONLY"
+              #echo $filename_name_and_version_only
+              cd ./ansible_collections/community/sap_launchpad/plugins
+              search_file="$(python ./python_module_fuzzy_call_script.py $filename_id_only $filename_name_and_version_only)" # Quote command substitution to preserve newline
+              cd ../../../../
+              if [[ "$search_file" == *"ERROR"* ]]; then
+                echo -e "$search_file" # Quote variable to preserve newline
+                exit1_check=1
+              elif [[ "$search_file" == "" ]]; then
+                echo "Skipped file $filename"
+              else
+                echo "Perform recursive sed for $filename change to $search_file"
+                stripped_search_file=$(echo $search_file | tr -d '\n')
+                cd "./gh_repo"
+                find . -type f -not -path '*/\.*' -exec sed -i "s/$filename/$stripped_search_file/g" {} \;
+                cd ../
+              fi
+            done
+            if [[ "$exit1_check" -eq 1 ]]; then
+              exit 1
+            fi
+          fi
+      - name: Commit to main branch
+        id: git_commit_auto
+        run: |
+          cd ./gh_repo
+          if [[ $(git status --porcelain) ]]; then
+            git config user.name github-actions
+            git config user.email github-actions@github.com
+            git stash
+            git pull
+            git stash pop
+            git add .
+            git status
+            git commit -m "software-update: replace with new filenames $(date +%F_%H-%M)"
+            git push
+          else
+            exit 0
+          fi
