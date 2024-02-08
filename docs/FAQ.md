@@ -99,7 +99,7 @@ No special recommendations
 
 #### SAP MaxDB
 
-Restricted to certain Special Characters `#$@_`
+Restricted to certain Special Characters `#$@_`. Must not begin with a digit.
 
 #### IBM Db2
 
@@ -107,7 +107,7 @@ Avoid use of Special Character `$` which may cause automation errors when parsed
 
 #### Oracle DB
 
-Avoid use of Special Character `$` which may cause automation errors when parsed
+Avoid use of Special Character `$` which may cause automation errors when parsed. Must not begin with a digit or underscore.
 
 
 ### SAP System / SAP NetWeaver password restrictions?
@@ -116,10 +116,24 @@ Avoid use of Special Character `$` which may cause automation errors when parsed
 
 - Between 3 and 40 characters
 - Alphanumerical, not advisable to use space character
-- Restricted to certain Special Characters `!"@$%&/()=?’*+~#-_.,;:{[]}\<>│`
+- Restricted to certain Special Characters `!"@$%&/()=?’*+~#-_.,;:{[]}\<>│`. Not advisible to use `\` or `"`
 
-Reference:
-- [Password Rules - SAP NetWeaver Application Server for ABAP 7.52](https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_752/c6e6d078ab99452db94ed7b3b7bbcccf/4ac3efb58c352470e10000000a42189c.html?locale=en-US)
+**Reference:**
+
+For SAP NetWeaver Application Server (ABAP) see document [Password Rules - User and Role Administration - SAP NetWeaver Application Server for ABAP 7.52](https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_752/c6e6d078ab99452db94ed7b3b7bbcccf/4ac3efb58c352470e10000000a42189c.html?locale=en-US).
+
+For further information, please see [User Guides for System Provisioning with Software Provisioning Manager](https://help.sap.com/docs/SOFTWARE_PROVISIONING_MANAGER/30839dda13b2485889466316ce5b39e9/4901b2032db94b64bac87454dd94805b.html) which contains a list of different guides under two sections:
+
+1. Installation Option of Software Provisioning Manager 2.0
+    - Installation Guides - Application Server Systems - Software Provisioning Manager 2.0
+2. Installation Option of Software Provisioning Manager 1.0
+    - Installation Guides - Application Server Systems - Software Provisioning Manager 1.0
+
+On each of these pages (for SWPM 1.0/2.0) there are documents (HTML/PDF) in a table with choice for `Database, Product Release, Operating System Platform, Technical Track`. Each document contains layered sections 'Planning > Basic Installation Parameters > SAP System Parameters' with Password limitation information.
+
+For example, [SAP System Parameters - Installation of SAP ABAP Systems on UNIX : SAP HANA 2.0 - SWPM 2.0](https://help.sap.com/docs/SLTOOLSET/39c32e9783f6439e871410848f61544c/fe3f4554f82b1d5de10000000a44538d.html).
+
+Please note, these guides are different than those listed on [Guide Finder for SAP NetWeaver and ABAP Platform](https://help.sap.com/docs/r/nwguidefinder).
 
 <br/>
 
