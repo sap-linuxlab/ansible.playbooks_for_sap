@@ -21,8 +21,12 @@
       prompt: |
         Please enter which SAP Software installation media to download, select from options (separate with comma - for example sap_s4hana_2022,sap_ecc6_ehp6_hana)...
 
+        sap_s4hana_2023
         sap_s4hana_2022
         sap_s4hana_2021
+        sap_s4hana_2020
+        sap_s4hana_1909
+        sap_bw4hana_2023
         sap_bw4hana_2021
         sap_ecc6_ehp8_hana
         sap_ecc6_ehp8_ibmdb2
