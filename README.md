@@ -50,7 +50,7 @@ These Ansible Playbooks for SAP are designed to be:
     - Standard (Scale-Up)
     - High Availability (performance optimized)
     - Scale-Out
-- SAP S/4HANA (2023, 2022, 2021)
+- SAP S/4HANA (2023, 2022, 2021, 2020, 1909)
     - Sandbox
     - Sandbox via Maintenance Planner
     - Standard
@@ -59,7 +59,7 @@ These Ansible Playbooks for SAP are designed to be:
     - Distributed via Maintenance Planner
     - Distributed High Availability
     - Distributed High Availability via Maintenance Planner
-- SAP Landscape for SAP S/4HANA (2023, 2022, 2021)
+- SAP Landscape for SAP S/4HANA (2023, 2022, 2021, 2020, 1909)
     - 3-System Standard
     - 3-System Standard via Maintenance Planner
 - SAP S/4HANA Foundation (2023, 2022, 2021), for SAP HANA-only Add-Ons and Custom Apps

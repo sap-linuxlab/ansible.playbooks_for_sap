@@ -15,7 +15,7 @@ SAP S/4HANA installation:
 - System Topology/Architecture: a Sandbox System is commonly referred as Two-Tier Architecture, may also be known as OneHost or Central System.
 
 SAP S/4HANA software versions:
-2023, 2022, 2021
+2023, 2022, 2021, 2020, 1909
 
 ---
 

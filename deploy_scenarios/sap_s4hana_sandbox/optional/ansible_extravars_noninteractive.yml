@@ -352,7 +352,7 @@ sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"
 # (see ansible_extravars.yml in parent directory of this Ansible Playbook for full definitions)
 ####
 
-sap_swpm_templates_product_input: "ENTER_STRING_VALUE_HERE" # sap_s4hana_2023_sandbox , sap_s4hana_2022_sandbox , sap_s4hana_2021_sandbox
+sap_swpm_templates_product_input: "ENTER_STRING_VALUE_HERE" # sap_s4hana_2023_sandbox , sap_s4hana_2022_sandbox , sap_s4hana_2021_sandbox , sap_s4hana_2020_sandbox , sap_s4hana_1909_sandbox
 
 # Override any variable set in sap_swpm_inifile_dictionary
 # NW Instance Parameters

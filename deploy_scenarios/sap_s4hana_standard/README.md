@@ -15,7 +15,7 @@ SAP S/4HANA installation:
 - System Topology/Architecture: a Standard System is commonly referred as Three-Tier Architecture, may also be known as DualHost.
 
 SAP S/4HANA software versions:
-2023, 2022, 2021
+2023, 2022, 2021, 2020, 1909
 
 ---
 

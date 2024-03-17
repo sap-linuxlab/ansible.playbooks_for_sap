@@ -15,7 +15,7 @@ SAP S/4HANA installation:
 - System Topology/Architecture: a Distributed High Availability System is commonly referred as Multi-Tier Architecture using instances with switchover cluster infrastructure.
 
 SAP S/4HANA software versions:
-2023, 2022, 2021
+2023, 2022, 2021, 2020, 1909
 
 ---
 

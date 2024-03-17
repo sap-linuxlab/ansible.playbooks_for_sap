@@ -381,7 +381,7 @@ sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"
 # (see ansible_extravars.yml in parent directory of this Ansible Playbook for full definitions)
 ####
 
-sap_swpm_templates_product_input_prefix: "ENTER_STRING_VALUE_HERE" # sap_s4hana_2023_distributed , sap_s4hana_2022_distributed , sap_s4hana_2021_distributed
+sap_swpm_templates_product_input_prefix: "ENTER_STRING_VALUE_HERE" # sap_s4hana_2023_distributed , sap_s4hana_2022_distributed , sap_s4hana_2021_distributed , sap_s4hana_2020_distributed , sap_s4hana_1909_distributed
 #sap_swpm_templates_product_input: # Set for each Ansible Task to the respective host
 
 # Override any variable set in sap_swpm_inifile_dictionary
