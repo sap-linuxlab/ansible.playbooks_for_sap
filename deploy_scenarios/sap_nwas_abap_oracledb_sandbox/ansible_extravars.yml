@@ -156,7 +156,7 @@ sap_swpm_templates_install_dictionary:
       - '51053828'   # Oracle 19.0.0.0 RDBMS Linux on x86_64 64bit, ZIP. Compatible with RHEL 7.x/8.x and SLES 12.x/15.x
 #      - '51054219'   # Oracle Client 12.1.0.2. Compatible with RHEL 7.x and SLES 12.x
 #      - '51054433'   # Oracle 12.2.0.1 Client V2 64bit (All), ZIP. Compatible with RHEL 7.x and SLES 12.x
-      - '51055071'   # Oracle 19.0.0.0 RDBMS Client 64bit (All), ZIP (AKA. Oracle Database 19c Base Release). Compatible with RHEL 7.x/8.x and SLES 12.x/15.x
+      - '1057419'   # Oracle 19.0.0.0 RDBMS Client 64bit (All), ZIP (AKA. Oracle Database 19c Base Release). Compatible with RHEL 7.x/8.x and SLES 12.x/15.x
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
 
@@ -219,7 +219,7 @@ sap_swpm_templates_install_dictionary:
       - '51053828'   # Oracle 19.0.0.0 RDBMS Linux on x86_64 64bit, ZIP. Compatible with RHEL 7.x/8.x and SLES 12.x/15.x
 #      - '51054219'   # Oracle Client 12.1.0.2. Compatible with RHEL 7.x and SLES 12.x
 #      - '51054433'   # Oracle 12.2.0.1 Client V2 64bit (All), ZIP. Compatible with RHEL 7.x and SLES 12.x
-      - '51055071'   # Oracle 19.0.0.0 RDBMS Client 64bit (All), ZIP (AKA. Oracle Database 19c Base Release). Compatible with RHEL 7.x/8.x and SLES 12.x/15.x
+      - '1057419'   # Oracle 19.0.0.0 RDBMS Client 64bit (All), ZIP (AKA. Oracle Database 19c Base Release). Compatible with RHEL 7.x/8.x and SLES 12.x/15.x
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
 #      - '51050829_4' # NW 7.5 Language 1/2
 #      - '51050829_5' # NW 7.5 Language 2/2
