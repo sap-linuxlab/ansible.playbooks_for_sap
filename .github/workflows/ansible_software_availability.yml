@@ -181,6 +181,7 @@ jobs:
             fi
           fi
       - name: Commit to main branch
+        if: always() # Ensure even if errors on previous step, that any replaced filenames are committed
         id: git_commit_auto
         run: |
           cd ./gh_repo
