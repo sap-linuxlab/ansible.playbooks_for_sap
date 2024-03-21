@@ -62,12 +62,12 @@ sap_hana_install_media_dictionary:
 
     softwarecenter_search_list_saphana_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_075_0-80002031.SAR'
+      - 'IMDB_SERVER20_076_0-80002031.SAR'
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
 
     softwarecenter_search_list_saphana_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_075_0-80002031.SAR'
+      - 'IMDB_SERVER20_076_0-80002031.SAR'
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
 
   sap_hana_2_sps06_install:

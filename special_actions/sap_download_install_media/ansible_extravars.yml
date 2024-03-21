@@ -15,7 +15,7 @@ sap_software_templates_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_075_0-80002031.SAR'
+      - 'IMDB_SERVER20_076_0-80002031.SAR'
       - 'IMDB_LCAPPS_2075_0-20010426.SAR'
       - 'IMDB_AFL20_075_0-80001894.SAR'
       - 'IMDB_CLIENT20_019_21-80002082.SAR' # SAP HANA Client
@@ -52,7 +52,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_25.zip'
       - 'S4CORE108_INST_EXPORT_26.zip'
       - 'S4CORE108_INST_EXPORT_27.zip'
-      - 'S4CORE108_INST_EXPORT_28.zip'
+      - '19118000000000008993'
       - 'S4CORE108_INST_EXPORT_29.zip'
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
@@ -61,7 +61,7 @@ sap_software_templates_dictionary:
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_075_0-80002046.SAR'
+      - 'IMDB_SERVER20_076_0-80002046.SAR'
       - 'IMDB_LCAPPS_2075_0-80002183.SAR'
       - 'IMDB_AFL20_075_0-80002045.SAR'
       - 'IMDB_CLIENT20_019_21-80002095.SAR' # SAP HANA Client
@@ -98,7 +98,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_25.zip'
       - 'S4CORE108_INST_EXPORT_26.zip'
       - 'S4CORE108_INST_EXPORT_27.zip'
-      - 'S4CORE108_INST_EXPORT_28.zip'
+      - '19118000000000008993'
       - 'S4CORE108_INST_EXPORT_29.zip'
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
@@ -142,7 +142,7 @@ sap_software_templates_dictionary:
       - 'S4CORE107_INST_EXPORT_20.zip'
       - 'S4CORE107_INST_EXPORT_21.zip'
       - 'S4CORE107_INST_EXPORT_22.zip'
-      - 'S4CORE107_INST_EXPORT_23.zip'
+      - '19118000000000007806'
       - 'S4CORE107_INST_EXPORT_24.zip'
       - 'S4CORE107_INST_EXPORT_25.zip'
       - 'S4CORE107_INST_EXPORT_26.zip'
@@ -190,7 +190,7 @@ sap_software_templates_dictionary:
       - 'S4CORE107_INST_EXPORT_20.zip'
       - 'S4CORE107_INST_EXPORT_21.zip'
       - 'S4CORE107_INST_EXPORT_22.zip'
-      - 'S4CORE107_INST_EXPORT_23.zip'
+      - '19118000000000007806'
       - 'S4CORE107_INST_EXPORT_24.zip'
       - 'S4CORE107_INST_EXPORT_25.zip'
       - 'S4CORE107_INST_EXPORT_26.zip'
@@ -456,7 +456,7 @@ sap_software_templates_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_075_0-80002031.SAR'
+      - 'IMDB_SERVER20_076_0-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
       - 'IMDB_CLIENT20_019_21-80002082.SAR' # SAP HANA Client
@@ -478,7 +478,7 @@ sap_software_templates_dictionary:
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_075_0-80002031.SAR'
+      - 'IMDB_SERVER20_076_0-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
       - 'IMDB_CLIENT20_019_21-80002082.SAR' # SAP HANA Client
