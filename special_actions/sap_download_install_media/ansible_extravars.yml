@@ -467,7 +467,7 @@ sap_software_templates_dictionary:
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
-      - 'BW4HANA400_INST_EXPORT_2.zip'
+      - '19118000000000009027'
       - 'BW4HANA400_INST_EXPORT_3.zip'
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
@@ -489,7 +489,7 @@ sap_software_templates_dictionary:
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
-      - 'BW4HANA400_INST_EXPORT_2.zip'
+      - '19118000000000009027'
       - 'BW4HANA400_INST_EXPORT_3.zip'
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
