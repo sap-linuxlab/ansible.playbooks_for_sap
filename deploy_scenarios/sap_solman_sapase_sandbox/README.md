@@ -30,7 +30,7 @@ When executing this Ansible Playbook for SAP, the following hosts are provisione
 1. Host for SAP ASE Database Server and SAP NetWeaver Application Server (ABAP) - Central Services (ASCS) and Primary Application Server (PAS)
 
 The sequence of a Standard System installation is:
-- `hdblcm`: Install SAP ASE database server
+- `SWPM`: Install SAP ASE database server
 - `SWPM`: Install SAP Solution Manager 7.2 Support Release 2
 
 This therefore matches to the SAP SWPM Product ID prefixes that are executed in sequence:

@@ -30,7 +30,7 @@ When executing this Ansible Playbook for SAP, the following hosts are provisione
 1. Host for Oracle DB Database Server and SAP NetWeaver Application Server (ABAP) - Central Services (ASCS) and Primary Application Server (PAS)
 
 The sequence of a Standard System installation is:
-- `hdblcm`: Install Oracle DB database server
+- `SWPM`: Install Oracle DB database server
 - `SWPM`: Install SAP NetWeaver Application Server (ABAP) and Installation Export to Database (i.e. Database Load)
 
 This therefore matches to the SAP SWPM Product ID prefixes that are executed in sequence:
