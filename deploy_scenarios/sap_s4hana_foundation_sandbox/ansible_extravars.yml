@@ -347,7 +347,7 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXEDB_100-80005373.SAR' # Kernel Part II (785)
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - 'S4FND106_INST_EXPORT_1.zip'
-      - 'S4FND106_INST_EXPORT_2.zip'
+      - '19118000000000005963'
       - 'S4FND106_INST_EXPORT_3.zip'
       - 'S4FND106_INST_EXPORT_4.zip'
       - 'S4FND106_INST_EXPORT_5.zip'
@@ -369,7 +369,7 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXEDB_100-80005508.SAR' # Kernel Part II (785)
       - 'SAPHOSTAGENT61_61-80004831.SAR'
       - 'S4FND106_INST_EXPORT_1.zip'
-      - 'S4FND106_INST_EXPORT_2.zip'
+      - '19118000000000005963'
       - 'S4FND106_INST_EXPORT_3.zip'
       - 'S4FND106_INST_EXPORT_4.zip'
       - 'S4FND106_INST_EXPORT_5.zip'
