@@ -170,11 +170,11 @@ sap_swpm_templates_install_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_075_0-80002031.SAR'
+      - 'IMDB_SERVER20_077_0-80002031.SAR'
       - 'IMDB_LCAPPS_2075_0-20010426.SAR'
       - 'IMDB_AFL20_075_0-80001894.SAR'
       - 'IMDB_CLIENT20_019_21-80002082.SAR' # SAP HANA Client
-      - 'SWPM20SP17_0-80003424.SAR'
+      - 'SWPM20SP17_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
@@ -191,15 +191,15 @@ sap_swpm_templates_install_dictionary:
       - 'S4FND108_INST_EXPORT_9.zip'
       - 'S4FND108_NW_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
-#      - 'SUM20SP19_2-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP19_5-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_075_0-80002046.SAR'
+      - 'IMDB_SERVER20_077_0-80002046.SAR'
       - 'IMDB_LCAPPS_2075_0-80002183.SAR'
       - 'IMDB_AFL20_075_0-80002045.SAR'
       - 'IMDB_CLIENT20_019_21-80002095.SAR' # SAP HANA Client
-      - 'SWPM20SP17_0-80003426.SAR'
+      - 'SWPM20SP17_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
@@ -216,7 +216,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4FND108_INST_EXPORT_9.zip'
       - 'S4FND108_NW_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
-#      - 'SUM20SP19_2-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP19_5-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_fndn_2022_sandbox:
@@ -259,7 +259,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
       - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
-      - 'SWPM20SP17_0-80003424.SAR'
+      - 'SWPM20SP17_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70006642.SAR' # Kernel Part I (789)
@@ -269,7 +269,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4FND107_INST_EXPORT_2.zip'
       - 'S4FND107_INST_EXPORT_3.zip'
       - 'S4FND107_INST_EXPORT_4.zip'
-      - 'S4FND107_INST_EXPORT_5.zip'
+      - '19118000000000008428'
       - 'S4FND107_INST_EXPORT_6.zip'
       - 'S4FND107_INST_EXPORT_7.zip'
       - 'S4FND107_INST_EXPORT_8.zip'
@@ -282,7 +282,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
       - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
-      - 'SWPM20SP17_0-80003426.SAR'
+      - 'SWPM20SP17_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70006667.SAR' # Kernel Part I (789)
@@ -292,7 +292,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4FND107_INST_EXPORT_2.zip'
       - 'S4FND107_INST_EXPORT_3.zip'
       - 'S4FND107_INST_EXPORT_4.zip'
-      - 'S4FND107_INST_EXPORT_5.zip'
+      - '19118000000000008428'
       - 'S4FND107_INST_EXPORT_6.zip'
       - 'S4FND107_INST_EXPORT_7.zip'
       - 'S4FND107_INST_EXPORT_8.zip'
@@ -340,14 +340,14 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
       - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
-      - 'SWPM20SP17_0-80003424.SAR'
+      - 'SWPM20SP17_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_100-80005374.SAR' # Kernel Part I (785)
       - 'SAPEXEDB_100-80005373.SAR' # Kernel Part II (785)
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - 'S4FND106_INST_EXPORT_1.zip'
-      - 'S4FND106_INST_EXPORT_2.zip'
+      - '19118000000000005963'
       - 'S4FND106_INST_EXPORT_3.zip'
       - 'S4FND106_INST_EXPORT_4.zip'
       - 'S4FND106_INST_EXPORT_5.zip'
@@ -362,14 +362,14 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
       - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
-      - 'SWPM20SP17_0-80003426.SAR'
+      - 'SWPM20SP17_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_100-80005509.SAR' # Kernel Part I (785)
       - 'SAPEXEDB_100-80005508.SAR' # Kernel Part II (785)
       - 'SAPHOSTAGENT61_61-80004831.SAR'
       - 'S4FND106_INST_EXPORT_1.zip'
-      - 'S4FND106_INST_EXPORT_2.zip'
+      - '19118000000000005963'
       - 'S4FND106_INST_EXPORT_3.zip'
       - 'S4FND106_INST_EXPORT_4.zip'
       - 'S4FND106_INST_EXPORT_5.zip'
