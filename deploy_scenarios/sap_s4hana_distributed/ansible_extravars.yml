@@ -1666,8 +1666,8 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
 
     nwas-ascs: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_ascs # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "c6id.4xlarge" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1711,8 +1711,8 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
 
     nwas-pas: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "c6id.4xlarge" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1756,8 +1756,8 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
 
     nwas-aas: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_aas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "c6id.4xlarge" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1909,7 +1909,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     nwas-ascs: # Hostname, must be 13 characters or less
       sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
+      virtual_machine_profile: "n2-standard-16" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1954,7 +1954,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     nwas-pas: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
+      virtual_machine_profile: "n2-standard-16" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1999,7 +1999,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     nwas-aas: # Hostname, must be 13 characters or less
       sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
+      virtual_machine_profile: "n2-standard-16" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -2343,7 +2343,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
     nwas-ascs: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_ascs # hana_primary, nwas_ascs, nwas_pas, nwas_aas
+      sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
       virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
@@ -2389,7 +2389,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
     nwas-pas: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
       virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
@@ -2435,7 +2435,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
     nwas-aas: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_aas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
       virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
@@ -2646,7 +2646,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     nwas-ascs: # Hostname, must be 13 characters or less
       sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128GB DRAM
+      virtual_machine_profile: "Standard_D16s_v5" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -2691,7 +2691,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     nwas-pas: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128GB DRAM
+      virtual_machine_profile: "Standard_D16s_v5" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -2736,7 +2736,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     nwas-aas: # Hostname, must be 13 characters or less
       sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128GB DRAM
+      virtual_machine_profile: "Standard_D16s_v5" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
