@@ -538,10 +538,30 @@ As a baseline infrastructure (hardware) host/s sizing, only the following are pr
 
 | Host Specification Plan | SAP Solution Scenarios applicable |
 | --- | --- |
-| `tiny_64gb` | SAP HANA only |
 | `xsmall_256gb` | SAP S/4HANA, SAP Business Suite on HANA (SoH, aka. ECC on HANA) and SAP HANA |
 | `xsmall_anydb_32vcpu` | SAP Business Suite (ECC) and SAP AnyDB <br/><sub>(SAP ASE, SAP MaxDB, IBM Db2, Oracle DB)</sub> |
-| `xsmall_nwas_32vcpu` | SAP NetWeaver AS only |
+| `xsmall_nwas_16vcpu` | SAP NetWeaver AS only |
+| `tiny_64gb` | SAP HANA only (infrequent usage) |
+
+The following are the list of Profile/Types of Virtual Machines used on the Hyperscaler Cloud Service Providers:
+
+- 32 vCPU x 256GB DRAM for SAP HANA
+    - Amazon Web Services: `r7i.8xlarge`
+    - Google Cloud Platform: `n2-highmem-32`
+    - IBM Cloud, Intel: `mx2-32x256`
+    - IBM Cloud, IBM Power: `ush1-4x256`
+    - Microsoft Azure: `Standard_M32ls`
+- 32 vCPU x 128GB DRAM for SAP AnyDB
+    - Amazon Web Services: `m7i.8xlarge`
+    - Google Cloud Platform: `n2-standard-32`
+    - IBM Cloud, Intel: `bx2-32x128`
+    - Microsoft Azure: `Standard_D32s_v5`
+- 16 vCPU x 32GB DRAM for SAP NetWeaver _(minimum 1:2 ratio for vCPU:RAM)_
+    - Amazon Web Services: `c6id.4xlarge`
+    - Google Cloud Platform: `n2-standard-16` _(lowest certified 16 vCPU uses 64 GB DRAM)_
+    - IBM Cloud, Intel: `cx2-16x32`
+    - IBM Cloud, IBM Power: `cnp-2x32`
+    - Microsoft Azure: `Standard_D16s_v5` _(lowest certified 16 vCPU uses 64 GB DRAM)_
 
 It is easily possible to extend each Ansible Playbook for SAP with additional host specifications, such as:
 

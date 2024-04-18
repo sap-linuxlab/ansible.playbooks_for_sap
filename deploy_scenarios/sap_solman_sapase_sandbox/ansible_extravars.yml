@@ -254,7 +254,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
     solman01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
+      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       storage_definition:
@@ -349,7 +349,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     solman01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       storage_definition:
@@ -422,7 +422,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
     solman01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "bx2-32x128"
+      virtual_machine_profile: "bx2-32x128" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       storage_definition:
@@ -576,7 +576,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     solman01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_D32s_v5"
+      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128 GB DRAM
       disable_ip_anti_spoofing: true
 
       storage_definition:

@@ -903,7 +903,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "r5.8xlarge"
+      virtual_machine_profile: "r7i.8xlarge" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H51"
@@ -966,7 +966,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
+      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "D01"
@@ -1009,7 +1009,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "r5.8xlarge"
+      virtual_machine_profile: "r7i.8xlarge" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H61"
@@ -1072,7 +1072,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
+      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "T01"
@@ -1115,7 +1115,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "r5.8xlarge"
+      virtual_machine_profile: "r7i.8xlarge" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H90"
@@ -1178,7 +1178,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
+      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "P01"
@@ -1270,7 +1270,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-highmem-32"
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H51"
@@ -1337,7 +1337,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "D01"
@@ -1384,7 +1384,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-highmem-32"
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H61"
@@ -1453,7 +1453,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "T01"
@@ -1500,7 +1500,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-highmem-32"
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H90"
@@ -1569,7 +1569,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "P01"
@@ -1641,7 +1641,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "mx2-32x256"
+      virtual_machine_profile: "mx2-32x256" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H51"
@@ -1708,7 +1708,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "cx2-32x64"
+      virtual_machine_profile: "cx2-16x32" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "D01"
@@ -1755,7 +1755,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "mx2-32x256"
+      virtual_machine_profile: "mx2-32x256" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H61"
@@ -1822,7 +1822,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "cx2-32x64"
+      virtual_machine_profile: "cx2-16x32" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "T01"
@@ -1869,7 +1869,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "mx2-32x256"
+      virtual_machine_profile: "mx2-32x256" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H90"
@@ -1936,7 +1936,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "cx2-32x64"
+      virtual_machine_profile: "cx2-16x32" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "P01"
@@ -2007,7 +2007,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H51"
@@ -2074,7 +2074,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "D01"
@@ -2121,7 +2121,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H61"
@@ -2176,7 +2176,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "T01"
@@ -2223,7 +2223,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H90"
@@ -2278,7 +2278,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "P01"
@@ -2428,7 +2428,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_M32ls"
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H51"
@@ -2497,7 +2497,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
       sap_system_type: project_dev
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_DS4_v2"
+      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "D01"
@@ -2545,7 +2545,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_M32ls"
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H61"
@@ -2614,7 +2614,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
       sap_system_type: project_tst
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_DS4_v2"
+      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "T01"
@@ -2662,7 +2662,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_M32ls"
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "H90"
@@ -2731,7 +2731,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
       sap_system_type: project_prd
 
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_DS4_v2"
+      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "P01"

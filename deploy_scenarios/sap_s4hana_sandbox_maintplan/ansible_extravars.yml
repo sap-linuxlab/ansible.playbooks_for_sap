@@ -317,7 +317,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "r5.8xlarge"
+      virtual_machine_profile: "r7i.8xlarge" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -441,7 +441,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-highmem-32"
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -537,7 +537,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "bx2-32x128"
+      virtual_machine_profile: "bx2-32x128" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -634,7 +634,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -799,7 +799,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_M32ls"
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
