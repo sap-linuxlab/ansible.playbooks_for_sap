@@ -337,8 +337,6 @@ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   rhel-8-4: "*RHEL-8.4*_HVM*x86_64*"
   rhel-8-6: "*RHEL-8.6*_HVM*x86_64*"
   rhel-8-8: "*RHEL-8.8*_HVM*x86_64*"
-  rhel-7-7-sap-ha: "*RHEL-SAP-7.7*"
-  rhel-7-9-sap-ha: "*RHEL-SAP-7.9*"
   rhel-8-1-sap-ha: "*RHEL-SAP-8.1.0*"
   rhel-8-2-sap-ha: "*RHEL-SAP-8.2.0*"
   rhel-8-4-sap-ha: "*RHEL-SAP-8.4.0*"
@@ -452,14 +450,6 @@ sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
   rhel-8-latest:
     project: "rhel-cloud"
     family: "rhel-8"
-
-  rhel-7-7-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-7-7-sap-ha"
-
-  rhel-7-9-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-7-9-sap-ha"
 
   rhel-8-1-sap-ha:
     project: "rhel-sap-cloud"
