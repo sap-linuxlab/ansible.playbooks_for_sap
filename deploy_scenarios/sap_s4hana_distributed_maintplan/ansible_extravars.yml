@@ -1002,7 +1002,8 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           disk_size: 320                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -1048,8 +1049,9 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1093,8 +1095,9 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1139,8 +1142,9 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1244,7 +1248,8 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           disk_type: pd-balanced
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -1291,8 +1296,9 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1336,8 +1342,9 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1381,8 +1388,9 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1462,7 +1470,8 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           disk_type: 10iops-tier         # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -1509,8 +1518,9 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1554,8 +1564,9 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1600,8 +1611,9 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1679,7 +1691,8 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           disk_type: tier3
@@ -1726,8 +1739,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           disk_type: tier3               # Does NOT use Burst IOPS storage
           filesystem_type: swap          # must be swap filesystem
 
@@ -1772,8 +1786,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           disk_type: tier3               # Does NOT use Burst IOPS storage
           filesystem_type: swap          # must be swap filesystem
 
@@ -1818,8 +1833,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           disk_type: tier3               # Does NOT use Burst IOPS storage
           filesystem_type: swap          # must be swap filesystem
 
@@ -1980,7 +1996,8 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 4                 # size in GB, integer
           disk_type: P1
@@ -2028,8 +2045,9 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2073,8 +2091,9 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2118,8 +2137,9 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2181,7 +2201,8 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           disk_size: 256                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
@@ -2229,8 +2250,9 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64                  # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2276,8 +2298,9 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64                  # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2323,8 +2346,9 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64                  # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2385,7 +2409,8 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           disk_size: 256
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -2432,8 +2457,9 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2478,8 +2504,9 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2524,8 +2551,9 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2591,7 +2619,8 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -2641,8 +2670,9 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2690,8 +2720,9 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: swap          # must be swap filesystem
 
@@ -2740,8 +2771,9 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap_nwas
+          disk_size: 64
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: swap          # must be swap filesystem
 
