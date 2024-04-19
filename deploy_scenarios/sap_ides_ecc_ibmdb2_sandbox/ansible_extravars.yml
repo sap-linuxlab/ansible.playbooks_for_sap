@@ -313,7 +313,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_sbx_db2
+        - name: swap # sbx_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           filesystem_type: swap          # must be swap filesystem
 
@@ -416,7 +416,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_sbx_db2
+        - name: swap # sbx_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           disk_type: pd-balanced
           filesystem_type: swap          # must be swap filesystem
@@ -500,7 +500,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_sbx_db2
+        - name: swap # sbx_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           disk_type: 5iops-tier
           filesystem_type: swap          # must be swap filesystem
@@ -664,7 +664,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
         # Use closest Azure Managed Disk Premium SSD type to 96GB
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_sbx_db2
+        - name: swap # sbx_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           disk_type: P10
           filesystem_type: swap          # must be swap filesystem
@@ -732,7 +732,7 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_sbx_db2
+        - name: swap # sbx_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           filesystem_type: swap          # must be swap filesystem
 
@@ -803,7 +803,7 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_sbx_db2
+        - name: swap # sbx_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: swap          # must be swap filesystem

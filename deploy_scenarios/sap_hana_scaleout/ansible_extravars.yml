@@ -205,7 +205,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -298,7 +298,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -382,7 +382,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -464,7 +464,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           disk_type: tier3
@@ -614,7 +614,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap_hdb
+        - name: swap # hdb
           #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 4                 # size in GB, integer
           disk_type: P1
@@ -673,7 +673,7 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
@@ -722,7 +722,7 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
@@ -780,7 +780,7 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
@@ -839,7 +839,7 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap_hdb
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
