@@ -373,7 +373,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap # db2
+        - name: swap # anydb_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           filesystem_type: swap          # must be swap filesystem
 
@@ -616,7 +616,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap # db2
+        - name: swap # anydb_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           disk_type: pd-balanced
           filesystem_type: swap          # must be swap filesystem
@@ -846,7 +846,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
-        - name: swap # db2
+        - name: swap # anydb_db2
           disk_size: 128                 # minimum 128GB swap for IBM DB2 LUW
           disk_type: 5iops-tier
           filesystem_type: swap          # must be swap filesystem
@@ -1153,7 +1153,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap # db2
+        - name: swap # anydb_db2
           #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 128                 # size in GB, integer
           disk_type: P10
@@ -1365,7 +1365,7 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap # db2
+        - name: swap # anydb_db2
           #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 128                 # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
@@ -1581,7 +1581,7 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap # db2
+        - name: swap # anydb_db2
           #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 128                 # size in GB, integer
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
