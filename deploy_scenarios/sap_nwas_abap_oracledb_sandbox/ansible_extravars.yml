@@ -269,7 +269,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
     nwas01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
+      virtual_machine_profile: "m7i.8xlarge" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -322,8 +322,9 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           disk_size: 80                  # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -381,7 +382,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     nwas01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-standard-32" # 32 vCPU, 128GB Memory
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -434,8 +435,10 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           disk_size: 80                  # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
+          disk_type: pd-balanced
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -471,7 +474,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
     nwas01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "bx2-32x128"
+      virtual_machine_profile: "bx2-32x128" # 32 vCPU x 128GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -528,9 +531,10 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           disk_type: general-purpose
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
-          disk_type: 5iops-tier
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
+          disk_type: general-purpose
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -644,7 +648,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     nwas01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_D32s_v5"
+      virtual_machine_profile: "Standard_D32s_v5" # 32 vCPU x 128 GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -702,9 +706,11 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap
-          disk_size: 96                  # size in GB, integer
-          disk_type: P10
+        # Use closest Azure Managed Disk Premium SSD type to 96GB
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -779,8 +785,9 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           disk_size: 80                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -861,8 +868,9 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: swap          # must be swap filesystem
 

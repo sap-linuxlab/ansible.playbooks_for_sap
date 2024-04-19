@@ -538,10 +538,36 @@ As a baseline infrastructure (hardware) host/s sizing, only the following are pr
 
 | Host Specification Plan | SAP Solution Scenarios applicable |
 | --- | --- |
-| `tiny_64gb` | SAP HANA only |
 | `xsmall_256gb` | SAP S/4HANA, SAP Business Suite on HANA (SoH, aka. ECC on HANA) and SAP HANA |
 | `xsmall_anydb_32vcpu` | SAP Business Suite (ECC) and SAP AnyDB <br/><sub>(SAP ASE, SAP MaxDB, IBM Db2, Oracle DB)</sub> |
-| `xsmall_nwas_32vcpu` | SAP NetWeaver AS only |
+| `xsmall_nwas_16vcpu` | SAP NetWeaver AS only |
+| `tiny_64gb` | SAP HANA only (infrequent usage) |
+
+For Hyperscaler Cloud Service Providers, the baseline infrastructure (hardware) host/s sizing use the following Profile/Types of Virtual Machines:
+
+- 32 vCPU x 256GB DRAM for SAP HANA
+    - Amazon Web Services: `r7i.8xlarge`
+    - Google Cloud Platform: `n2-highmem-32`
+    - IBM Cloud, Intel: `mx2-32x256`
+    - IBM Cloud, IBM Power: `ush1-4x256`
+    - Microsoft Azure: `Standard_M32ls`
+- 32 vCPU x 128GB DRAM for SAP AnyDB
+    - Amazon Web Services: `m7i.8xlarge`
+    - Google Cloud Platform: `n2-standard-32`
+    - IBM Cloud, Intel: `bx2-32x128`
+    - Microsoft Azure: `Standard_D32s_v5`
+- 16 vCPU x 32GB DRAM for SAP NetWeaver _(minimum 1:2 ratio for vCPU:RAM)_
+    - Amazon Web Services: `c6id.4xlarge`
+    - Google Cloud Platform: `n2-standard-16` _(lowest certified 16 vCPU uses 64 GB DRAM)_
+    - IBM Cloud, Intel: `cx2-16x32`
+    - IBM Cloud, IBM Power: `cnp-2x32`
+    - Microsoft Azure: `Standard_D16s_v5` _(lowest certified 16 vCPU uses 64 GB DRAM)_
+
+> Note: See below for default swap sizes, with refereence to SAP Note 1597355 - Swap-space recommendation for Linux.
+> - For SAP HANA, swap is 2GiB.
+> - For SAP NetWeaver, swap is 64GiB.
+> - For SAP AnyDB, IBM Db2 swap is 128GiB (minimum) else swap is 96GiB.
+> - For Sandbox (OneHost DB and NWAS), swap is 96GiB.
 
 It is easily possible to extend each Ansible Playbook for SAP with additional host specifications, such as:
 
@@ -554,6 +580,7 @@ It is easily possible to extend each Ansible Playbook for SAP with additional ho
 | `xxlarge_6144gb` | SAP HANA and SAP S/4HANA |
 
 For example, the Ansible Playbook `sap_s4hana_sandbox` appending a host specification plan `small_512gb` on AWS could be defined as:
+
 ```yaml
 sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 

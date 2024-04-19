@@ -770,7 +770,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "r5.8xlarge"
+      virtual_machine_profile: "r7i.8xlarge" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -825,7 +825,8 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           disk_size: 80                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
           disk_size: 96
           filesystem_type: swap          # must be swap filesystem
 
@@ -884,7 +885,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-highmem-32"
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -932,9 +933,10 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           disk_type: pd-balanced
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
-          disk_size: 2
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
+          disk_type: pd-balanced
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -970,7 +972,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "bx2-32x128"
+      virtual_machine_profile: "mx2-32x256" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1030,9 +1032,10 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           disk_type: general-purpose
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
-          disk_size: 2
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
+          disk_type: general-purpose
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1067,7 +1070,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1115,9 +1118,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
-          disk_size: 2
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
           disk_type: tier3
           filesystem_type: swap          # must be swap filesystem
 
@@ -1232,7 +1235,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_M32ls"
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -1281,10 +1284,11 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap
-          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
-          disk_size: 4                 # size in GB, integer
-          disk_type: P1
+        # Use closest Azure Managed Disk Premium SSD type to 96GB
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1350,9 +1354,9 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           disk_size: 256                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
-          disk_size: 2                   # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1418,9 +1422,9 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           disk_size: 256                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
-          disk_size: 2                   # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1491,9 +1495,10 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
-          disk_size: 2                   # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
