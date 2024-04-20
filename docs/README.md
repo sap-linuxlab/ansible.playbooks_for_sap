@@ -227,6 +227,13 @@ If selecting Ansible to perform provisioning of Infrastructure, please ensure th
 For further details on the output, please see [Host provisioning via Ansible](#host-provisioning-via-ansible), under section Infrastructure Platform provisioned resources by Ansible Playbooks for SAP.
 
 
+### Design assumptions with execution impact
+
+- For Hyperscaler Cloud Service Providers that use Resource Groups (IBM Cloud, Microsoft Azure):
+    - Virtual Machine and associated resources (Disks, Network Interfaces, Load Balancer etc.) will be provisioned to the same Resource Group as the targeted network/subnet.
+    - Optional: Private DNS may be allocated to another Resource Group, and an optional variable is provided for this.
+
+
 <details>
 <summary><b>Amazon Web Services (AWS):</b></summary>
 
@@ -259,7 +266,7 @@ For further details on the output, please see [Host provisioning via Ansible](#h
 <details>
 <summary><b>Microsoft Azure:</b></summary>
 
-- Resource Group
+- Resource Group <sub><sup><i>(optional: Private DNS may be allocated to separate Resource Group, see `sap_infrastructure` documentation)</i></sup></sub>
 - VNet
     - VNet Subnet
     - VNet Network Security Group (NSG)
@@ -276,7 +283,7 @@ For further details on the output, please see [Host provisioning via Ansible](#h
 <details>
 <summary><b>IBM Cloud:</b></summary>
 
-- Resource Group
+- Resource Group <sub><sup><i>(optional: Private DNS may be allocated to separate Resource Group, see `sap_infrastructure` documentation)</i></sup></sub>
 - VPC
     - VPC Access Control List (ACL)
     - VPC Subnets
@@ -292,7 +299,7 @@ For further details on the output, please see [Host provisioning via Ansible](#h
 <details>
 <summary><b>IBM Cloud, IBM Power VS:</b></summary>
 
-- Resource Group
+- Resource Group <sub><sup><i>(optional: Private DNS may be allocated to separate Resource Group, see `sap_infrastructure` documentation)</i></sup></sub>
 - IBM Power Workspace
     - VLAN Subnet
     - Cloud Connection (from secure enclave to IBM Cloud)
