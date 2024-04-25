@@ -185,7 +185,7 @@ sap_swpm_templates_install_dictionary:
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
       - 'BW4HANA400_INST_EXPORT_6.zip'
-      - 'BW4HANA400_INST_EXPORT_7.zip'
+      - '19118000000000009032'
       - 'BW4HANA400_INST_EXPORT_8.zip'
 #      - 'BW4HANA400_NW_LANG_EN.SAR'
 
@@ -207,7 +207,7 @@ sap_swpm_templates_install_dictionary:
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
       - 'BW4HANA400_INST_EXPORT_6.zip'
-      - 'BW4HANA400_INST_EXPORT_7.zip'
+      - '19118000000000009032'
       - 'BW4HANA400_INST_EXPORT_8.zip'
 #      - 'BW4HANA400_NW_LANG_EN.SAR'
 
