@@ -700,8 +700,9 @@ sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
   rhel-9-2: ".*RHEL.*9.*2"
   sles-15-3: ".*SLES.*15.*3"
   sles-15-4: ".*SLES.*15.*4"
-  rhel-8-4-sap-ha: ".*RHEL.*8.*4.*SAP$" # ensure string suffix using $
   rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
+  rhel-8-8-sap-ha: ".*RHEL.*8.*8.*SAP$" # ensure string suffix using $
+  rhel-9-2-sap-ha: ".*RHEL.*9.*2.*SAP$" # ensure string suffix using $
   sles-15-2-sap-ha: ".*SLES.*15.*2.*SAP$" # ensure string suffix using $
   sles-15-3-sap-ha: ".*SLES.*15.*3.*SAP$" # ensure string suffix using $
   sles-15-4-sap-ha: ".*SLES.*15.*4.*SAP$" # ensure string suffix using $
