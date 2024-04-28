@@ -132,9 +132,9 @@ sap_hana_install_update_etchosts: 'false'
 # Mandatory parameters : Infrastructure provisioning definitions - SAP HANA scale-out
 ####
 
-sap_hana_scaleout_active_coordinator: 1
-sap_hana_scaleout_active_worker: 2
-sap_hana_scaleout_standby: 1 # Only 0 or 1
+sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator: 1
+sap_vm_provision_calculate_sap_hana_scaleout_active_worker: 2
+sap_vm_provision_calculate_sap_hana_scaleout_standby: 1 # Only 0 or 1
 
 
 ####
