@@ -17,7 +17,7 @@ collections:
     version: 1.1.0
   - name: community.sap_infrastructure
     type: galaxy
-    version: 1.0.0
+    version: 1.0.1
 #  - name: community.sap_operations
 #    type: galaxy
 #    version: 0.9.1
