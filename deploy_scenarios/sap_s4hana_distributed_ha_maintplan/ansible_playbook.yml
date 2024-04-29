@@ -62,7 +62,7 @@
       ansible.builtin.add_host:
         name: "{{ item }}"
         group: sap_vm_provision_target_inventory_group
-      loop: "{{ vars['sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary'][sap_vm_provision_host_specification_plan].keys() }}"
+      loop: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys() }}"
       when: sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
 
 - name: Ansible Play to provision hosts for SAP
@@ -645,7 +645,7 @@
 
         sap_ha_pacemaker_cluster_vip_resource_group_name: vipnwasascs
 
-        sap_ha_pacemaker_cluster_storage_definition: "{{ vars['sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary'][sap_vm_provision_host_specification_plan][ansible_hostname].storage_definition | list }}"
+        sap_ha_pacemaker_cluster_storage_definition: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][ansible_hostname].storage_definition | list }}"
         sap_ha_pacemaker_cluster_storage_nfs_filesytem_type: nfs4
         sap_ha_pacemaker_cluster_storage_nfs_mount_options: defaults,hard,acl
         sap_ha_pacemaker_cluster_storage_nfs_server: "{{ sap_storage_nfs_server | default('') }}"

@@ -102,9 +102,9 @@ sap_hana_install_update_etchosts: 'false'
 # Mandatory parameters : Infrastructure provisioning definitions - SAP HANA scale-out
 ####
 
-sap_hana_scaleout_active_coordinator: 1
-sap_hana_scaleout_active_worker: 2
-sap_hana_scaleout_standby: 1 # Only 0 or 1
+sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator: 1
+sap_vm_provision_calculate_sap_hana_scaleout_active_worker: 2
+sap_vm_provision_calculate_sap_hana_scaleout_standby: 1 # Only 0 or 1
 
 
 
@@ -215,7 +215,7 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
-      - '19118000000000009027'
+      - 'BW4HANA400_INST_EXPORT_2.zip'
       - 'BW4HANA400_INST_EXPORT_3.zip'
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
@@ -237,7 +237,7 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
-      - '19118000000000009027'
+      - 'BW4HANA400_INST_EXPORT_2.zip'
       - 'BW4HANA400_INST_EXPORT_3.zip'
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
@@ -336,20 +336,24 @@ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   rhel-8-2: "*RHEL-8.2*_HVM*x86_64*"
   rhel-8-4: "*RHEL-8.4*_HVM*x86_64*"
   rhel-8-6: "*RHEL-8.6*_HVM*x86_64*"
-  rhel-7-7-sap-ha: "*RHEL-SAP-7.7*"
-  rhel-7-9-sap-ha: "*RHEL-SAP-7.9*"
+  rhel-8-8: "*RHEL-8.8*_HVM*x86_64*"
   rhel-8-1-sap-ha: "*RHEL-SAP-8.1.0*"
   rhel-8-2-sap-ha: "*RHEL-SAP-8.2.0*"
   rhel-8-4-sap-ha: "*RHEL-SAP-8.4.0*"
   rhel-8-6-sap-ha: "*RHEL-SAP-8.6.0*"
+  rhel-8-8-sap-ha: "*RHEL-SAP-8.8.0*"
+  rhel-9-0-sap-ha: "*RHEL-SAP-9.0.0*"
+  rhel-9-2-sap-ha: "*RHEL-SAP-9.2.0*"
   sles-15-2: "*suse-sles-15-sp2-v202*-hvm-ssd-x86_64*"
   sles-15-3: "*suse-sles-15-sp3-v202*-hvm-ssd-x86_64*"
   sles-15-4: "*suse-sles-15-sp4-v202*-hvm-ssd-x86_64*"
+  sles-15-5: "*suse-sles-15-sp5-v202*-hvm-ssd-x86_64*"
   sles-12-5-sap-ha: "*suse-sles-sap-12-sp5-v202*-hvm-ssd-x86_64*"
   sles-15-1-sap-ha: "*suse-sles-sap-15-sp1-v202*-hvm-ssd-x86_64*"
   sles-15-2-sap-ha: "*suse-sles-sap-15-sp2-v202*-hvm-ssd-x86_64*"
   sles-15-3-sap-ha: "*suse-sles-sap-15-sp3-v202*-hvm-ssd-x86_64*"
   sles-15-4-sap-ha: "*suse-sles-sap-15-sp4-v202*-hvm-ssd-x86_64*"
+  sles-15-5-sap-ha: "*suse-sles-sap-15-sp5-v202*-hvm-ssd-x86_64*"
 
 
 sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
@@ -358,7 +362,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
     hdb-node: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "r5.8xlarge"
+      virtual_machine_profile: "r7i.8xlarge" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
@@ -390,7 +394,8 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -402,8 +407,8 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
 
     nwas01: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "c6id.4xlarge" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -426,8 +431,9 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           disk_size: 80                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -446,14 +452,6 @@ sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
   rhel-8-latest:
     project: "rhel-cloud"
     family: "rhel-8"
-
-  rhel-7-7-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-7-7-sap-ha"
-
-  rhel-7-9-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-7-9-sap-ha"
 
   rhel-8-1-sap-ha:
     project: "rhel-sap-cloud"
@@ -494,7 +492,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
     hdb-node: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "n2-highmem-32"
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -526,7 +524,8 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -539,8 +538,8 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
 
     nwas01: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-standard-16" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -565,8 +564,9 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           disk_type: pd-balanced
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
           disk_type: pd-balanced
           filesystem_type: swap          # must be swap filesystem
 
@@ -586,9 +586,12 @@ sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:
   rhel-8-4: ".*redhat.*8-4.*minimal.*amd64.*"
   rhel-8-6: ".*redhat.*8-6.*minimal.*amd64.*"
   rhel-9-0: ".*redhat.*9-0.*minimal.*amd64.*"
-  rhel-7-9-sap-ha: ".*redhat.*7-9.*amd64.*hana.*"
+  rhel-9-2: ".*redhat.*9-2.*minimal.*amd64.*"
   rhel-8-4-sap-ha: ".*redhat.*8-4.*amd64.*hana.*"
   rhel-8-6-sap-ha: ".*redhat.*8-6.*amd64.*hana.*"
+  rhel-8-8-sap-ha: ".*redhat.*8-8.*amd64.*hana.*"
+  rhel-9-0-sap-ha: ".*redhat.*9-0.*amd64.*hana.*"
+  rhel-9-2-sap-ha: ".*redhat.*9-0.*amd64.*hana.*"
   sles-15-3-sap-ha: ".*sles.*15-3.*amd64.*hana.*"
   sles-15-4-sap-ha: ".*sles.*15-4.*amd64.*hana.*"
   sles-15-5-sap-ha: ".*sles.*15-5.*amd64.*hana.*"
@@ -600,7 +603,7 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
     hdb-node: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "mx2-32x256"
+      virtual_machine_profile: "mx2-32x256" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
@@ -632,7 +635,8 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           filesystem_type: swap          # must be swap filesystem
@@ -645,8 +649,8 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
 
     nwas01: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "cx2-32x64"
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cx2-16x32" # 16 vCPU x 32GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -671,8 +675,9 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           disk_type: general-purpose     # Does NOT use Burst IOPS storage
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
           disk_type: general-purpose     # Does NOT use Burst IOPS storage
           filesystem_type: swap          # must be swap filesystem
 
@@ -695,8 +700,9 @@ sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
   rhel-9-2: ".*RHEL.*9.*2"
   sles-15-3: ".*SLES.*15.*3"
   sles-15-4: ".*SLES.*15.*4"
-  rhel-8-4-sap-ha: ".*RHEL.*8.*4.*SAP$" # ensure string suffix using $
   rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
+  rhel-8-8-sap-ha: ".*RHEL.*8.*8.*SAP$" # ensure string suffix using $
+  rhel-9-2-sap-ha: ".*RHEL.*9.*2.*SAP$" # ensure string suffix using $
   sles-15-2-sap-ha: ".*SLES.*15.*2.*SAP$" # ensure string suffix using $
   sles-15-3-sap-ha: ".*SLES.*15.*3.*SAP$" # ensure string suffix using $
   sles-15-4-sap-ha: ".*SLES.*15.*4.*SAP$" # ensure string suffix using $
@@ -708,7 +714,8 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 
     hdb-node: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
@@ -740,7 +747,8 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
           disk_type: tier3
@@ -753,8 +761,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
     nwas01: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "cnp-4x32" # alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -779,8 +788,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           disk_type: tier3               # Does NOT use Burst IOPS storage
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
           disk_type: tier3               # Does NOT use Burst IOPS storage
           filesystem_type: swap          # must be swap filesystem
 
@@ -818,6 +828,26 @@ sap_vm_provision_msazure_vm_host_os_image_dictionary:
     offer: "RHEL-SAP-HA"
     sku: "84sapha-gen2"
 
+  rhel-8-6-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "86sapha-gen2"
+
+  rhel-8-8-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "88sapha-gen2"
+
+  rhel-9-0-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "90sapha-gen2"
+
+  rhel-9-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "92sapha-gen2"
+
   rhel-8-1-sap-applications:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
@@ -832,6 +862,26 @@ sap_vm_provision_msazure_vm_host_os_image_dictionary:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "84sapapps-gen2"
+
+  rhel-8-6-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-applications"
+    sku: "86sapapps-gen2"
+
+  rhel-8-8-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-applications"
+    sku: "88sapapps-gen2"
+
+  rhel-9-0-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-applications"
+    sku: "90sapapps-gen2"
+
+  rhel-9-2-sap-applications:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-applications"
+    sku: "92sapapps-gen2"
 
   sles-15-sp3-sap:
     publisher: "SUSE"
@@ -855,7 +905,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     hdb-node: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_M32ls"
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
@@ -888,7 +938,8 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 4                 # size in GB, integer
           disk_type: P1
@@ -903,7 +954,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
     nwas01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "Standard_DS4_v2"
+      virtual_machine_profile: "Standard_D16s_v5" # 16 vCPU x 64GB DRAM
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
@@ -929,9 +980,10 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
-        - name: swap
-          disk_size: 96                  # size in GB, integer
-          disk_type: P10
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -987,7 +1039,8 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
@@ -1025,8 +1078,9 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           disk_size: 128                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96                  # size in GB, integer
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64                  # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -1083,7 +1137,8 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           filesystem_type: swap          # must be swap filesystem
@@ -1122,8 +1177,9 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           disk_type: nas                 # KubeVirt Storage Class
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
           disk_type: nas                 # KubeVirt Storage Class
           filesystem_type: swap          # must be swap filesystem
 
@@ -1185,7 +1241,8 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
           nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
 
-        - name: swap
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2                   # size in GB, integer
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
@@ -1198,9 +1255,13 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
     nwas01: # Hostname, must be 13 characters or less
-      sap_host_type: nwas_pas # hana_primary, nwas_ascs, nwas_pas, nwas_aas
-      virtual_machine_profile: "m5.8xlarge"
-      disable_ip_anti_spoofing: true
+
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 128
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
       sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
@@ -1224,8 +1285,9 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
           filesystem_type: xfs           # default: xfs
 
-        - name: swap
-          disk_size: 96
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
