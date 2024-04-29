@@ -717,6 +717,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
     s4h01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
       virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
