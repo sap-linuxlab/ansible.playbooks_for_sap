@@ -62,9 +62,9 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'IMDB_LCAPPS_2075_0-80002183.SAR'
-      - 'IMDB_AFL20_075_0-80002045.SAR'
-      - 'IMDB_CLIENT20_019_21-80002095.SAR' # SAP HANA Client
+      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
+      - 'IMDB_AFL20_077_0-80002045.SAR'
+      - 'IMDB_CLIENT20_020_22-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -111,9 +111,9 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_LCAPPS_2067_0-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -160,7 +160,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_AFL20_067_0-80002045.SAR'
       - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
@@ -210,9 +210,9 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_LCAPPS_2067_0-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -253,7 +253,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_AFL20_067_0-80002045.SAR'
       - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
@@ -297,9 +297,9 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_LCAPPS_2067_0-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -336,7 +336,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_AFL20_067_0-80002045.SAR'
       - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
@@ -376,9 +376,9 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_LCAPPS_2067_0-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003424.SAR'
       - 'igsexe_16-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -394,13 +394,13 @@ sap_software_templates_dictionary:
       - 'S4CORE104_INST_EXPORT_7.zip'
       - 'S4CORE104_INST_EXPORT_8.zip'
       - 'S4CORE104_INST_EXPORT_9.zip'
-      - 'S4CORE104_INST_EXPORT_10.zip'
-      - 'S4CORE104_INST_EXPORT_11.zip'
-      - 'S4CORE104_INST_EXPORT_12.zip'
+      - '19118000000000003058'
+      - '19118000000000003059'
+      - '19118000000000003060'
       - 'S4CORE104_INST_EXPORT_13.zip'
       - 'S4CORE104_INST_EXPORT_14.zip'
       - 'S4CORE104_INST_EXPORT_15.zip'
-      - 'S4CORE104_INST_EXPORT_16.zip'
+      - '19118000000000003065'
       - 'S4CORE104_INST_EXPORT_17.zip'
       - 'S4CORE104_INST_EXPORT_18.zip'
       - 'S4CORE104_INST_EXPORT_19.zip'
@@ -416,7 +416,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_AFL20_067_0-80002045.SAR'
       - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003426.SAR'
       - 'igsexe_16-80003246.sar' # IGS 7.53
@@ -433,13 +433,13 @@ sap_software_templates_dictionary:
       - 'S4CORE104_INST_EXPORT_7.zip'
       - 'S4CORE104_INST_EXPORT_8.zip'
       - 'S4CORE104_INST_EXPORT_9.zip'
-      - 'S4CORE104_INST_EXPORT_10.zip'
-      - 'S4CORE104_INST_EXPORT_11.zip'
-      - 'S4CORE104_INST_EXPORT_12.zip'
+      - '19118000000000003058'
+      - '19118000000000003059'
+      - '19118000000000003060'
       - 'S4CORE104_INST_EXPORT_13.zip'
       - 'S4CORE104_INST_EXPORT_14.zip'
       - 'S4CORE104_INST_EXPORT_15.zip'
-      - 'S4CORE104_INST_EXPORT_16.zip'
+      - '19118000000000003065'
       - 'S4CORE104_INST_EXPORT_17.zip'
       - 'S4CORE104_INST_EXPORT_18.zip'
       - 'S4CORE104_INST_EXPORT_19.zip'
@@ -457,7 +457,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_LCAPPS_2067_0-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
       - 'IMDB_CLIENT20_019_21-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003424.SAR'
@@ -467,7 +467,7 @@ sap_software_templates_dictionary:
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
-      - 'BW4HANA400_INST_EXPORT_2.zip'
+      - '19118000000000009027'
       - 'BW4HANA400_INST_EXPORT_3.zip'
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
@@ -480,7 +480,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_AFL20_067_0-80002045.SAR'
       - 'IMDB_CLIENT20_019_21-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
@@ -489,7 +489,7 @@ sap_software_templates_dictionary:
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
-      - 'BW4HANA400_INST_EXPORT_2.zip'
+      - '19118000000000009027'
       - 'BW4HANA400_INST_EXPORT_3.zip'
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
@@ -504,9 +504,9 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_LCAPPS_2067_0-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -516,7 +516,7 @@ sap_software_templates_dictionary:
       - 'BW4HANA300_INST_EXPORT_1.zip'
       - '19118000000000006191'
       - 'BW4HANA300_INST_EXPORT_3.zip'
-      - 'BW4HANA300_INST_EXPORT_4.zip'
+      - '19118000000000006193'
       - 'BW4HANA300_INST_EXPORT_5.zip'
       - 'BW4HANA300_INST_EXPORT_6.zip'
       - 'BW4HANA300_INST_EXPORT_7.zip'
@@ -527,7 +527,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_AFL20_067_0-80002045.SAR'
       - 'IMDB_CLIENT20_015_22-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP17_4-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
@@ -538,7 +538,7 @@ sap_software_templates_dictionary:
       - 'BW4HANA300_INST_EXPORT_1.zip'
       - '19118000000000006191'
       - 'BW4HANA300_INST_EXPORT_3.zip'
-      - 'BW4HANA300_INST_EXPORT_4.zip'
+      - '19118000000000006193'
       - 'BW4HANA300_INST_EXPORT_5.zip'
       - 'BW4HANA300_INST_EXPORT_6.zip'
       - 'BW4HANA300_INST_EXPORT_7.zip'
@@ -553,7 +553,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_059_13-80002031.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'VCH202000_2059_0-80005463.SAR'
       - 'SWPM10SP40_5-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
@@ -610,7 +610,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_059_13-80002031.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SWPM10SP40_5-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -849,7 +849,7 @@ sap_software_templates_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
@@ -881,7 +881,7 @@ sap_software_templates_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
 #      - '51050829_4' # NW 7.5 Language 1/2
@@ -1165,7 +1165,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_059_13-80002031.SAR'
-      - 'IMDB_CLIENT20_015_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
       - 'VCH202000_2059_0-80005463.SAR'
       - 'SWPM10SP40_5-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
