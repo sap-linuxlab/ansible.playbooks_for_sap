@@ -591,7 +591,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE107_INST_EXPORT_28.zip'
       - 'S4CORE107_INST_EXPORT_29.zip'
       - 'S4CORE107_INST_EXPORT_30.zip'
-      - 'S4HANAOP107_ERP_LANG_EN.SAR'
+      - '19118000000000007719'
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004547.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
@@ -639,7 +639,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE107_INST_EXPORT_28.zip'
       - 'S4CORE107_INST_EXPORT_29.zip'
       - 'S4CORE107_INST_EXPORT_30.zip'
-      - 'S4HANAOP107_ERP_LANG_EN.SAR'
+      - '19118000000000007719'
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004546.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
