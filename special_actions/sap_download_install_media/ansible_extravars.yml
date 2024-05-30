@@ -33,7 +33,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_6.zip'
       - 'S4CORE108_INST_EXPORT_7.zip'
       - 'S4CORE108_INST_EXPORT_8.zip'
-      - 'S4CORE108_INST_EXPORT_9.zip'
+      - '19118000000000009003'
       - 'S4CORE108_INST_EXPORT_10.zip'
       - '19118000000000008975'
       - 'S4CORE108_INST_EXPORT_12.zip'
@@ -79,7 +79,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_6.zip'
       - 'S4CORE108_INST_EXPORT_7.zip'
       - 'S4CORE108_INST_EXPORT_8.zip'
-      - 'S4CORE108_INST_EXPORT_9.zip'
+      - '19118000000000009003'
       - 'S4CORE108_INST_EXPORT_10.zip'
       - '19118000000000008975'
       - 'S4CORE108_INST_EXPORT_12.zip'
@@ -221,7 +221,7 @@ sap_software_templates_dictionary:
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - 'S4CORE106_INST_EXPORT_1.zip'
       - 'S4CORE106_INST_EXPORT_2.zip'
-      - 'S4CORE106_INST_EXPORT_3.zip'
+      - '19118000000000006104'
       - 'S4CORE106_INST_EXPORT_4.zip'
       - 'S4CORE106_INST_EXPORT_5.zip'
       - 'S4CORE106_INST_EXPORT_6.zip'
@@ -263,7 +263,7 @@ sap_software_templates_dictionary:
       - 'SAPHOSTAGENT61_61-80004831.SAR'
       - 'S4CORE106_INST_EXPORT_1.zip'
       - 'S4CORE106_INST_EXPORT_2.zip'
-      - 'S4CORE106_INST_EXPORT_3.zip'
+      - '19118000000000006104'
       - 'S4CORE106_INST_EXPORT_4.zip'
       - 'S4CORE106_INST_EXPORT_5.zip'
       - 'S4CORE106_INST_EXPORT_6.zip'
@@ -741,7 +741,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
+      - 'DBATL740O11_49-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - 'SWPM10SP40_6-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
@@ -966,7 +966,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
+      - 'DBATL740O11_49-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - 'SWPM10SP40_6-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
@@ -994,7 +994,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
+      - 'DBATL740O11_49-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - 'SWPM10SP40_6-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
@@ -1245,7 +1245,7 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
+      - 'DBATL740O11_49-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - 'SWPM10SP40_6-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
