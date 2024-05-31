@@ -179,7 +179,7 @@ sap_swpm_templates_install_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_23-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
@@ -243,7 +243,7 @@ sap_swpm_templates_install_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_020_22-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_020_23-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
 #      - '51050829_4' # NW 7.5 Language 1/2
