@@ -216,12 +216,12 @@ sap_swpm_templates_install_dictionary:
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
       - '19118000000000009027'
-      - 'BW4HANA400_INST_EXPORT_3.zip'
+      - '19118000000000009028'
       - 'BW4HANA400_INST_EXPORT_4.zip'
-      - 'BW4HANA400_INST_EXPORT_5.zip'
-      - 'BW4HANA400_INST_EXPORT_6.zip'
+      - '19118000000000009030'
+      - '19118000000000009031'
       - '19118000000000009032'
-      - 'BW4HANA400_INST_EXPORT_8.zip'
+      - '19118000000000009033'
 #      - 'BW4HANA400_NW_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
@@ -238,12 +238,12 @@ sap_swpm_templates_install_dictionary:
       - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
       - '19118000000000009027'
-      - 'BW4HANA400_INST_EXPORT_3.zip'
+      - '19118000000000009028'
       - 'BW4HANA400_INST_EXPORT_4.zip'
-      - 'BW4HANA400_INST_EXPORT_5.zip'
-      - 'BW4HANA400_INST_EXPORT_6.zip'
+      - '19118000000000009030'
+      - '19118000000000009031'
       - '19118000000000009032'
-      - 'BW4HANA400_INST_EXPORT_8.zip'
+      - '19118000000000009033'
 #      - 'BW4HANA400_NW_LANG_EN.SAR'
 
   sap_bw4hana_2021_standard:
@@ -293,14 +293,14 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXE_100-80005374.SAR' # Kernel Part I (785)
       - 'SAPEXEDB_100-80005373.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'BW4HANA300_INST_EXPORT_1.zip'
+      - '19118000000000006190'
       - '19118000000000006191'
       - 'BW4HANA300_INST_EXPORT_3.zip'
       - '19118000000000006193'
       - 'BW4HANA300_INST_EXPORT_5.zip'
       - 'BW4HANA300_INST_EXPORT_6.zip'
       - 'BW4HANA300_INST_EXPORT_7.zip'
-      - 'BW4HANA300_INST_EXPORT_8.zip'
+      - '19118000000000006197'
 #      - 'BW4HANA300_NW_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
@@ -315,14 +315,14 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXE_100-80005509.SAR' # Kernel Part I (785)
       - 'SAPEXEDB_100-80005508.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-      - 'BW4HANA300_INST_EXPORT_1.zip'
+      - '19118000000000006190'
       - '19118000000000006191'
       - 'BW4HANA300_INST_EXPORT_3.zip'
       - '19118000000000006193'
       - 'BW4HANA300_INST_EXPORT_5.zip'
       - 'BW4HANA300_INST_EXPORT_6.zip'
       - 'BW4HANA300_INST_EXPORT_7.zip'
-      - 'BW4HANA300_INST_EXPORT_8.zip'
+      - '19118000000000006197'
 #      - 'BW4HANA300_NW_LANG_EN.SAR'
 
 
