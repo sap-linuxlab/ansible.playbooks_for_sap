@@ -17,7 +17,7 @@ SPS07, SPS06
 
 ## Execution of Ansible Playbook
 
-Prior to execution, please read the [full documentation of the Ansible Playbooks for SAP](../docs/README.md) for the capabilities and different execution methods.
+Prior to execution, please read the [full documentation of the Ansible Playbooks for SAP](../../docs/README.md) for the capabilities and different execution methods.
 
 ## Execution outcome
 
