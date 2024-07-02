@@ -33,10 +33,9 @@ jobs:
         id: local_setup
         run: |
           python --version
-          python -m pip install ansible-core==2.17.0
           python -m pip install requests beautifulsoup4 lxml
-          ansible --version
-          ansible-galaxy collection install git+https://github.com/sap-linuxlab/community.sap_launchpad.git,main -p ./ansible_collections
+          git clone https://github.com/sap-linuxlab/community.sap_launchpad.git
+          ls -lha
       - name: Ansible Playbooks for SAP - check SAP software availability
         id: identify_software_list
         env:
@@ -44,14 +43,12 @@ jobs:
           sap_user_id_password: ${{ secrets.SAP_USER_ID_PASSWORD }}
         run: |
           if ! which python > /dev/null; then echo 'Python binary not available' && exit 1 ; fi
-          #echo "DEBUG - Software List:"
-          #echo $software_list
-          #export ANSIBLE_COLLECTIONS_PATH="$PWD/ansible_collections"
           # Extract from softwarecenter_search_list_.* until first empty line, then remove yaml formatting and sort for unique
           export software_list=$(cat ./gh_repo/**/**/ansible_extravars.yml | awk '!NF{f=0} /^.*softwarecenter_search_list.*/{f=1} f{print}' | awk '!/.*softwarecenter_search_list.*/' | awk '{sub(/#.*/,""); print}' | awk '{sub(/ .*- '\''/,""); print}' | sed '/^ *$/d' | sed '/^---*$/d' | tr -d "'" | sort | uniq)
           export errors_list=""
-          # cd "./gh_repo/"
-          cd ./ansible_collections/community/sap_launchpad/plugins
+          #echo "DEBUG - Software List:"
+          #echo $software_list
+          cd ./community.sap_launchpad/plugins
           touch python_module_search_script.py
           echo '#!/usr/bin/env python' >> python_module_search_script.py
           echo 'import sys' >> python_module_search_script.py
@@ -70,6 +67,8 @@ jobs:
           echo '  else:' >> python_module_search_script.py
           echo '    print(item)' >> python_module_search_script.py
           errors_list="$(python ./python_module_search_script.py $software_list)" # Quote command substitution to preserve newline
+          echo "Software List where URL not available:"
+          echo $errors_list
           # for item in $software_list
           # do
           #   shell_exit_code=0
@@ -84,8 +83,7 @@ jobs:
           #       continue
           #   fi
           # done
-          # cd ../
-          cd ../../../../
+          cd ../../
           if [ -z "$errors_list" ]
           then
             exit 0
@@ -95,7 +93,7 @@ jobs:
             echo "as the following SAP Software are no longer available:"
             echo "$errors_list" | tr " " "\n"
             echo ""
-            cd ./ansible_collections/community/sap_launchpad/plugins
+            cd ./community.sap_launchpad/plugins
             sed -i "s|python3|python|g" ./modules/software_center_download.py
             touch python_module_fuzzy_call_script.py
             echo '#!/usr/bin/env python' >> python_module_fuzzy_call_script.py
@@ -173,7 +171,7 @@ jobs:
             echo '    else:' >> python_module_fuzzy_call_script.py
             echo "        print(query_result[0]['Title'])" >> python_module_fuzzy_call_script.py
             export exit1_check=0
-            cd ../../../../
+            cd ../../
             #echo "DEBUG - Errors List:"
             #echo $errors_list
             for filename in $errors_list
@@ -189,9 +187,9 @@ jobs:
               #echo $filename_id_only
               #echo "DEBUG - Filename NAME AND VERSION ONLY"
               #echo $filename_name_and_version_only
-              cd ./ansible_collections/community/sap_launchpad/plugins
+              cd ./community.sap_launchpad/plugins
               search_file="$(python ./python_module_fuzzy_call_script.py $filename_id_only $filename_name_and_version_only)" # Quote command substitution to preserve newline
-              cd ../../../../
+              cd ../../
               if [[ "$search_file" == *"ERROR"* ]]; then
                 echo -e "$search_file" # Quote variable to preserve newline
                 exit1_check=1
