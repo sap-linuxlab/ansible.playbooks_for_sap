@@ -45,27 +45,46 @@ jobs:
         run: |
           if ! which python > /dev/null; then echo 'Python binary not available' && exit 1 ; fi
           export ANSIBLE_COLLECTIONS_PATH="$PWD/ansible_collections"
-          cd "./gh_repo/"
+          cd ./ansible_collections/community/sap_launchpad/plugins
+          # cd "./gh_repo/"
           # Extract from softwarecenter_search_list_.* until first empty line, then remove yaml formatting and sort for unique
           export software_list=$(cat ./**/**/ansible_extravars.yml | awk '!NF{f=0} /^.*softwarecenter_search_list.*/{f=1} f{print}' | awk '!/.*softwarecenter_search_list.*/' | awk '{sub(/#.*/,""); print}' | awk '{sub(/ .*- '\''/,""); print}' | sed '/^ *$/d' | sed '/^---*$/d' | tr -d "'" | sort | uniq)
           #echo "DEBUG - Software List:"
           #echo $software_list
           export errors_list=""
-          for item in $software_list
-          do
-            shell_exit_code=0
-            echo "Checking availability of SAP Software: $item"
-            python_path="$(which python)"
-            ansible all --inventory 'localhost,' --connection 'local' --extra-vars "ansible_python_interpreter=$python_path" \
-            --module-name community.sap_launchpad.software_center_download \
-            --args "suser_id='$sap_user_id' suser_password='$sap_user_id_password' softwarecenter_search_query='$item' dest='.' dry_run=True" \
-            || shell_exit_code=$?
-            if [ $shell_exit_code -ne 0 ]; then
-                errors_list="$errors_list $item"
-                continue
-            fi
-          done
-          cd ../
+          touch python_module_search_script.py
+          echo '#!/usr/bin/env python' >> python_module_search_script.py
+          echo 'import sys' >> python_module_search_script.py
+          echo 'input_search_file_list=sys.argv[1]' >> python_module_search_script.py
+          echo 'from module_utils.sap_id_sso import sap_sso_login' >> python_module_search_script.py
+          echo 'from module_utils.sap_launchpad_software_center_download_search_fuzzy import *' >> python_module_search_script.py
+          echo "username='$sap_user_id'" >> python_module_search_script.py
+          echo "password='$sap_user_id_password'" >> python_module_search_script.py
+          echo 'sap_sso_login(username, password)' >> python_module_search_script.py
+          echo 'input_search_file_list_python=iter(input_search_file_list.splitlines())' >> python_module_search_script.py
+          echo 'for item in input_search_file_list_python:' >> python_module_search_script.py
+          echo '  available = is_download_link_available(download_link)' >> python_module_search_script.py
+          echo '  if available:' >> python_module_search_script.py
+          echo '    return' >> python_module_search_script.py
+          echo '  else:' >> python_module_search_script.py
+          echo '    print(item)' >> python_module_search_script.py
+          errors_list="$(python ./python_module_search_script.py $software_list)" # Quote command substitution to preserve newline
+          # for item in $software_list
+          # do
+          #   shell_exit_code=0
+          #   echo "Checking availability of SAP Software: $item"
+          #   python_path="$(which python)"
+          #   ansible all --inventory 'localhost,' --connection 'local' --extra-vars "ansible_python_interpreter=$python_path" \
+          #   --module-name community.sap_launchpad.software_center_download \
+          #   --args "suser_id='$sap_user_id' suser_password='$sap_user_id_password' softwarecenter_search_query='$item' dest='.' dry_run=True" \
+          #   || shell_exit_code=$?
+          #   if [ $shell_exit_code -ne 0 ]; then
+          #       errors_list="$errors_list $item"
+          #       continue
+          #   fi
+          # done
+          # cd ../
+          cd ../../../../
           if [ -z "$errors_list" ]
           then
             exit 0
