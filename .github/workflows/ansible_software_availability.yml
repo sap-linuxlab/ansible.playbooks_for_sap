@@ -54,7 +54,9 @@ jobs:
           do
             shell_exit_code=0
             echo "Checking availability of SAP Software: $item"
-            ansible all --inventory 'localhost,' --connection 'local' --module-name community.sap_launchpad.software_center_download \
+            python_path="$(which python)"
+            ansible all --inventory 'localhost,' --connection 'local' --extra-vars "ansible_python_interpreter=$python_path" \
+            --module-name community.sap_launchpad.software_center_download \
             --args "suser_id='$sap_user_id' suser_password='$sap_user_id_password' softwarecenter_search_query='$item' dest='.' dry_run=True" \
             || shell_exit_code=$?
             if [ $shell_exit_code -ne 0 ]; then
