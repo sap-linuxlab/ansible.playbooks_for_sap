@@ -60,7 +60,11 @@ jobs:
           echo 'sap_sso_login(username, password)' >> python_module_search_script.py
           echo 'input_search_file_list_python=iter(input_search_file_list.splitlines())' >> python_module_search_script.py
           echo 'for item in input_search_file_list_python:' >> python_module_search_script.py
-          echo "  download_link, download_filename = search_software_filename(item,'')" >> python_module_search_script.py
+          echo '  try:' >> python_module_search_script.py
+          echo "    download_link, download_filename = search_software_filename(item,'')" >> python_module_search_script.py
+          echo '  except Exception as e:' >> python_module_search_script.py
+          echo '    print(item)' >> python_module_search_script.py
+          echo '    continue' >> python_module_search_script.py
           echo '  available = is_download_link_available(download_link)' >> python_module_search_script.py
           echo '  if available:' >> python_module_search_script.py
           echo '    continue' >> python_module_search_script.py
