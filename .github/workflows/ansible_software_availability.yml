@@ -57,7 +57,7 @@ jobs:
           echo 'import sys' >> python_module_search_script.py
           echo 'input_search_file_list=sys.argv[1]' >> python_module_search_script.py
           echo 'from module_utils.sap_id_sso import sap_sso_login' >> python_module_search_script.py
-          echo 'from module_utils.sap_launchpad_software_center_download_search_fuzzy import *' >> python_module_search_script.py
+          echo 'from module_utils.sap_launchpad_software_center_download_runner import *' >> python_module_search_script.py
           echo "username='$sap_user_id'" >> python_module_search_script.py
           echo "password='$sap_user_id_password'" >> python_module_search_script.py
           echo 'sap_sso_login(username, password)' >> python_module_search_script.py
