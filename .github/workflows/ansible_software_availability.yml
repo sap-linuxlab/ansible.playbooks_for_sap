@@ -73,6 +73,7 @@ jobs:
             echo "$errors_list" | tr " " "\n"
             echo ""
             cd ./ansible_collections/community/sap_launchpad/plugins
+            sed -i "s|python3|python|g" ./modules/software_center_download.py
             touch python_module_fuzzy_call_script.py
             echo '#!/usr/bin/env python' >> python_module_fuzzy_call_script.py
             echo 'import sys' >> python_module_fuzzy_call_script.py
