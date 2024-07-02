@@ -44,14 +44,14 @@ jobs:
           sap_user_id_password: ${{ secrets.SAP_USER_ID_PASSWORD }}
         run: |
           if ! which python > /dev/null; then echo 'Python binary not available' && exit 1 ; fi
-          export ANSIBLE_COLLECTIONS_PATH="$PWD/ansible_collections"
-          cd ./ansible_collections/community/sap_launchpad/plugins
-          # cd "./gh_repo/"
-          # Extract from softwarecenter_search_list_.* until first empty line, then remove yaml formatting and sort for unique
-          export software_list=$(cat ./**/**/ansible_extravars.yml | awk '!NF{f=0} /^.*softwarecenter_search_list.*/{f=1} f{print}' | awk '!/.*softwarecenter_search_list.*/' | awk '{sub(/#.*/,""); print}' | awk '{sub(/ .*- '\''/,""); print}' | sed '/^ *$/d' | sed '/^---*$/d' | tr -d "'" | sort | uniq)
           #echo "DEBUG - Software List:"
           #echo $software_list
+          #export ANSIBLE_COLLECTIONS_PATH="$PWD/ansible_collections"
+          # Extract from softwarecenter_search_list_.* until first empty line, then remove yaml formatting and sort for unique
+          export software_list=$(cat ./gh_repo/**/**/ansible_extravars.yml | awk '!NF{f=0} /^.*softwarecenter_search_list.*/{f=1} f{print}' | awk '!/.*softwarecenter_search_list.*/' | awk '{sub(/#.*/,""); print}' | awk '{sub(/ .*- '\''/,""); print}' | sed '/^ *$/d' | sed '/^---*$/d' | tr -d "'" | sort | uniq)
           export errors_list=""
+          # cd "./gh_repo/"
+          cd ./ansible_collections/community/sap_launchpad/plugins
           touch python_module_search_script.py
           echo '#!/usr/bin/env python' >> python_module_search_script.py
           echo 'import sys' >> python_module_search_script.py
