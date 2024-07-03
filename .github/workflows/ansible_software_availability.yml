@@ -75,6 +75,7 @@ jobs:
           then
             exit 0
           else
+            echo ""
             echo "### ERRORS identified ####"
             echo "Ansible Playbooks for SAP require updating,"
             echo "as the following SAP Software are no longer available:"
