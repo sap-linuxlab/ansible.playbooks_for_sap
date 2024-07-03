@@ -48,7 +48,7 @@ jobs:
           export software_list=$(cat ./gh_repo/**/**/ansible_extravars.yml | awk '!NF{f=0} /^.*softwarecenter_search_list.*/{f=1} f{print}' | awk '!/.*softwarecenter_search_list.*/' | awk '{sub(/#.*/,""); print}' | awk '{sub(/ .*- '\''/,""); print}' | sed '/^ *$/d' | sed '/^---*$/d' | tr -d "'" | sort | uniq  | tr -d " \t")
           export errors_list=""
           echo "Software List:"
-          echo $software_list
+          echo "$software_list" # Quote command substitution to preserve newline
           cd ./community.sap_launchpad/plugins
           touch python_module_search_script.py
           echo '#!/usr/bin/env python' >> python_module_search_script.py
