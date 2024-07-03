@@ -124,11 +124,11 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - 'SWPM10SP40_3-20009701.SAR'
+      - 'SWPM10SP41_2-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
-      - 'SYBCTRL_1240-80002616.SAR'
-      - '51056521_1' # SAP ASE 16.0.04.04 RDBMS Linux on x86_64 64bit
+      - 'SYBCTRL_1325-80002616.SAR'
+      - '51057804_1' # SAP ASE 16.0.04.06 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
@@ -179,11 +179,11 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - 'SWPM10SP40_3-20009701.SAR'
+      - 'SWPM10SP41_2-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
-      - 'SYBCTRL_1240-80002616.SAR'
-      - '51056521_1' # SAP ASE 16.0.04.04 RDBMS Linux on x86_64 64bit
+      - 'SYBCTRL_1325-80002616.SAR'
+      - '51057804_1' # SAP ASE 16.0.04.06 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
 #      - '51050829_4' # NW 7.5 Language 1/2
