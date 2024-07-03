@@ -141,7 +141,7 @@ sap_swpm_templates_install_dictionary:
       - '51056521_1' # SAP ASE 16.0.04.04 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SYBCTRL_1325-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
+      - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
 #      - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
 #      - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
 
@@ -212,7 +212,7 @@ sap_swpm_templates_install_dictionary:
       - '51056521_1' # SAP ASE 16.0.04.04 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SYBCTRL_1325-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
+      - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
