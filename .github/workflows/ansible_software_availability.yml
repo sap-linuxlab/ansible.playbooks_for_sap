@@ -204,10 +204,11 @@ jobs:
                   stripped_search_file=$(echo $line | tr -d '\n')
                   if [[ "$stripped_search_file" == *.* ]]; then
                     find . -type f -not -path '*/\.*' -exec sed -i "s/$filename/$stripped_search_file/g" {} \;
-                  if [[ "$stripped_search_file" == *;* ]]; then
+                  elif [[ "$stripped_search_file" == *\;* ]]; then
                     origin_prefix="${stripped_search_file%;*}"
                     replace_prefix=second="${stripped_search_file##*;}"
                     find . -type f -not -path '*/\.*' -exec sed -i "s/$origin_prefix.[0-9]\{1,\}/$replace_prefix/g" {} \;
+                  fi
                 done
                 cd ../
               else
