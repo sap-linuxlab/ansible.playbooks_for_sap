@@ -81,6 +81,8 @@ jobs:
             echo "as the following SAP Software are no longer available:"
             echo "$errors_list" # Quote command substitution to preserve newline
             echo ""
+            # Ensure stdout accuracy by pause script
+            sleep 10
             cd ./community.sap_launchpad/plugins
             sed -i "s|python3|python|g" ./modules/software_center_download.py
             touch python_module_fuzzy_call_script.py
@@ -207,7 +209,7 @@ jobs:
                     find . -type f -not -path '*/\.*' -exec sed -i "s/$filename/$stripped_search_file/g" {} \;
                   elif [[ "$stripped_search_file" == *\;* ]]; then
                     origin_prefix="${stripped_search_file%;*}"
-                    replace_prefix=second="${stripped_search_file##*;}"
+                    replace_prefix="${stripped_search_file##*;}"
                     echo "-> Perform recursive sed for $origin_prefix change to $replace_prefix"
                     find . -type f -not -path '*/\.*' -exec sed -i "s/$origin_prefix.[0-9]\{1,\}/$replace_prefix/g" {} \;
                   fi
