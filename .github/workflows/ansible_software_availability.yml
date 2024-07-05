@@ -203,10 +203,12 @@ jobs:
                 echo "$search_file" | while IFS= read -r line ; do
                   stripped_search_file=$(echo $line | tr -d '\n')
                   if [[ "$stripped_search_file" == *.* ]]; then
+                    echo "-> Perform recursive sed for $filename change to $search_file"
                     find . -type f -not -path '*/\.*' -exec sed -i "s/$filename/$stripped_search_file/g" {} \;
                   elif [[ "$stripped_search_file" == *\;* ]]; then
                     origin_prefix="${stripped_search_file%;*}"
                     replace_prefix=second="${stripped_search_file##*;}"
+                    echo "-> Perform recursive sed for $origin_prefix change to $replace_prefix"
                     find . -type f -not -path '*/\.*' -exec sed -i "s/$origin_prefix.[0-9]\{1,\}/$replace_prefix/g" {} \;
                   fi
                 done

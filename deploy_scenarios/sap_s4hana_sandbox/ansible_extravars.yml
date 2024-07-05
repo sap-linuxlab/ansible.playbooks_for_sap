@@ -170,7 +170,7 @@ sap_swpm_templates_install_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_077_0-80002031.SAR'
+      - 'IMDB_SERVER20_075_0-80002031.SAR'
       - 'IMDB_LCAPPS_2075_0-20010426.SAR'
       - 'IMDB_AFL20_075_0-80001894.SAR'
       - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
