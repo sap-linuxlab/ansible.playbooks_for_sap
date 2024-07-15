@@ -126,7 +126,7 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
@@ -203,7 +203,7 @@ sap_swpm_templates_install_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels

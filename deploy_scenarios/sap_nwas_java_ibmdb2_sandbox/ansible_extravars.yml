@@ -134,7 +134,7 @@ sap_swpm_templates_install_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
