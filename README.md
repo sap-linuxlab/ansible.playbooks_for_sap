@@ -30,8 +30,8 @@ These Ansible Playbooks for SAP are designed to be:
 ## Ansible Playbooks for SAP - available scenarios summary
 
 **Ansible Playbooks are available for Operating Systems:**
-- SUSE Linux Enterprise Server for SAP Applications (SLES4SAP)
-- Red Hat Enterprise Linux for SAP Solutions (RHEL4SAP) &nbsp;&nbsp;<sup><sup>[labelled 'High Availability and Update Services (HA-US)' on Cloud Hyperscalers]</sup></sup>
+- SUSE Linux Enterprise Server for SAP (SLES4SAP)
+- Red Hat Enterprise Linux for SAP (RHEL4SAP)
 
 **Ansible Playbooks are available for Infrastructure Platforms:**
 - AWS EC2 Virtual Server instances
