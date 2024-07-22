@@ -50,8 +50,6 @@ This therefore matches to the SAP SWPM Product ID prefixes that are executed in 
 > N.B. Optionally, instead of default ENSA2 the High Availability for SAP NetWeaver ASCS/ERS can use ENSA1 by using `sap_ha_pacemaker_cluster_nwas_abap_ascs_ers_ensa1: true`
 
 
-
-
 ### Execution sequence
 
 - Infrastructure Provision
