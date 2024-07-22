@@ -6,9 +6,15 @@ This Ansible Playbook can be executed with:
 - Existing hosts
 
 This Ansible Playbook can be targeted at the following Infrastructure Platforms:
-- Amazon Web Services (aws)
-- Google Cloud Platform (gcp)
-- Microsoft Azure (msazure)
+- Amazon Web Services (AWS)
+- Google Cloud Platform (GCP)
+- IBM Cloud
+- IBM Cloud, IBM Power Virtual Servers
+- Microsoft Azure (MS Azure)
+- IBM PowerVM
+- KubeVirt
+- OVirt
+- VMware
 
 SAP S/4HANA Foundation (for SAP HANA-only Add-Ons and Custom Apps) installation:
 - Standard System definition by SAP: all main SAP NetWeaver instances (except the SAP HANA database instance) run on a single host.

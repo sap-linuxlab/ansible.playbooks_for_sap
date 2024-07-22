@@ -1,4 +1,4 @@
-# Ansible Playbook - SAP S/4HANA Distributed installation (with HA), using SAP Maintenance Planner
+# Ansible Playbook - SAP S/4HANA Distributed installation (with HA)
 
 This Ansible Playbook can be executed with:
 - Ansible to provision hosts
@@ -6,9 +6,9 @@ This Ansible Playbook can be executed with:
 - Existing hosts
 
 This Ansible Playbook can be targeted at the following Infrastructure Platforms:
-- Amazon Web Services (aws)
-- Google Cloud Platform (gcp)
-- Microsoft Azure (msazure)
+- Amazon Web Services (AWS)
+- Google Cloud Platform (GCP)
+- Microsoft Azure (MS Azure)
 
 SAP S/4HANA installation:
 - Distributed High Availability System definition by SAP: every SAP HANA and SAP NetWeaver instance run on a separate host, with redundancy hosts for switchover.
