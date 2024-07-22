@@ -1,4 +1,4 @@
-# Ansible Playbook - SAP Business Suite (ECC) with IBM Db2, Distributed installation (no HA)
+# Ansible Playbook - SAP Business Suite (ECC) with IBM Db2, Distributed installation (with HA)
 
 This Ansible Playbook uses an Ansible Role which is `experimental`.
 
