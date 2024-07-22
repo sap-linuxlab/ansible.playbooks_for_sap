@@ -8,7 +8,12 @@ This Ansible Playbook can be executed with:
 This Ansible Playbook can be targeted at the following Infrastructure Platforms:
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
+- IBM Cloud
+- IBM Cloud, IBM Power Virtual Servers
 - Microsoft Azure (MS Azure)
+- IBM PowerVM
+- OVirt
+- VMware
 
 SAP HANA software versions (included, compatible with any):
 SPS07, SPS06
