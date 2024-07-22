@@ -25,7 +25,7 @@ There are multiple methods to executing the Ansible Playbook for SAP, it depends
 Each Ansible Playbook for SAP can use Interactive Prompts or Standard (Non-Interactive, variable files) for variable inputs, and can be executed as:
 
 - **Ansible with existing host/s:** this executes using the Ansible Inventory to perform an SAP Software installation. `This requires prior setup of Infrastructure Platform.`
-- **Ansible to provision hosts:** this provisions host/s using Ansible Tasks and performs an SAP Software installaton. `This requires prior setup of Infrastructure Platform.`
+- **Ansible to provision hosts:** this provisions host/s using Ansible Tasks and performs an SAP Software installation. `This requires prior setup of Infrastructure Platform.`
 - **Ansible executes Terraform to provision hosts:** this executes Terraform (v1.0.0-v1.5.5) to provision a minimal landing zone on the Infrastructure Platform, then provisions host/s and performs an SAP Software installation.
     - _Ideally suited for isolated Sandbox testing, as this provisions an isolated environment on the target Infrastructure Platform which can easily be destroyed with a re-run of the Ansible Playbook using variable `sap_vm_provision_terraform_state: absent` ._
     - _**`NOTE:`** Ansible to Terraform is only compatible with provisioning Sandboxes. This is a design decision, based upon Terraform BSL transition reducing developer interest and effort to provide equal functionality (e.g. HA) via Terraform._
