@@ -178,7 +178,7 @@ sap_swpm_templates_install_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
@@ -186,7 +186,7 @@ sap_swpm_templates_install_dictionary:
       - '51054655_2' # SAP Solution Manager 7.2 SR2 Installation Export II, ZIP. Contains EXP3, EXP4 (SAP:SOLMAN:SR27.2:DVD_EXPORT(2/2):SAP SOLUTION MANAGER 7.2 SR2 Installation Export DVD 2/2:Dxxxxxxxx_2)
     #  - '51054655_3' # SAP Solution Manager 7.2 SR2 Language, ZIP. (SAP:SAP:SAP:MM:SAP:Dxxxxxxxx_3)
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR'
+      - 'IMDB_CLIENT20_021_28-80002082.SAR'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002572.SAR' # Kernel Part II (753), SAP HANA
 
@@ -253,7 +253,7 @@ sap_swpm_templates_install_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
@@ -261,7 +261,7 @@ sap_swpm_templates_install_dictionary:
       - 'SAPJVM8_63-80000202.SAR' # SAP JVM 8.1 PL 63. See SAP Note 1680045 for 3 updates on SEP 17, 2020 related to SAP NetWeaver 7.5 JAVA before SP22 - "SAPJVM 8.1 archive you use has a patch level of 63 or lower"
       - '51054655_4' # SAP Solution Manager 7.2 SR2 - Java, ZIP. Uses SAP Netweaver 7.5 SP19 JAVA. Contains SOLMAN72_JAVA_UT (SAP:UT_SOLMAN:SR2SOLMAN72:SP00:*:*), JAVA_EXPORT (SAP:JEXPORT:SR2_72SOLMAN_2020S4:*:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:SR2_72SOLMAN_2020S4:*:*:*), JAVA_J2EE_OSINDEP (SAP:J2EE-CD:SR2_72SOLMAN_2020S4:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:SR2_72SOLMAN_2020S4:*:*:*), JAVA_J2EE_OSINDEP_UT (SAP:UT:SR2_72SOLMAN_2020S4:*:*:*)
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR'
+      - 'IMDB_CLIENT20_021_28-80002082.SAR'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002572.SAR' # Kernel Part II (753), SAP HANA
 

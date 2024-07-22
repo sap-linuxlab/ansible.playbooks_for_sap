@@ -220,9 +220,9 @@ sap_swpm_templates_install_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'IMDB_LCAPPS_2075_0-20010426.SAR'
-      - 'IMDB_AFL20_075_0-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_LCAPPS_2077_3-20010426.SAR'
+      - 'IMDB_AFL20_077_0-80001894.SAR'
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -261,14 +261,14 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
-#      - 'SUM20SP20_2-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'IMDB_LCAPPS_2075_0-80002183.SAR'
-      - 'IMDB_AFL20_075_0-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
+      - 'IMDB_AFL20_077_0-80002045.SAR'
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -307,7 +307,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
-#      - 'SUM20SP20_2-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2023_distributed_nwas_ascs_ha:
@@ -554,7 +554,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -595,14 +595,14 @@ sap_swpm_templates_install_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004547.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_2-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -643,7 +643,7 @@ sap_swpm_templates_install_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004546.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_2-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2022_distributed_nwas_ascs_ha:
@@ -890,7 +890,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -932,7 +932,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -1214,7 +1214,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -1252,7 +1252,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -1530,7 +1530,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_16-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -1569,7 +1569,7 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_16-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'

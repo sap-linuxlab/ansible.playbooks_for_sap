@@ -8,7 +8,7 @@ collections:
     version: 6.1.0
   - name: fedora.linux_system_roles
     type: galaxy
-    version: 1.33.0
+    version: 1.82.0
   - name: community.sap_install
     type: galaxy
     version: 1.4.0

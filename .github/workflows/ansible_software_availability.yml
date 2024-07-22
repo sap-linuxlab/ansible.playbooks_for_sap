@@ -81,6 +81,8 @@ jobs:
             echo "as the following SAP Software are no longer available:"
             echo "$errors_list" # Quote command substitution to preserve newline
             echo ""
+            # Ensure stdout accuracy by pause script
+            sleep 10
             cd ./community.sap_launchpad/plugins
             sed -i "s|python3|python|g" ./modules/software_center_download.py
             touch python_module_fuzzy_call_script.py
@@ -140,6 +142,21 @@ jobs:
             echo "                list_imdb_server.append(sublist['Title'])" >> python_module_fuzzy_call_script.py
             echo "        list_imdb_server.sort(reverse=True)" >> python_module_fuzzy_call_script.py
             echo "        print(list_imdb_server[0])" >> python_module_fuzzy_call_script.py
+            echo "        # Match LCAPPS and AFL to new SAP HANA DB Server version" >> python_module_fuzzy_call_script.py
+            echo "        imdb_server20_existing_prefix = input_search_file_name_and_version_only.split('_')[-1]" >> python_module_fuzzy_call_script.py
+            echo "        imdb_server20_new_prefix = list_imdb_server[0].split('-')[0]" >> python_module_fuzzy_call_script.py
+            echo "        imdb_server20_new_prefix2 = imdb_server20_new_prefix.rsplit('_', 1)[0]" >> python_module_fuzzy_call_script.py
+            echo "        imdb_server20_new_version = imdb_server20_new_prefix2.split('_')[-1]" >> python_module_fuzzy_call_script.py
+            echo '        imdb_lcapps20_existing_version = "IMDB_LCAPPS_2" + imdb_server20_existing_prefix' >> python_module_fuzzy_call_script.py
+            echo '        imdb_lcapps20_version = "IMDB_LCAPPS_2" + imdb_server20_new_version' >> python_module_fuzzy_call_script.py
+            echo "        imdb_lcapps20_query = search_software_fuzzy(imdb_lcapps20_version)" >> python_module_fuzzy_call_script.py
+            echo "        imdb_lcapps20_result_prefix = imdb_lcapps20_query[0]['Title'].split('-')[0]" >> python_module_fuzzy_call_script.py
+            echo '        imdb_afl20_existing_version = "IMDB_AFL20_" + imdb_server20_existing_prefix' >> python_module_fuzzy_call_script.py
+            echo '        imdb_afl20_version = "IMDB_AFL20_" + imdb_server20_new_version' >> python_module_fuzzy_call_script.py
+            echo "        imdb_afl20_query = search_software_fuzzy(imdb_afl20_version)" >> python_module_fuzzy_call_script.py
+            echo "        imdb_afl20_result_prefix = imdb_afl20_query[0]['Title'].split('-')[0]" >> python_module_fuzzy_call_script.py
+            echo "        print(imdb_lcapps20_existing_version + ';' + imdb_lcapps20_result_prefix)" >> python_module_fuzzy_call_script.py
+            echo "        print(imdb_afl20_existing_version + ';' + imdb_afl20_result_prefix)" >> python_module_fuzzy_call_script.py
             echo "    elif any('SAPWEBDISP' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
             echo "        # As SAP WebDisp file name numbering does not use preceeding 0's, manually filter out v7 which is older than v69:" >> python_module_fuzzy_call_script.py
             echo "        input_webdisp = input_search_file_name_and_version_only[:-2]" >> python_module_fuzzy_call_script.py
@@ -182,6 +199,22 @@ jobs:
                 exit1_check=1
               elif [[ "$search_file" == "" ]]; then
                 echo "Skipped file $filename"
+              elif [[ "$search_file" == *"IMDB_SERVER"* ]]; then
+                echo "Perform recursive sed for SAP HANA and SAP HANA Components"
+                cd "./gh_repo"
+                echo "$search_file" | while IFS= read -r line ; do
+                  stripped_search_file=$(echo $line | tr -d '\n')
+                  if [[ "$stripped_search_file" == *.* ]]; then
+                    echo "-> Perform recursive sed for $filename change to $search_file"
+                    find . -type f -not -path '*/\.*' -exec sed -i "s/$filename/$stripped_search_file/g" {} \;
+                  elif [[ "$stripped_search_file" == *\;* ]]; then
+                    origin_prefix="${stripped_search_file%;*}"
+                    replace_prefix="${stripped_search_file##*;}"
+                    echo "-> Perform recursive sed for $origin_prefix change to $replace_prefix"
+                    find . -type f -not -path '*/\.*' -exec sed -i "s/$origin_prefix.[0-9]\{1,\}/$replace_prefix/g" {} \;
+                  fi
+                done
+                cd ../
               else
                 echo "Perform recursive sed for $filename change to $search_file"
                 stripped_search_file=$(echo $search_file | tr -d '\n')

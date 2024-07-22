@@ -82,11 +82,18 @@ For the execution outcome, please read the Infrastructure Platform provisioned r
 ## Minimum OS compatibility from Ansible Playbooks for SAP
 
 The Ansible Playbooks for SAP are designed for Linux operating systems, the minimum compatible and tested versions are:
-- RHEL for SAP 8.4+
-- SLES for SAP 15 SP3+
-    - _Note: will currently not work for HA, due to use of `ha_cluster` Linux System Role (LSR) which has incomplete `crmsh` Pacemaker Shell compatibility_
+
+- SUSE Linux Enterprise Server for SAP Applications (SLES4SAP) 15 SP5 +
+- Red Hat Enterprise Linux for SAP Solutions (RHEL4SAP) 8.4 +
+
+_Additional notes regarding OS Editions and Versions:_
+
+- SLES with HAE is not compatible due to missing OS Packages for SAP
+- RHEL for _SAP Applications_ may not have imcompatibility, depending on selected scenario, due to missing OS Packages for SAP HANA, High Availability and extended patching (EUS/E4S)
+- RHEL for _SAP Solutions_ may be labelled 'RHEL for SAP with High Availability and Update Services (HA-US)' on Cloud Hyperscalers
 
 Assumptions for executing the Ansible Roles from this Ansible Collection include:
+
 - If using existing hosts, then the host is a Registered OS with an active license
 - If using existing hosts, then the host has access to OS Package repositories (from the relevant content delivery network of the OS vendor)
 

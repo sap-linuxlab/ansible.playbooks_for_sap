@@ -16,9 +16,9 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'IMDB_LCAPPS_2075_0-20010426.SAR'
-      - 'IMDB_AFL20_075_0-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_LCAPPS_2077_3-20010426.SAR'
+      - 'IMDB_AFL20_077_0-80001894.SAR'
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -57,14 +57,14 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
-#      - 'SUM20SP20_2-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'IMDB_LCAPPS_2075_0-80002183.SAR'
-      - 'IMDB_AFL20_075_0-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
+      - 'IMDB_AFL20_077_0-80002045.SAR'
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -103,7 +103,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
-#      - 'SUM20SP20_2-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2022:
@@ -113,7 +113,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -154,14 +154,14 @@ sap_software_templates_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004547.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_2-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -202,7 +202,7 @@ sap_software_templates_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004546.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_2-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_3-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2021:
@@ -212,7 +212,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -254,7 +254,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -299,7 +299,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -337,7 +337,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -378,7 +378,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_16-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -417,7 +417,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_16-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -459,7 +459,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_077_0-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -481,7 +481,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_077_0-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -506,7 +506,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -528,7 +528,7 @@ sap_software_templates_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP18_2-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
       - 'igshelper_17-10010245.sar'
@@ -553,15 +553,15 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_059_13-80002031.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'VCH202000_2059_0-80005463.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_2-80002456.SAR' # SUM 2.0
+      - 'SUM20SP20_3-80002456.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
       - '51050708_2'
@@ -579,15 +579,15 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_059_13-80002046.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'VCH202000_2059_0-80005464.SAR'
-      - 'SWPM10SP41_2-70002492.SAR'
+      - 'SWPM10SP41_3-70002492.SAR'
       - 'igsexe_13-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_2-80002470.SAR' # SUM 2.0
+      - 'SUM20SP20_3-80002470.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
       - '51050708_2'
@@ -610,14 +610,14 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_059_13-80002031.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'SUM11SP03_0-80006800.SAR' # SUM 1.1
+      - 'SUM11SP03_1-80006800.SAR' # SUM 1.1
       - 'SAPKD74083' # SPAM/SAINT Update - Version 740/0083
       - '51050036_1' # SAP ERP 6.0 on HANA EHP7 Installation Export 1/18
       - '51050036_2'
@@ -641,14 +641,14 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_059_13-80002046.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
-      - 'SWPM10SP41_2-70002492.SAR'
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
+      - 'SWPM10SP41_3-70002492.SAR'
       - 'igsexe_13-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-      - 'SUM11SP03_0-80006861.SAR' # SUM 1.1
+      - 'SUM11SP03_1-80006861.SAR' # SUM 1.1
       - 'SAPKD74083' # SPAM/SAINT Update - Version 740/0083
       - '51050036_1' # SAP ERP 6.0 on HANA EHP7 Installation Export 1/18
       - '51050036_2'
@@ -679,7 +679,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
@@ -712,7 +712,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
@@ -743,7 +743,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'DBATL740O11_49-80002605.SAR' # DBATOOLS Package for Oracle 11g, 12c and higher, Support Package SAP KERNEL 7.53 64-BIT UNICODE Linux on x86_64 64bit ORACLE
@@ -782,7 +782,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SYBCTRL_1325-80002616.SAR'
@@ -815,7 +815,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002604.SAR' # Kernel Part II (753), SAP MaxDB 7.9
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51054410_2' # MaxDB 7.9 - SP10 Build 04 Linux on x86_64 64bit
@@ -844,12 +844,12 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
 #      - 'VCH202000_2059_0-80005463.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
@@ -858,12 +858,12 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
 #      - 'VCH202000_2059_0-80005464.SAR'
-      - 'SWPM10SP41_2-70002492.SAR'
+      - 'SWPM10SP41_3-70002492.SAR'
       - 'igsexe_13-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002629.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT61_61-80004831.SAR'
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
@@ -876,12 +876,12 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
 #      - 'VCH202000_2059_0-80005463.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT61_61-80004822.SAR'
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
 #      - '51050829_4' # NW 7.5 Language 1/2
@@ -895,12 +895,12 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
 #      - 'VCH202000_2059_0-80005464.SAR'
-      - 'SWPM10SP41_2-70002492.SAR'
+      - 'SWPM10SP41_3-70002492.SAR'
       - 'igsexe_13-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_800-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002629.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT61_61-80004831.SAR'
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
 #      - '51050829_4' # NW 7.5 Language 1/2
@@ -919,7 +919,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
@@ -941,7 +941,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
@@ -968,7 +968,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'DBATL740O11_49-80002605.SAR' # DBATOOLS Package for Oracle 11g, 12c and higher, Support Package SAP KERNEL 7.53 64-BIT UNICODE Linux on x86_64 64bit ORACLE
@@ -996,7 +996,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'DBATL740O11_49-80002605.SAR' # DBATOOLS Package for Oracle 11g, 12c and higher, Support Package SAP KERNEL 7.53 64-BIT UNICODE Linux on x86_64 64bit ORACLE
@@ -1029,7 +1029,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SYBCTRL_1325-80002616.SAR'
@@ -1051,7 +1051,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SYBCTRL_1325-80002616.SAR'
@@ -1078,7 +1078,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002604.SAR' # Kernel Part II (753), SAP MaxDB 7.9
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51054410_2' # MaxDB 7.9 - SP10 Build 04 Linux on x86_64 64bit
@@ -1098,7 +1098,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002604.SAR' # Kernel Part II (753), SAP MaxDB 7.9
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51054410_2' # MaxDB 7.9 - SP10 Build 04 Linux on x86_64 64bit
@@ -1120,7 +1120,7 @@ sap_software_templates_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
@@ -1142,7 +1142,7 @@ sap_software_templates_dictionary:
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
@@ -1165,15 +1165,15 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_059_13-80002031.SAR'
-      - 'IMDB_CLIENT20_021_26-80002082.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002082.SAR' # SAP HANA Client
       - 'VCH202000_2059_0-80005463.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_2-80002456.SAR' # SUM 2.0
+      - 'SUM20SP20_3-80002456.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51057073_1' # IDES for SAP ERP 6.0 EHP8 on HANA (1/2)
       - '51057073_2'
@@ -1181,15 +1181,15 @@ sap_software_templates_dictionary:
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_059_13-80002046.SAR'
-      - 'IMDB_CLIENT20_021_26-80002095.SAR' # SAP HANA Client
+      - 'IMDB_CLIENT20_021_28-80002095.SAR' # SAP HANA Client
       - 'VCH202000_2059_0-80005464.SAR'
-      - 'SWPM10SP41_2-70002492.SAR'
+      - 'SWPM10SP41_3-70002492.SAR'
       - 'igsexe_13-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_2-80002470.SAR' # SUM 2.0
+      - 'SUM20SP20_3-80002470.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51057073_1' # IDES for SAP ERP 6.0 EHP8 on HANA (1/2)
       - '51057073_2'
@@ -1204,7 +1204,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
@@ -1247,7 +1247,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'DBATL740O11_49-80002605.SAR' # DBATOOLS Package for Oracle 11g, 12c and higher, Support Package SAP KERNEL 7.53 64-BIT UNICODE Linux on x86_64 64bit ORACLE
@@ -1296,7 +1296,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SYBCTRL_1325-80002616.SAR'
@@ -1339,7 +1339,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002604.SAR' # Kernel Part II (753), SAP MaxDB 7.9
       - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'SWPM10SP41_2-20009701.SAR'
+      - 'SWPM10SP41_3-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - '51054410_2' # MaxDB 7.9 - SP10 Build 04 Linux on x86_64 64bit
