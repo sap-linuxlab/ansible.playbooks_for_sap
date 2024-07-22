@@ -1,0 +1,374 @@
+---
+
+# This file is meant to be used in addition to the extravars file, to be used when the user does not want interactive variable prompts (i.e. non-interactive)
+# This can be used by using the Extra Vars file operator multiple times, such as:
+## ansible-playbook ansible_playbook.yml --extra-vars "@./ansible_extravars.yml" --extra-vars "@./ansible_extravars_noninteractive.yml"
+
+
+####
+# Key SAP System variables
+####
+
+sap_system_sid: "E01"
+sap_system_anydb_sid: "ED1"
+sap_system_nwas_abap_ascs_instance_nr: "00"
+sap_system_nwas_abap_ers_instance_nr: "10"
+sap_system_nwas_abap_pas_instance_nr: "01"
+sap_system_nwas_abap_aas_instance_nr: "11"
+
+
+####
+# Infrastructure Provisioning selection
+####
+
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"  # ansible , ansible_to_terraform , existing_hosts
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"  # aws_ec2_vs , gcp_ce_vm , ibmcloud_vs , ibmcloud_powervs , msazure_vm , ibmpowervm_vm , kubevirt_vm , ovirt_vm , vmware_vm
+
+sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
+
+
+####
+# Infrastructure Provisioning selection
+# AWS
+#
+# Only for use when 'aws_ec2_vs' is value provided for variable sap_vm_provision_iac_platform
+####
+
+sap_vm_provision_aws_access_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_aws_secret_access_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
+sap_vm_provision_aws_vpc_availability_zone: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_aws_vpc_subnet_create_boolean: "{{ true | default(false) if aws_vpc_subnet_id == 'new' else false }}"
+sap_vm_provision_aws_vpc_subnet_id: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_aws_ec2_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_aws_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_aws_vpc_sg_names: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. fs-0000.efs.eu-west-2.amazonaws.com:/
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. fs-0000.efs.eu-west-2.amazonaws.com:/
+sap_vm_provision_nfs_mount_point_type: nfs4
+sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl
+
+
+####
+# Infrastructure Provisioning selection
+# Google Cloud
+#
+# Only for use when 'gcp_ce_vm' is value provided for variable sap_vm_provision_iac_platform
+####
+
+sap_vm_provision_gcp_credentials_json: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_project: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"
+sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
+sap_vm_provision_nfs_mount_point_type: nfs
+sap_vm_provision_nfs_mount_point_opts: vers=3,mountvers=3,rw,relatime,hard,proto=tcp,timeo=600,retrans=2,mountport=2050,mountproto=tcp
+
+
+####
+# Infrastructure Provisioning selection
+# IBM Cloud
+#
+# Only for use when 'ibmcloud_vs' is value provided for variable sap_vm_provision_iac_platform
+####
+sap_vm_provision_ibmcloud_api_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_resource_group_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_availability_zone | regex_replace('-[0-9]', '') }}"
+sap_vm_provision_ibmcloud_availability_zone: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_vpc_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_vpc_sg_names: "ENTER_STRING_VALUE_HERE,ENTER_STRING_VALUE_HERE" # comma-separated, if ansible_to_terraform then ignore this variable
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+sap_vm_provision_nfs_mount_point_type: nfs4
+sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,sec=sys,_netdev,hard,timeo=600,retrans=2,noresvport,acl # Use sec=sys to prevent file ownership issues e.g. 'Permission denied' error
+
+
+####
+# Infrastructure Provisioning selection
+# MS Azure
+#
+# Only for use when 'msazure_vm' is value provided for variable sap_vm_provision_iac_platform
+####
+
+sap_vm_provision_msazure_subscription_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_tenant_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_app_client_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_app_client_secret: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_resource_group_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_location_availability_zone_no: 1
+sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_type: nfs4
+sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,timeo=600,retrans=2,hard # defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
+
+
+####
+# Infrastructure Provisioning selection
+# OVirt
+#
+# Only for use when 'ovirt_vm' is value provided for variable sap_vm_provision_iac_platform
+####
+
+sap_vm_provision_ovirt_engine_insecure_bool: true
+sap_vm_provision_ovirt_engine_url: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ovirt_engine_fqdn: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ovirt_engine_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ovirt_engine_password: "ENTER_STRING_VALUE_HERE"
+#sap_vm_provision_ovirt_engine_cafile: "ENTER_STRING_VALUE_HERE"
+
+sap_vm_provision_ovirt_hypervisor_cluster_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ovirt_hypervisor_cluster_host_node_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ovirt_hypervisor_cluster_storage_domain_name: "ENTER_STRING_VALUE_HERE"
+
+sap_vm_provision_ovirt_vm_boot_menu: false
+sap_vm_provision_ovirt_vm_clone_independent: false
+sap_vm_provision_ovirt_vm_disk_type: "raw" # default is 'cow' = thin provisioning
+sap_vm_provision_ovirt_vm_timezone: "Etc/GMT"
+#sap_vm_provision_ovirt_vm_operating_system: "other_linux"
+
+# OVirt VM option 1 - create from VM Template Name
+sap_vm_provision_ovirt_vm_template_name: "ENTER_STRING_VALUE_HERE"
+
+# OVirt VM option 2 - create from RHEL Kickstart definition
+# sap_vm_provision_ovirt_vm_kickstart_definition:
+#   os_image_iso: RHEL-9.2.0-x86_64-dvd.iso
+# # pxeboot path on the hypervisor node(s)
+#   initrd_path: /software/pxeboot/rhel-9.2/initrd.img
+#   kernel_path: /software/pxeboot/rhel-9.2/vmlinuz
+# # see RHEL release documentations for kickstart installation kernel parameters
+#   kernel_params: "inst.ks=http://{{ sap_vm_provision_ovirt_kickstart_host }}/kickstart/{{ sap_vm_provision_ovirt_kickstart_config_file_name }} ip={{ sap_vm_provision_ovirt_vm_host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].ovirt_vm_ip }}::{{ sap_vm_provision_ovirt_vm_host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].ovirt_vm_gw }}:{{ sap_vm_provision_ovirt_vm_host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].ovirt_vm_netmask }}:{{ inventory_hostname }}:{{ sap_vm_provision_ovirt_vm_host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].ovirt_vm_interface }}:none inst.nompath ipv6.disable=1 inst.repo=cdrom kpti=0"
+#   boot_disk:
+#     activate: true
+#     bootable: true
+#     interface: "virtio_scsi"
+#     size: "25GiB"
+#     format: "cow"
+
+# OVirt VM - vNIC definitions when not using DHCP
+#sap_vm_provision_ovirt_vm_nics:
+#  - interface: virtio
+#    name: nic1
+#    profile_name: vm_nic_profile_name
+
+# OVirt VM - cloud-init
+#sap_vm_provision_ovirt_vm_cloud_init:
+#    authorized_ssh_keys: "{{ lookup('file', ( sap_vm_provision_ssh_host_public_key_file_path | default(sap_vm_provision_ssh_host_private_key_file_path + '.pub') ) ) }}"
+#    regenerate_ssh_keys: false
+#    host_name: "{{ host_node }}" # Must use short name for SAP Systems, not FQDN
+#   custom_script: | # Cloud-init script which will be executed on Virtual Machine when deployed. This is appended to the end of the cloud-init script generated by any other options.
+#     write_files:
+#     - content: |
+#         Hello, world!
+#       path: /tmp/greeting.txt
+#       permissions: '0644'
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"
+
+
+####
+# Infrastructure Provisioning selection,
+# when provisioning minimal landing zone and hosts via Terraform
+#
+# Only for use when 'ansible_to_terraform' is value provided for variable sap_vm_provision_iac_type
+####
+
+sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+
+
+####
+# Infrastructure Provisioning selection,
+# additional configuration when provisioning On-Premise hosts
+#
+# Only for use when 'ibmpowervm', 'ovirt_vm' is value provided for variable sap_vm_provision_iac_platform
+####
+
+# Only for use when environment does not contain an SNAT for Outbound Internet activity
+# sap_vm_provision_proxy_web_forward_proxy_ip: "ENTER_STRING_VALUE_HERE" # IP:Port only, no http:// prefix
+# sap_vm_provision_proxy_web_forward_exclusions: "localhost,127.0.0.1,{{ sap_vm_provision_dns_root_domain }},{{ sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host }},{{ ibmpower_vc_auth_endpoint.rpartition('//')[-1].partition('/')[0].partition(':')[0] }}"
+
+# OS Package Repo Mirror - CA file downloaded from RHT Satellite / SUSE RMT for injection to host
+sap_vm_provision_os_registration_ca_file_path: "ENTER_STRING_VALUE_HERE"
+
+# OS Package Repo Mirror - RHEL command example: curl -sS 'https://RHT_SATELLITE_SERVER/register?activation_keys=&location_id=&organization_id=&setup_insights=false&setup_remote_execution=false&update_packages=false' -H 'Authorization: Bearer XXXX' | bash
+# OS Package Repo Mirror - SLES command example: curl http://SUSE_RMT_SERVER/tools/rmt-client-setup | bash 'https://SUSE_RMT_SERVER/' --yes
+sap_vm_provision_os_registration_script_command: "ENTER_STRING_VALUE_HERE"
+
+# OS Package Repo Direct - Cannot be used in conjunction with OS Package Repository Mirrors
+#sap_vm_provision_os_online_registration_user: "ENTER_STRING_VALUE_HERE"
+#sap_vm_provision_os_online_registration_passcode: "ENTER_STRING_VALUE_HERE"
+
+
+####
+# SAP Software installation media downloads
+####
+
+# SAP ONE Support Launchpad credentials
+sap_id_user: "ENTER_STRING_VALUE_HERE"
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
+
+# Directory for SAP installation media
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
+
+
+####
+# Mandatory parameters : Virtual IPs (VIPs)
+####
+
+sap_vm_provision_ha_vip_anydb_primary: "ENTER_STRING_VALUE_HERE"
+# sap_vm_temp_vip_anydb_primary: "ENTER_STRING_VALUE_HERE"
+# sap_ha_install_anydb_ibmdb2_vip_primary_ip_address: "ENTER_STRING_VALUE_HERE"
+
+sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "ENTER_STRING_VALUE_HERE"
+sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "ENTER_STRING_VALUE_HERE"
+
+
+####
+# Linux Pacemaker cluster setup for IBM Db2
+####
+
+sap_ha_install_anydb_ibmdb2_sid: "ENTER_STRING_VALUE_HERE"
+sap_ha_install_anydb_ibmdb2_hostname_primary: "ENTER_STRING_VALUE_HERE"
+sap_ha_install_anydb_ibmdb2_hostname_secondary: "ENTER_STRING_VALUE_HERE"
+sap_ha_install_anydb_ibmdb2_software_directory: "ENTER_STRING_VALUE_HERE"
+
+####
+# Linux Pacemaker cluster setup for IBM Db2 - variables for AWS
+####
+
+sap_ha_install_anydb_ibmdb2_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
+sap_ha_install_anydb_ibmdb2_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
+sap_ha_install_anydb_ibmdb2_aws_vip_update_rt: "ENTER_STRING_VALUE_HERE"
+
+####
+# Linux Pacemaker cluster setup for IBM Db2 - variables for Google Cloud
+####
+
+sap_ha_install_anydb_ibmdb2_gcp_credentials_json_file: "{{ sap_vm_provision_gcp_credentials_json }}"
+sap_ha_install_anydb_ibmdb2_gcp_project: "{{ sap_vm_provision_gcp_project }}"
+sap_ha_install_anydb_ibmdb2_gcp_lb_health_check_port: 62700
+
+####
+# Linux Pacemaker cluster setup for IBM Db2 - variables for IBM Cloud
+####
+
+sap_ha_install_anydb_ibmdb2_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+sap_ha_install_anydb_ibmdb2_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_region }}"
+sap_ha_install_anydb_ibmdb2_ibmcloud_health_check_port: 62700
+
+####
+# Linux Pacemaker cluster setup for IBM Db2 - variables for Microsoft Azure
+####
+
+sap_ha_install_anydb_ibmdb2_msazure_tenant_id: "{{ sap_vm_provision_msazure_tenant_id }}"
+sap_ha_install_anydb_ibmdb2_msazure_app_client_id: "{{ sap_vm_provision_msazure_app_client_id }}"
+sap_ha_install_anydb_ibmdb2_msazure_app_client_secret: "{{ sap_vm_provision_msazure_app_client_secret }}"
+sap_ha_install_anydb_ibmdb2_msazure_lb_health_check_port: 62700
+
+
+####
+# Linux Pacemaker cluster setup for SAP - variables for AWS
+####
+
+sap_ha_pacemaker_cluster_aws_region: "{{ aws_vpc_availability_zone[:-1] }}"
+sap_ha_pacemaker_cluster_aws_access_key_id: "{{ aws_access_key }}"
+sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ aws_secret_access_key }}"
+
+
+####
+# Linux Pacemaker cluster setup for SAP - variables for Google Cloud
+####
+
+sap_ha_pacemaker_cluster_gcp_project: "{{ gcp_project }}"
+sap_ha_pacemaker_cluster_gcp_region_zone: "{{ gcp_region_zone }}"
+
+
+####
+# Linux Pacemaker cluster setup for SAP - variables for IBM Cloud
+####
+
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ ibmcloud_api_key }}"
+sap_ha_pacemaker_cluster_ibmcloud_region: "{{ ibmcloud_region }}"
+
+
+####
+# Linux Pacemaker cluster setup for SAP - variables for Microsoft Azure
+####
+
+sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ az_subscription_id }}"
+sap_ha_pacemaker_cluster_msazure_resource_group: "{{ az_resource_group_name }}"
+
+
+####
+# SAP SWPM, uses the Ansible Role sap_swpm with Default Templates mode
+# (see ansible_extravars.yml in parent directory of this Ansible Playbook for full definitions)
+####
+
+sap_swpm_templates_product_input_prefix: "ENTER_STRING_VALUE_HERE" # sap_ecc6_ehp8_ibmdb2_distributed
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# NW Instance Parameters
+sap_swpm_sid: "{{ sap_system_sid }}"
+sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+sap_swpm_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
+
+# Override any variable set in sap_swpm_inifile_dictionary
+# HDB Instance Parameters
+sap_swpm_db_sid: "{{ sap_system_anydb_sid }}"
