@@ -13,7 +13,7 @@ This Ansible Playbook can be targeted at the following Infrastructure Platforms:
 - IBM Cloud
 - Microsoft Azure (MS Azure)
 
-SAP Business Suite with IBM Db2 Sandbox installation:
+SAP Business Suite with IBM Db2 installation:
 - Distributed System definition by SAP: every SAP AnyDB (i.e. IBM Db2) and SAP NetWeaver instance run on a separate host.
 - System Topology/Architecture: a Distributed System is commonly referred as Multi-Tier Architecture.
 - Note: This Ansible Playbook is not available for IBM Power Little Endian (ppc64le); all prior SAP Software without SAP HANA was for IBM Power Big Endian (ppc64) only.
