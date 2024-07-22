@@ -6,9 +6,14 @@ This Ansible Playbook can be executed with:
 - Existing hosts
 
 This Ansible Playbook can be targeted at the following Infrastructure Platforms:
-- Amazon Web Services (aws)
-- Google Cloud Platform (gcp)
-- Microsoft Azure (msazure)
+- Amazon Web Services (AWS)
+- Google Cloud Platform (GCP)
+- IBM Cloud
+- IBM Cloud, IBM Power Virtual Servers
+- Microsoft Azure (MS Azure)
+- IBM PowerVM
+- OVirt
+- VMware
 
 SAP NetWeaver (ABAP) with SAP HANA Sandbox installation:
 - Sandbox System definition by SAP: all SAP HANA and SAP NetWeaver instances run on a single host.
