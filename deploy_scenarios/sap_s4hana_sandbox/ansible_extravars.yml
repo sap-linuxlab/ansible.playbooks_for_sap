@@ -212,7 +212,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
-#      - 'SUM20SP20_5-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_6-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
@@ -258,7 +258,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
-#      - 'SUM20SP20_5-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_6-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2022_sandbox:
@@ -341,7 +341,7 @@ sap_swpm_templates_install_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004547.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_5-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_6-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
@@ -389,7 +389,7 @@ sap_swpm_templates_install_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004546.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_5-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_6-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2021_sandbox:
