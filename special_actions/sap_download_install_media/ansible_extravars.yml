@@ -57,7 +57,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
-#      - 'SUM20SP20_6-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_7-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
@@ -103,7 +103,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_30.zip'
       - 'S4HANAOP108_ERP_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
-#      - 'SUM20SP20_6-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_7-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2022:
@@ -154,7 +154,7 @@ sap_software_templates_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004547.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_6-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP20_7-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
@@ -202,7 +202,7 @@ sap_software_templates_dictionary:
 #      - 'HANAUMML12_6-70001054.ZIP' # UMML4HANA 1 SP12
 #      - 'KD75783.SAR' # SPAM/SAINT Update - Version 757/0083
 #      - 'SAPPAAPL4_2203_2-80004546.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
-#      - 'SUM20SP20_6-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP20_7-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_2021:
@@ -561,7 +561,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_6-80002456.SAR' # SUM 2.0
+      - 'SUM20SP20_7-80002456.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
       - '51050708_2'
@@ -587,7 +587,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_6-80002470.SAR' # SUM 2.0
+      - 'SUM20SP20_7-80002470.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
       - '51050708_2'
@@ -617,7 +617,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'SUM11SP03_2-80006800.SAR' # SUM 1.1
+      - 'SUM11SP03_3-80006800.SAR' # SUM 1.1
       - 'SAPKD74083' # SPAM/SAINT Update - Version 740/0083
       - '51050036_1' # SAP ERP 6.0 on HANA EHP7 Installation Export 1/18
       - '51050036_2'
@@ -648,7 +648,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-      - 'SUM11SP03_2-80006861.SAR' # SUM 1.1
+      - 'SUM11SP03_3-80006861.SAR' # SUM 1.1
       - 'SAPKD74083' # SPAM/SAINT Update - Version 740/0083
       - '51050036_1' # SAP ERP 6.0 on HANA EHP7 Installation Export 1/18
       - '51050036_2'
@@ -1173,7 +1173,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_6-80002456.SAR' # SUM 2.0
+      - 'SUM20SP20_7-80002456.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51057073_1' # IDES for SAP ERP 6.0 EHP8 on HANA (1/2)
       - '51057073_2'
@@ -1189,7 +1189,7 @@ sap_software_templates_dictionary:
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-      - 'SUM20SP20_6-80002470.SAR' # SUM 2.0
+      - 'SUM20SP20_7-80002470.SAR' # SUM 2.0
       - 'SAPKD75083' # SPAM/SAINT Update - Version 750/0083
       - '51057073_1' # IDES for SAP ERP 6.0 EHP8 on HANA (1/2)
       - '51057073_2'
