@@ -785,7 +785,7 @@ sap_software_templates_dictionary:
       - 'SWPM10SP41_7-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
-      - 'SYBCTRL_1419-80002616.SAR'
+      - 'SYBCTRL_1420-80002616.SAR'
       - '51057804_1' # SAP ASE 16.0.04.06 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
@@ -1032,7 +1032,7 @@ sap_software_templates_dictionary:
       - 'SWPM10SP41_7-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
-      - 'SYBCTRL_1419-80002616.SAR'
+      - 'SYBCTRL_1420-80002616.SAR'
       - '51057804_1' # SAP ASE 16.0.04.06 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
@@ -1054,7 +1054,7 @@ sap_software_templates_dictionary:
       - 'SWPM10SP41_7-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
-      - 'SYBCTRL_1419-80002616.SAR'
+      - 'SYBCTRL_1420-80002616.SAR'
       - '51057804_1' # SAP ASE 16.0.04.06 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
@@ -1299,7 +1299,7 @@ sap_software_templates_dictionary:
       - 'SWPM10SP41_7-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
-      - 'SYBCTRL_1419-80002616.SAR'
+      - 'SYBCTRL_1420-80002616.SAR'
       - '51057804_1' # SAP ASE 16.0.04.06 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - '51053216_1' # IDES SAP ERP 6.0 EHP8 - INSTALL. EXP. (1/2) 1/22
