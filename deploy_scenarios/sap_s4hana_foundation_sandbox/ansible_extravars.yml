@@ -191,7 +191,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4FND108_INST_EXPORT_9.zip'
       - 'S4FND108_NW_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
-#      - 'SUM20SP21_3-80002456.SAR' # SUM 2.0
+#      - 'SUM20SP21_4-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
@@ -216,7 +216,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4FND108_INST_EXPORT_9.zip'
       - 'S4FND108_NW_LANG_EN.SAR'
 #      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
-#      - 'SUM20SP21_3-80002470.SAR' # SUM 2.0
+#      - 'SUM20SP21_4-80002470.SAR' # SUM 2.0
 
 
   sap_s4hana_fndn_2022_sandbox:
