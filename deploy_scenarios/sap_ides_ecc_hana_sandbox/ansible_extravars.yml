@@ -430,7 +430,7 @@ sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:
   rhel-8-6-sap-ha: ".*redhat.*8-6.*amd64.*hana.*"
   rhel-8-8-sap-ha: ".*redhat.*8-8.*amd64.*hana.*"
   rhel-9-0-sap-ha: ".*redhat.*9-0.*amd64.*hana.*"
-  rhel-9-2-sap-ha: ".*redhat.*9-0.*amd64.*hana.*"
+  rhel-9-2-sap-ha: ".*redhat.*9-2.*amd64.*hana.*"
   sles-15-3-sap-ha: ".*sles.*15-3.*amd64.*hana.*"
   sles-15-4-sap-ha: ".*sles.*15-4.*amd64.*hana.*"
   sles-15-5-sap-ha: ".*sles.*15-5.*amd64.*hana.*"
