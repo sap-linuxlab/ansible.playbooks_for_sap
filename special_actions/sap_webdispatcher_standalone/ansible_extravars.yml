@@ -182,7 +182,7 @@ sap_swpm_templates_install_dictionary:
       - nw_config_webdisp_generic
       - nw_config_host_agent
       - sap_os_linux_user
-      - solman_credentials_swpm1 # use ICM Auth Web Admin password
+      - nw_config_java_icm_credentials # use ICM Auth Web Admin password
 
     sap_swpm_inifile_dictionary:
 
@@ -213,7 +213,7 @@ sap_swpm_templates_install_dictionary:
       - nw_config_webdisp_generic
       - nw_config_host_agent
       - sap_os_linux_user
-      - solman_credentials_swpm1 # use ICM Auth Web Admin password
+      - nw_config_java_icm_credentials # use ICM Auth Web Admin password
 
     sap_swpm_inifile_dictionary:
 
