@@ -89,7 +89,7 @@ The Ansible Playbooks for SAP are designed for Linux operating systems, the mini
 _Additional notes regarding OS Editions and Versions:_
 
 - SLES with HAE is not compatible due to missing OS Packages for SAP
-- RHEL for _SAP Applications_ may not have imcompatibility, depending on selected scenario, due to missing OS Packages for SAP HANA, High Availability and extended patching (EUS/E4S)
+- RHEL for _SAP Applications_ may not have incompatibility, depending on selected scenario, due to missing OS Packages for SAP HANA, High Availability and extended patching (EUS/E4S)
 - RHEL for _SAP Solutions_ may be labelled 'RHEL for SAP with High Availability and Update Services (HA-US)' on Cloud Hyperscalers
 
 Assumptions for executing the Ansible Roles from this Ansible Collection include:
