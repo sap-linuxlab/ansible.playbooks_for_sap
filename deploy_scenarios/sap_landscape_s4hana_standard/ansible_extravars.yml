@@ -2123,7 +2123,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
         - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
-          disk_type: tier3
+          disk_type: tier1
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2229,7 +2229,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
         - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
-          disk_type: tier3
+          disk_type: tier1
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -2335,7 +2335,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
         - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
-          disk_type: tier3
+          disk_type: tier1
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -3741,7 +3741,7 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
         - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
-          disk_type: tier3
+          disk_type: tier1
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
@@ -3851,7 +3851,7 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
         - name: swap # hdb
           swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 2
-          disk_type: tier3
+          disk_type: tier1
           filesystem_type: swap          # must be swap filesystem
 
         - name: software

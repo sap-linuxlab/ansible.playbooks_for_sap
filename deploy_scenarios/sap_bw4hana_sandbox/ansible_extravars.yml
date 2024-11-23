@@ -717,7 +717,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
         # See SAP Note 1597355 - Swap-space recommendation for Linux
         - name: swap # sbx
           disk_size: 96
-          disk_type: tier3
+          disk_type: tier1
           filesystem_type: swap          # must be swap filesystem
 
         - name: software
