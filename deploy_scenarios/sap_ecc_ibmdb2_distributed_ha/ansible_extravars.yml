@@ -49,7 +49,7 @@ sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
 #sap_id_user_password: 'SET_IN_VAR_PROMPT'
 
 # Directory for SAP installation media
-#sap_install_media_detect_source_directory: "SET_IN_VAR_PROMPT"
+#sap_software_download_directory: "SET_IN_VAR_PROMPT"
 
 # Configuration for SAP installation media detection
 # sap_install_media_detect_** variables are set for each Ansible Task to the respective host

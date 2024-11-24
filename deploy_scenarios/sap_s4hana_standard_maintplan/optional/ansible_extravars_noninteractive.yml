@@ -360,7 +360,7 @@ sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
 sap_maintenance_planner_transaction_name: 'ENTER_STRING_VALUE_HERE'
 
 # Directory for SAP installation media
-sap_software_download_directory: "ENTER_STRING_VALUE_HERE"
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /software
 
 
 ####

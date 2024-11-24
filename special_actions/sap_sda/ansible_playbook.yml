@@ -98,7 +98,6 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_install_media_detect
       vars:
-        sap_install_media_detect_source_directory: "/software"
         sap_install_media_detect_swpm: true
         sap_install_media_detect_hostagent: true
         sap_install_media_detect_kernel: true
