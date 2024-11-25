@@ -25,7 +25,7 @@ collections:
 # Collections for Infrastructure from Ansible Galaxy
   - name: cloud.terraform
     type: galaxy
-    version: 1.1.0
+    version: 3.0.0
   - name: amazon.aws
     type: galaxy
     version: 7.2.0
@@ -53,7 +53,7 @@ collections:
     version: 3.0.0
   - name: cloud.common
     type: galaxy
-    version: 3.0.0
+    version: 4.0.0
 
 # Collections from public repositories via HTTPS
 #  - name: https://github.com/sap-linuxlab/community.sap_install.git
