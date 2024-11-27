@@ -110,13 +110,14 @@ sap_vm_provision_ibmcloud_vpc_sg_names: "ENTER_STRING_VALUE_HERE,ENTER_STRING_VA
 ####
 sap_vm_provision_ibmcloud_api_key: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_ibmcloud_resource_group_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
-sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
 sap_vm_provision_ibmcloud_powervs_location: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ibmcloud_powervs_workspace_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ibmcloud_powervs_vlan_subnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_powervs_workspace_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
+sap_vm_provision_ibmcloud_powervs_vlan_subnet_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
 sap_vm_provision_ibmcloud_powervs_host_os_image: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE" # only for ansible_to_terraform, can be name or 'new'
 
 # Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
 ####
