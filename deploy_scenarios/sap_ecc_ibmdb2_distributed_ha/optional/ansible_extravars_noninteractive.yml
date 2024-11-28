@@ -275,8 +275,8 @@ sap_vm_provision_ha_vip_anydb_primary: "ENTER_STRING_VALUE_HERE"
 # sap_vm_temp_vip_anydb_primary: "ENTER_STRING_VALUE_HERE"
 # sap_ha_install_anydb_ibmdb2_vip_primary_ip_address: "ENTER_STRING_VALUE_HERE"
 
-sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "ENTER_STRING_VALUE_HERE"
-sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ha_vip_nwas_abap_ascs: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ha_vip_nwas_abap_ers: "ENTER_STRING_VALUE_HERE"
 
 
 ####

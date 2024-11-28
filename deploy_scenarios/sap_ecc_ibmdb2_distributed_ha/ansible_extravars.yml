@@ -63,8 +63,8 @@ sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
 #sap_vm_temp_vip_anydb_primary: "SET_IN_VAR_PROMPT"
 #sap_ha_install_anydb_ibmdb2_vip_primary_ip_address: "SET_IN_VAR_PROMPT"
 
-#sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "SET_IN_VAR_PROMPT"
-#sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "SET_IN_VAR_PROMPT"
+#sap_vm_provision_ha_vip_nwas_abap_ascs: "SET_IN_VAR_PROMPT"
+#sap_vm_provision_ha_vip_nwas_abap_ers: "SET_IN_VAR_PROMPT"
 
 
 ####

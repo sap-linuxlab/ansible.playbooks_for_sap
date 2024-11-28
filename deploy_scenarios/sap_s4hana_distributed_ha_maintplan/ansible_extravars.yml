@@ -110,9 +110,9 @@ softwarecenter_search_list_sapcar_ppc64le:
 ####
 # Mandatory parameters : Virtual IPs (VIPs)
 ####
-#sap_ha_pacemaker_cluster_vip_hana_primary_ip_address: "SET_IN_VAR_PROMPT"
-#sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "SET_IN_VAR_PROMPT"
-#sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "SET_IN_VAR_PROMPT"
+#sap_vm_provision_ha_vip_hana_primary: "SET_IN_VAR_PROMPT"
+#sap_vm_provision_ha_vip_nwas_abap_ascs: "SET_IN_VAR_PROMPT"
+#sap_vm_provision_ha_vip_nwas_abap_ers: "SET_IN_VAR_PROMPT"
 
 
 ####

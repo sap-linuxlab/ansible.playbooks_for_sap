@@ -432,9 +432,9 @@ sap_ha_install_hana_hsr_db_system_password: "{{ sap_hana_install_master_password
 # OVirt KVM:            the VIP must be within the VLAN Subnet range
 # KubeVirt:             the VIP must be within the VLAN Subnet range
 ####
-sap_ha_pacemaker_cluster_vip_hana_primary_ip_address: "ENTER_STRING_VALUE_HERE"
-sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "ENTER_STRING_VALUE_HERE"
-sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ha_vip_hana_primary: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ha_vip_nwas_abap_ascs: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ha_vip_nwas_abap_ers: "ENTER_STRING_VALUE_HERE"
 
 
 ####
