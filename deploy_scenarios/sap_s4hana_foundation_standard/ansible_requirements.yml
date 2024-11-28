@@ -28,10 +28,10 @@ collections:
     version: 3.0.0
   - name: amazon.aws
     type: galaxy
-    version: 7.2.0
+    version: 9.0.0
   - name: community.aws
     type: galaxy
-    version: 7.1.0
+    version: 9.0.0
   - name: azure.azcollection
     type: galaxy
     version: 2.2.0
