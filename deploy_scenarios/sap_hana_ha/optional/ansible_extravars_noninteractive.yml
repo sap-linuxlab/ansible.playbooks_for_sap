@@ -361,12 +361,13 @@ sap_ha_install_hana_hsr_db_system_password: "{{ sap_hana_install_master_password
 
 
 ####
-# Mandatory parameters : Virtual IPs (VIPs)
-# AWS:                  the VIP must be **outside** of any VPC Subnet ranges
-# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer
-# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer (NLB L4 or ALB L7)
-# IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range
-# MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer (NLB L4)
+# Infrastructure Platform - High Availability Virtual IPs (VIPs)
+#
+# AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+# IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+# MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
 # IBM PowerVM:          the VIP must be within the VLAN Subnet range
 # OVirt KVM:            the VIP must be within the VLAN Subnet range
 # KubeVirt:             the VIP must be within the VLAN Subnet range
