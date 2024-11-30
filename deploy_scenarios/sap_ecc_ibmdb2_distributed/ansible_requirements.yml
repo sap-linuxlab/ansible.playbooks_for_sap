@@ -11,13 +11,13 @@ collections:
     version: 1.88.9
   - name: community.sap_install
     type: galaxy
-    version: 1.4.1
+    version: 1.5.0
   - name: community.sap_launchpad
     type: galaxy
     version: 1.1.1
   - name: community.sap_infrastructure
     type: galaxy
-    version: 1.0.1
+    version: 1.1.0
 #  - name: community.sap_operations
 #    type: galaxy
 #    version: 0.9.1
@@ -34,14 +34,14 @@ collections:
     version: 9.0.0
   - name: azure.azcollection
     type: galaxy
-    version: 2.2.0
+    version: 3.0.1
   - name: google.cloud
     type: galaxy
     version: 1.1.3
   # Replace with ibm.cloud in future, legacy Ansible Collection uses hidden on-the-fly Terraform files in /var/tmp/ansible/ibmcloud)
   - name: ibm.cloudcollection
     type: galaxy
-    version: 1.51.0
+    version: 1.71.2
   - name: ovirt.ovirt
     type: galaxy
     version: 3.1.2
@@ -59,15 +59,6 @@ collections:
 #  - name: https://github.com/sap-linuxlab/community.sap_install.git
 #    type: git
 #    version: dev
-#  - name: https://github.com/sap-linuxlab/community.sap_launchpad.git
-#    type: git
-#    version: main
-#  - name: https://github.com/sap-linuxlab/community.sap_operations.git
-#    type: git
-#    version: main
-#  - name: https://github.com/ansible-collections/cloud.terraform.git
-#    type: git
-#    version: main
 
 # Collections from private repositories via use SSH (embedded GitHub PAT does not work)
 # Used for customised/forked Ansible Collections
