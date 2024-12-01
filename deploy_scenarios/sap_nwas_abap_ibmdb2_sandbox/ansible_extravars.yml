@@ -207,27 +207,43 @@ sap_swpm_templates_install_dictionary:
 
 sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
-  rhel-8-2: "*RHEL-8.2*_HVM*x86_64*"
+  # rhel-8-2: "*RHEL-8.2*_HVM*x86_64*" # removed
   rhel-8-4: "*RHEL-8.4*_HVM*x86_64*"
   rhel-8-6: "*RHEL-8.6*_HVM*x86_64*"
   rhel-8-8: "*RHEL-8.8*_HVM*x86_64*"
+  rhel-8-10: "*RHEL-8.10*_HVM*x86_64*"
+  rhel-9-0: "*RHEL-9.0*_HVM*x86_64*"
+  rhel-9-1: "*RHEL-9.1*_HVM*x86_64*"
+  rhel-9-2: "*RHEL-9.2*_HVM*x86_64*"
+  rhel-9-3: "*RHEL-9.3*_HVM*x86_64*"
+  rhel-9-4: "*RHEL-9.4*_HVM*x86_64*"
+  sles-12-5: "*suse-sles-12-sp5-v202*-hvm-ssd-x86_64*"
+  # sles-15-2: "*suse-sles-15-sp2-v202*-hvm-ssd-x86_64*" # removed
+  # sles-15-3: "*suse-sles-15-sp3-v202*-hvm-ssd-x86_64*" # removed
+  # sles-15-4: "*suse-sles-15-sp4-v202*-hvm-ssd-x86_64*" # removed
+  sles-15-5: "*suse-sles-15-sp5-v202*-hvm-ssd-x86_64*"
+  sles-15-6: "*suse-sles-15-sp6-v202*-hvm-ssd-x86_64*"
+  # rhel-7-7-sap-ha: "*RHEL-SAP-8.1.0*" # removed
+  # rhel-7-9-sap-ha: "*RHEL-SAP-8.1.0*" # removed
   rhel-8-1-sap-ha: "*RHEL-SAP-8.1.0*"
   rhel-8-2-sap-ha: "*RHEL-SAP-8.2.0*"
   rhel-8-4-sap-ha: "*RHEL-SAP-8.4.0*"
   rhel-8-6-sap-ha: "*RHEL-SAP-8.6.0*"
   rhel-8-8-sap-ha: "*RHEL-SAP-8.8.0*"
+  rhel-8-10-sap-ha: "*RHEL-SAP-8.10.0*"
   rhel-9-0-sap-ha: "*RHEL-SAP-9.0.0*"
   rhel-9-2-sap-ha: "*RHEL-SAP-9.2.0*"
-  sles-15-2: "*suse-sles-15-sp2-v202*-hvm-ssd-x86_64*"
-  sles-15-3: "*suse-sles-15-sp3-v202*-hvm-ssd-x86_64*"
-  sles-15-4: "*suse-sles-15-sp4-v202*-hvm-ssd-x86_64*"
-  sles-15-5: "*suse-sles-15-sp5-v202*-hvm-ssd-x86_64*"
+  rhel-9-4-sap-ha: "*RHEL-SAP-9.4.0*"
   sles-12-5-sap-ha: "*suse-sles-sap-12-sp5-v202*-hvm-ssd-x86_64*"
   sles-15-1-sap-ha: "*suse-sles-sap-15-sp1-v202*-hvm-ssd-x86_64*"
   sles-15-2-sap-ha: "*suse-sles-sap-15-sp2-v202*-hvm-ssd-x86_64*"
   sles-15-3-sap-ha: "*suse-sles-sap-15-sp3-v202*-hvm-ssd-x86_64*"
   sles-15-4-sap-ha: "*suse-sles-sap-15-sp4-v202*-hvm-ssd-x86_64*"
   sles-15-5-sap-ha: "*suse-sles-sap-15-sp5-v202*-hvm-ssd-x86_64*"
+  sles-15-6-sap-ha: "*suse-sles-sap-15-sp6-v202*-hvm-ssd-x86_64*"
+  sles-15-4-sap-ha-byos: "*suse-sles-sap-15-sp4-byos-v202*-hvm-ssd-x86_64*"
+  sles-15-5-sap-ha-byos: "*suse-sles-sap-15-sp5-byos-v202*-hvm-ssd-x86_64*"
+  sles-15-6-sap-ha-byos: "*suse-sles-sap-15-sp6-byos-v202*-hvm-ssd-x86_64*"
 
 
 sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
@@ -295,42 +311,75 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 ####
 
 sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
-
   rhel-8-latest:
     project: "rhel-cloud"
     family: "rhel-8"
-
-  rhel-8-1-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-8-1-sap-ha"
-
-  rhel-8-2-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-8-2-sap-ha"
-
-  rhel-8-4-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-8-4-sap-ha"
-
-  rhel-8-6-sap-ha:
-    project: "rhel-sap-cloud"
-    family: "rhel-8-6-sap-ha"
-
+  rhel-9-latest:
+    project: "rhel-cloud"
+    family: "rhel-9"
+  sles-12-latest:
+    project: "suse-cloud"
+    family: "sles-12"
   sles-15-latest:
     project: "suse-cloud"
     family: "sles-15"
-
-  sles-15-sp3-sap:
+  # rhel-7-7-sap-ha: # removed
+  #   project: "rhel-sap-cloud"
+  #   family: "rhel-7-7-sap-ha"
+  rhel-7-9-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-7-9-sap-ha"
+  # rhel-8-1-sap-ha: # removed
+  #   project: "rhel-sap-cloud"
+  #   family: "rhel-8-1-sap-ha"
+  rhel-8-2-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-2-sap-ha"
+  rhel-8-4-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-4-sap-ha"
+  rhel-8-6-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-6-sap-ha"
+  sles-12-5-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-12-sp5-sap"
+  # sles-15-1-sap-ha: # removed
+  #   project: "suse-sap-cloud"
+  #   family: "sles-15-sp1-sap"
+  sles-15-2-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp2-sap"
+  sles-15-3-sap-ha:
     project: "suse-sap-cloud"
     family: "sles-15-sp3-sap"
-
-  sles-15-sp4-sap:
+  sles-15-4-sap-ha:
     project: "suse-sap-cloud"
     family: "sles-15-sp4-sap"
-
-  sles-15-sp5-sap:
+  sles-15-5-sap-ha:
     project: "suse-sap-cloud"
     family: "sles-15-sp5-sap"
+  sles-15-6-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp6-sap"
+  sles-12-5-sap-ha-byos:
+    project: "suse-byos-cloud"
+    family: "sles-12-sp5-sap-byos"
+  sles-15-2-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp2-sap-byos"
+  sles-15-3-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp3-sap-byos"
+  sles-15-4-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp4-sap-byos"
+  sles-15-5-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp5-sap-byos"
+  sles-15-6-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp6-sap-byos"
 
 
 sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
@@ -405,16 +454,31 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:
   rhel-8-4: ".*redhat.*8-4.*minimal.*amd64.*"
   rhel-8-6: ".*redhat.*8-6.*minimal.*amd64.*"
+  rhel-8-8: ".*redhat.*8-8.*minimal.*amd64.*"
+  rhel-8-10: ".*redhat.*8-10.*minimal.*amd64.*"
   rhel-9-0: ".*redhat.*9-0.*minimal.*amd64.*"
   rhel-9-2: ".*redhat.*9-2.*minimal.*amd64.*"
+  rhel-9-4: ".*redhat.*9-4.*minimal.*amd64.*"
+  sles-15-5: ".*sles.*15-5.*amd64-[0-9]"
+  sles-15-6: ".*sles.*15-6.*amd64-[0-9]"
+  # rhel-7-6-sap-ha: ".*redhat.*7-6.*amd64.*hana.*" # retrievable from deprecated list
+  # rhel-7-9-sap-ha: ".*redhat.*7-9.*amd64.*hana.*" # retrievable from deprecated list
+  # rhel-8-1-sap-ha: ".*redhat.*8-1.*amd64.*hana.*" # retrievable from deprecated list
+  # rhel-8-2-sap-ha: ".*redhat.*8-2.*amd64.*hana.*" # retrievable from deprecated list
   rhel-8-4-sap-ha: ".*redhat.*8-4.*amd64.*hana.*"
   rhel-8-6-sap-ha: ".*redhat.*8-6.*amd64.*hana.*"
   rhel-8-8-sap-ha: ".*redhat.*8-8.*amd64.*hana.*"
+  rhel-8-10-sap-ha: ".*redhat.*8-10.*amd64.*hana.*"
   rhel-9-0-sap-ha: ".*redhat.*9-0.*amd64.*hana.*"
-  rhel-9-2-sap-ha: ".*redhat.*9-0.*amd64.*hana.*"
+  rhel-9-2-sap-ha: ".*redhat.*9-2.*amd64.*hana.*"
+  rhel-9-4-sap-ha: ".*redhat.*9-4.*amd64.*hana.*"
+  # sles-12-4-sap-ha: ".*sles.*12-4.*amd64.*hana.*" # retrievable from deprecated list
+  # sles-12-5-sap-ha: ".*sles.*12-5.*amd64.*hana.*" # retrievable from deprecated list
+  # sles-15-1-sap-ha: ".*sles.*15-1.*amd64.*hana.*" # retrievable from deprecated list
   sles-15-3-sap-ha: ".*sles.*15-3.*amd64.*hana.*"
   sles-15-4-sap-ha: ".*sles.*15-4.*amd64.*hana.*"
   sles-15-5-sap-ha: ".*sles.*15-5.*amd64.*hana.*"
+  sles-15-6-sap-ha: ".*sles.*15-6.*amd64.*hana.*"
 
 
 sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
@@ -487,95 +551,185 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 ####
 
 sap_vm_provision_msazure_vm_host_os_image_dictionary:
-
+  rhel-8-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "8-gen2"
+  rhel-8-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "81-gen2"
+  rhel-8-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "82-gen2"
+  rhel-8-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "83-gen2"
   rhel-8-4:
     publisher: "RedHat"
     offer: "RHEL"
     sku: "84-gen2"
-
+  rhel-8-5:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "85-gen2"
+  rhel-8-6:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "86-gen2"
+  rhel-8-7:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "87-gen2"
+  rhel-8-8:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "88-gen2"
+  rhel-8-9:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "89-gen2"
+  rhel-8-10:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "810-gen2"
+  rhel-9-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "90-gen2"
+  rhel-9-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "91-gen2"
+  rhel-9-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "92-gen2"
+  rhel-9-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "93-gen2"
+  rhel-9-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "94-gen2"
+  sles-12-5:
+    publisher: "SUSE"
+    offer: "sles-12-sp5"
+    sku: "gen2"
+  sles-15-1:
+    publisher: "SUSE"
+    offer: "sles-15-sp1"
+    sku: "gen2"
+  sles-15-2:
+    publisher: "SUSE"
+    offer: "sles-15-sp2"
+    sku: "gen2"
+  sles-15-3:
+    publisher: "SUSE"
+    offer: "sles-15-sp3"
+    sku: "gen2"
+  sles-15-4:
+    publisher: "SUSE"
+    offer: "sles-15-sp4"
+    sku: "gen2"
+  sles-15-5:
+    publisher: "SUSE"
+    offer: "sles-15-sp5"
+    sku: "gen2"
+  sles-15-6:
+    publisher: "SUSE"
+    offer: "sles-15-sp6"
+    sku: "gen2"
   rhel-8-1-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "81sapha-gen2"
-
   rhel-8-2-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "82sapha-gen2"
-
   rhel-8-4-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "84sapha-gen2"
-
   rhel-8-6-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "86sapha-gen2"
-
   rhel-8-8-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "88sapha-gen2"
-
+  rhel-8-10-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "810sapha-gen2"
   rhel-9-0-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "90sapha-gen2"
-
   rhel-9-2-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
     sku: "92sapha-gen2"
-
-  rhel-8-1-sap-applications:
+  rhel-9-4-sap-ha:
     publisher: "RedHat"
     offer: "RHEL-SAP-HA"
-    sku: "81sapapps-gen2"
-
-  rhel-8-2-sap-applications:
-    publisher: "RedHat"
-    offer: "RHEL-SAP-HA"
-    sku: "82sapapps-gen2"
-
-  rhel-8-4-sap-applications:
-    publisher: "RedHat"
-    offer: "RHEL-SAP-HA"
-    sku: "84sapapps-gen2"
-
-  rhel-8-6-sap-applications:
-    publisher: "RedHat"
-    offer: "RHEL-SAP-applications"
-    sku: "86sapapps-gen2"
-
-  rhel-8-8-sap-applications:
-    publisher: "RedHat"
-    offer: "RHEL-SAP-applications"
-    sku: "88sapapps-gen2"
-
-  rhel-9-0-sap-applications:
-    publisher: "RedHat"
-    offer: "RHEL-SAP-applications"
-    sku: "90sapapps-gen2"
-
-  rhel-9-2-sap-applications:
-    publisher: "RedHat"
-    offer: "RHEL-SAP-applications"
-    sku: "92sapapps-gen2"
-
-  sles-15-sp3-sap:
+    sku: "94sapha-gen2"
+  sles-12-5-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-12-sp5"
+    sku: "gen2"
+  sles-15-1-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1"
+    sku: "gen2"
+  sles-15-2-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2"
+    sku: "gen2"
+  sles-15-3-sap-ha:
     publisher: "SUSE"
     offer: "sles-sap-15-sp3"
     sku: "gen2"
-
-  sles-15-sp4-sap:
+  sles-15-4-sap-ha:
     publisher: "SUSE"
     offer: "sles-sap-15-sp4"
     sku: "gen2"
-
-  sles-15-sp5-sap:
+  sles-15-5-sap-ha:
     publisher: "SUSE"
     offer: "sles-sap-15-sp5"
+    sku: "gen2"
+  sles-15-6-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6"
+    sku: "gen2"
+  sles-15-1-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1-byos"
+    sku: "gen2"
+  sles-15-2-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2-byos"
+    sku: "gen2"
+  sles-15-3-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3-byos"
+    sku: "gen2"
+  sles-15-4-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4-byos"
+    sku: "gen2"
+  sles-15-5-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5-byos"
+    sku: "gen2"
+  sles-15-6-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6-byos"
     sku: "gen2"
 
 

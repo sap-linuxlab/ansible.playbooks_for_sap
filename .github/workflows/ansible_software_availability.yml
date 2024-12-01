@@ -29,7 +29,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           path: gh_repo
-      - name: Ansible setup
+      - name: Python setup
         id: local_setup
         run: |
           python --version
@@ -110,6 +110,28 @@ jobs:
             echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
             echo "            if sublist['Title'].startswith('SYBCTRL'):" >> python_module_fuzzy_call_script.py
             echo "                print(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('SAPEXE_' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        list_sapexe = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith('SAPEXE'):" >> python_module_fuzzy_call_script.py
+            echo "                list_sapexe.append(int((sublist['Title'].split('-', 1)[0]).split('_', 1)[1]))" >> python_module_fuzzy_call_script.py
+            echo "        list_sapexe.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        print('SAPEXE_' + str(list_sapexe[0]) + '-' + input_search_file + '.SAR')" >> python_module_fuzzy_call_script.py
+            echo "    elif any('SAPEXEDB_' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        list_sapexedb = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith('SAPEXEDB'):" >> python_module_fuzzy_call_script.py
+            echo "                list_sapexedb.append(int((sublist['Title'].split('-', 1)[0]).split('_', 1)[1]))" >> python_module_fuzzy_call_script.py
+            echo "        list_sapexedb.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        print('SAPEXEDB_' + str(list_sapexedb[0]) + '-' + input_search_file + '.SAR')" >> python_module_fuzzy_call_script.py
+            echo "    elif any('SMDA' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        input_smda = input_search_file_name_and_version_only[:-2]" >> python_module_fuzzy_call_script.py
+            echo "        list_smda = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith(input_smda):" >> python_module_fuzzy_call_script.py
+            echo "                list_smda.append(sublist['Title'])" >> python_module_fuzzy_call_script.py
+            echo "        list_smda.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        print(list_smda[0])" >> python_module_fuzzy_call_script.py
             echo "    elif any('IMDB_CLIENT20' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
             echo "        input_imdb_client = input_search_file_name_and_version_only[:-2]" >> python_module_fuzzy_call_script.py
             echo "        list_imdb_client = []" >> python_module_fuzzy_call_script.py

@@ -149,7 +149,6 @@
         mode: '0755'
       loop:
         - "{{ sap_install_media_detect_source_directory }}"
-        - "{{ sap_hana_install_software_directory }}"
 
     - name: Install Python package manager pip3 to system Python
       ansible.builtin.package:
@@ -752,3 +751,31 @@
       vars:
         sap_vm_provision_iac_post_deployment: true
       when: sap_vm_provision_iac_type == "ansible"
+
+
+- name: "Ansible Play for login shortcut"
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Display login shortcut with SSH Port Forward binding from localhost to Virtual IP of SAP HANA or SAP NetWeaver ASCS
+      ansible.builtin.debug:
+        msg: |
+          export bastion_user="{{ sap_vm_provision_bastion_user }}"
+          export bastion_host="{{ sap_vm_provision_bastion_public_ip }}"
+          export bastion_port="{{ sap_vm_provision_bastion_ssh_port }}"
+          export bastion_private_key_file="{{ sap_vm_provision_ssh_bastion_private_key_file_path }}"
+          export sap_hana_instance_nr="{{ sap_system_hana_db_instance_nr }}"
+          export sap_hana_virtual_ip="{{ sap_vm_provision_ha_vip_hana_primary }}"
+          export sap_nwas_ascs_instance_nr="{{ sap_system_nwas_abap_ascs_instance_nr }}"
+          export sap_nwas_ascs_virtual_ip="{{ sap_vm_provision_ha_vip_nwas_abap_ascs }}"
+
+          ssh -4 -N $bastion_user@$bastion_host -p $bastion_port -i $bastion_private_key_file -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ServerAliveInterval=60 -o ServerAliveCountMax=600 \
+          -L localhost:32${sap_nwas_ascs_instance_nr}:${sap_nwas_ascs_virtual_ip:32${sap_nwas_ascs_instance_nr} \
+          -L localhost:3${sap_hana_instance_nr}13:${sap_hana_virtual_ip}:3${sap_hana_instance_nr}13 \
+          -L localhost:3${sap_hana_instance_nr}15:${sap_hana_virtual_ip}:3${sap_hana_instance_nr}15 \
+          -L localhost:5${sap_hana_instance_nr}13:${sap_hana_virtual_ip}:5${sap_hana_instance_nr}13 \
+          -L localhost:5${sap_hana_instance_nr}15:${sap_hana_virtual_ip}:5${sap_hana_instance_nr}15
+
+          # For SAPGUI, use expert mode with SAP Logon String
+          conn=/H/localhost/S/32{{ sap_system_nwas_abap_ascs_instance_nr }}&expert=true

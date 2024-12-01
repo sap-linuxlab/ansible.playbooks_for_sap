@@ -149,7 +149,6 @@
         mode: '0755'
       loop:
         - "{{ sap_install_media_detect_source_directory }}"
-        - "{{ sap_hana_install_software_directory }}"
 
     - name: Install Python package manager pip3 to system Python
       ansible.builtin.package:
