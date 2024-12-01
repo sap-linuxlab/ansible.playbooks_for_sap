@@ -6,7 +6,7 @@ collections:
 #  - name: community.general
   - name: community.sap_install
     type: galaxy
-    version: 1.4.0
+    version: 1.5.0
 
 # Collections from public repositories via HTTPS
 #  - name: https://github.com/sap-linuxlab/community.sap_launchpad.git

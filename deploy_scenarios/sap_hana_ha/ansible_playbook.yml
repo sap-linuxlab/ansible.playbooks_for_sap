@@ -238,12 +238,7 @@
   max_fail_percentage: 0
   tasks:
 
-    - name: Set var of IP Address of SAP HANA primary
-      ansible.builtin.set_fact:
-        sap_nwas_pas_hostname: "{{ sap_vm_provision_dynamic_inventory_hana_primary_hostname }}"
-        sap_nwas_pas_ip: "{{ sap_vm_provision_dynamic_inventory_hana_primary_ip }}"
-
-    - name: Set var of files list from SAP NWAS, using lookup from Ansible hostvars with key as SAP HANA primary
+    - name: Set var of files list from SAP HANA primary, using lookup from Ansible hostvars with key as SAP HANA primary
       ansible.builtin.set_fact:
         sap_hana_install_media_files_list: "{{ hostvars[sap_vm_provision_dynamic_inventory_hana_primary_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
 
