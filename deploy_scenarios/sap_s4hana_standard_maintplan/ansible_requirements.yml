@@ -34,7 +34,7 @@ collections:
     version: 9.0.0
   - name: azure.azcollection
     type: galaxy
-    version: 3.0.1
+    version: 3.1.0
   - name: google.cloud
     type: galaxy
     version: 1.1.3
