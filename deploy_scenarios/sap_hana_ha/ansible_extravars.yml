@@ -50,6 +50,26 @@ sap_hana_update_etchosts: true
 # Configuration for SAP installation media detection
 # sap_install_media_detect_** variables are set for each Ansible Task to the respective host
 
+# Set Python version for sap_launchpad role execution
+# You can replace auto-detection jinja2 directly by string value.
+sap_launchpad_python: >-
+    {%- if ansible_distribution.split("_")[0] == 'SLES'
+     and (ansible_distribution_major_version == '15' and ansible_distribution_version.split('.')[1] | int >= 5
+      or ansible_distribution_major_version == '16') -%}
+      python311
+    {%- else -%}
+      python3
+    {%- endif -%}
+
+sap_launchpad_python_interpreter: >-
+    {%- if ansible_distribution.split("_")[0] == 'SLES'
+     and (ansible_distribution_major_version == '15' and ansible_distribution_version.split('.')[1] | int >= 5
+      or ansible_distribution_major_version == '16') -%}
+      python3.11
+    {%- else -%}
+      python3
+    {%- endif -%}
+sap_launchpad_venv: /opt/sap_launchpad/venv
 
 
 ####
