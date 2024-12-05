@@ -2,7 +2,7 @@
 # Ansible Playbook for SAP HANA Scale-Up (Performance Optimized)
 
 # Use include_role / include_tasks inside Ansible Task block, instead of using roles declaration or Task block with import_roles.
-# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation.
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
 
 
 #### Begin Infrastructure-as-Code provisioning ####
@@ -129,7 +129,6 @@
         state: present
 
 
-
 #### Begin downloading SAP software installation media to hosts ####
 
 - name: Ansible Play for preparing downloads of SAP Software installation media
@@ -149,30 +148,21 @@
 
     - name: Install Python package manager pip3 to system Python
       ansible.builtin.package:
-        name: python3-pip
-        state: present
-
-    - name: Ensure OS Packages for lxml are installed
-      ansible.builtin.package:
         name:
-          - python3-lxml
-          - libxslt-devel
-          - libxml2-devel
+          - "{{ sap_launchpad_python }}"
+          - "{{ sap_launchpad_python }}-pip"
         state: present
 
-    - name: Install Python dependency wheel to system Python
+    - name: Install Python modules to virtual environment
       ansible.builtin.pip:
         name:
           - wheel
-
-    - name: Install Python dependencies for Ansible Modules to system Python
-      ansible.builtin.pip:
-        name:
           - urllib3
           - requests
           - beautifulsoup4
           - lxml
-
+        virtualenv: "{{ sap_launchpad_venv }}"
+        virtualenv_command: "{{ sap_launchpad_python_interpreter }} -m venv"
 
 
 - name: Ansible Play for downloading SAP HANA installation media
@@ -206,7 +196,8 @@
       register: download_task
       retries: 1
       until: download_task is not failed
-
+      vars:
+        ansible_python_interpreter: "{{ sap_launchpad_venv ~ '/bin/' ~ sap_launchpad_python_interpreter }}"
 
     - name: Find SAP HANA installation media
       ansible.builtin.find:
@@ -289,7 +280,7 @@
 
 
 
-- name: Ansible Play for appending temporary Virtual IP (VIP) after preconfiguration and reboot of hosts
+- name: Ansible Play for appending temporary Virtual IP (VIP) after pre-configuration and reboot of hosts
   hosts: hana_primary, hana_secondary
   become: true
   any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
