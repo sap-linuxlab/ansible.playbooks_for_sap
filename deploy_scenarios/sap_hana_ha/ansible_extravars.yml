@@ -69,7 +69,6 @@ sap_launchpad_python_interpreter: >-
     {%- else -%}
       python3
     {%- endif -%}
-sap_launchpad_venv: /opt/sap_launchpad/venv
 
 
 ####

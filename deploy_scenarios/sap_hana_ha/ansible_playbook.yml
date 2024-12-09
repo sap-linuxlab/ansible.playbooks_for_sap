@@ -153,7 +153,13 @@
           - "{{ sap_launchpad_python }}-pip"
         state: present
 
-    - name: Install Python modules to virtual environment
+    - name: Create temporary directory for Python Virtual Environment
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: _sap_launchpad_venv
+      register: sap_launchpad_temp_venv
+
+    - name: Install Python modules to Python Virtual Environment
       ansible.builtin.pip:
         name:
           - wheel
@@ -161,7 +167,7 @@
           - requests
           - beautifulsoup4
           - lxml
-        virtualenv: "{{ sap_launchpad_venv }}"
+        virtualenv: "{{ sap_launchpad_temp_venv.path }}"
         virtualenv_command: "{{ sap_launchpad_python_interpreter }} -m venv"
 
 
@@ -197,7 +203,12 @@
       retries: 1
       until: download_task is not failed
       vars:
-        ansible_python_interpreter: "{{ sap_launchpad_venv ~ '/bin/' ~ sap_launchpad_python_interpreter }}"
+        ansible_python_interpreter: "{{ sap_launchpad_temp_venv.path ~ '/bin/' ~ sap_launchpad_python_interpreter }}"
+
+    - name: Remove temporary Python Virtual Environment
+      ansible.builtin.file:
+        path: "{{ sap_launchpad_temp_venv.path }}"
+        state: absent
 
     - name: Find SAP HANA installation media
       ansible.builtin.find:
