@@ -88,6 +88,7 @@ jobs:
             touch python_module_fuzzy_call_script.py
             echo '#!/usr/bin/env python' >> python_module_fuzzy_call_script.py
             echo 'import sys' >> python_module_fuzzy_call_script.py
+            echo 'import re' >> python_module_fuzzy_call_script.py
             echo 'input_search_file=sys.argv[1]' >> python_module_fuzzy_call_script.py
             echo 'input_search_file_name_and_version_only=sys.argv[2]' >> python_module_fuzzy_call_script.py
             echo 'from module_utils.sap_id_sso import sap_sso_login' >> python_module_fuzzy_call_script.py
@@ -188,6 +189,16 @@ jobs:
             echo "                list_webdisp.append(sublist['Title'])" >> python_module_fuzzy_call_script.py
             echo "        list_webdisp.sort(reverse=True)" >> python_module_fuzzy_call_script.py
             echo "        print(list_webdisp[0])" >> python_module_fuzzy_call_script.py
+            echo "    elif any('SAPHANACOCKPIT' in sublist['Title'] for sublist in query_result):" >> python_module_fuzzy_call_script.py
+            echo "        input_saphana_cockpit = re.sub('P$', '', input_search_file_name_and_version_only)" >> python_module_fuzzy_call_script.py
+            echo "        list_saphana_cockpit = []" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if sublist['Title'].startswith(input_saphana_cockpit):" >> python_module_fuzzy_call_script.py
+            echo "                list_saphana_cockpit.append(sublist['Fastkey'])" >> python_module_fuzzy_call_script.py
+            echo "        list_saphana_cockpit.sort(reverse=True)" >> python_module_fuzzy_call_script.py
+            echo "        for sublist in query_result:" >> python_module_fuzzy_call_script.py
+            echo "            if (list_saphana_cockpit[0] == sublist['Fastkey']):" >> python_module_fuzzy_call_script.py
+            echo "                print(sublist['Title'])" >> python_module_fuzzy_call_script.py
             echo "    else:" >> python_module_fuzzy_call_script.py
             echo '        print("\nERROR. More than 1 result for " + input_search_file + ", manual intervention required....")' >> python_module_fuzzy_call_script.py
             echo '        for item in query_result:' >> python_module_fuzzy_call_script.py
