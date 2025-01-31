@@ -1,0 +1,100 @@
+---
+# Interactive inputs for platform selection
+- name: Interactive input - sap_vm_provision_iac_type
+  ansible.builtin.pause:
+    prompt: |
+      Please choose Infrastructure-as-Code automation from list: ansible , ansible_to_terraform
+      (for existing_hosts, use Ansible standard execution with an Ansible Extravars file)
+  register: sap_vm_provision_iac_type_register
+  when: sap_vm_provision_iac_type is not defined or not sap_vm_provision_iac_type
+
+- name: Interactive input - sap_vm_provision_iac_platform
+  ansible.builtin.pause:
+    prompt: |
+      Please choose Infrastructure Platform from list:
+      aws_ec2_vs , gcp_ce_vm , ibmcloud_powervs , ibmcloud_vs , ibmpowervm_vm , kubevirt_vm , msazure_vm , ovirt_vm
+  register: sap_vm_provision_iac_platform_register
+  when: sap_vm_provision_iac_platform is not defined or not sap_vm_provision_iac_platform
+
+- name: Interactive input - Set facts from initial prompts
+  ansible.builtin.set_fact:
+    sap_vm_provision_iac_type: "{{ sap_vm_provision_iac_type_register.user_input
+      if sap_vm_provision_iac_type_register.user_input is defined and sap_vm_provision_iac_type_register.user_input
+      else sap_vm_provision_iac_type }}"
+    sap_vm_provision_iac_platform: "{{ sap_vm_provision_iac_platform_register.user_input
+      if sap_vm_provision_iac_platform_register.user_input is defined and sap_vm_provision_iac_platform_register.user_input
+      else sap_vm_provision_iac_platform }}"
+
+
+# Interactive inputs for SAP type
+- name: Check that provided {{ interactive_input_type }} has task file
+  ansible.builtin.stat:
+    path: "../../tasks/interactive_{{ interactive_input_type }}.yml"
+  register: __input_type_task_file
+  ignore_errors: true
+
+- name: Interactive input - Gather inputs for type {{ interactive_input_type }}
+  ansible.builtin.include_tasks:
+    file: "../../tasks/interactive_{{ interactive_input_type }}.yml"
+  when: __input_type_task_file.stat.exists
+
+
+# Interactive inputs for specific platform
+- name: Check that provided {{ sap_vm_provision_iac_platform }} has task file
+  ansible.builtin.stat:
+    path: "../../tasks/interactive_{{ sap_vm_provision_iac_platform }}.yml"
+  register: __iac_platform_task_file
+  ignore_errors: true
+
+- name: Interactive input - Trigger prompts for VM provisioning via {{ sap_vm_provision_iac_platform }}
+  ansible.builtin.include_tasks:
+    file: "../../tasks/interactive_{{ sap_vm_provision_iac_platform }}.yml"
+  when: __iac_platform_task_file.stat.exists
+
+
+# Interactive inputs for all scenarios
+
+- name: Interactive input - sap_vm_provision_dns_root_domain
+  ansible.builtin.pause:
+    prompt: "Please enter DNS domain for fully qualified domain name (FQDN)"
+  register: sap_vm_provision_dns_root_domain_register
+  no_log: true
+  when: sap_vm_provision_dns_root_domain is not defined or not sap_vm_provision_dns_root_domain
+
+
+- name: Interactive input - sap_install_media_detect_source_directory
+  ansible.builtin.pause:
+    prompt: "Please enter location of SAP installation media. Default: /software"
+  register: sap_install_media_detect_source_directory_register
+  no_log: true
+  when: sap_install_media_detect_source_directory is not defined or not sap_install_media_detect_source_directory
+
+- name: Interactive input - sap_id_user
+  ansible.builtin.pause:
+    prompt: "Please enter SAP S-User ID for downloading SAP installation media using sap_launchpad."
+  register: sap_id_user_register
+  no_log: true
+  when: sap_id_user is not defined or not sap_id_user
+
+- name: Interactive input - sap_id_user_password
+  ansible.builtin.pause:
+    prompt: "Please enter SAP S-User Password for downloading SAP installation media using sap_launchpad."
+  register: sap_id_user_password_register
+  no_log: true
+  when: sap_id_user_password is not defined or not sap_id_user_password
+
+
+- name: Interactive input - Set facts from prompts
+  ansible.builtin.set_fact:
+    sap_vm_provision_dns_root_domain: "{{ sap_vm_provision_dns_root_domain_register.user_input
+      if sap_vm_provision_dns_root_domain_register.user_input is defined and sap_vm_provision_dns_root_domain_register.user_input
+      else sap_vm_provision_dns_root_domain }}"
+    sap_install_media_detect_source_directory: "{{ sap_install_media_detect_source_directory_register.user_input
+      if sap_install_media_detect_source_directory_register.user_input is defined and sap_install_media_detect_source_directory_register.user_input
+      else sap_install_media_detect_source_directory | d('/software') }}"
+    sap_id_user: "{{ sap_id_user_register.user_input
+      if sap_id_user_register.user_input is defined and sap_id_user_register.user_input
+      else sap_id_user }}"
+    sap_id_user_password: "{{ sap_id_user_password_register.user_input
+      if sap_id_user_password_register.user_input is defined and sap_id_user_password_register.user_input
+      else sap_id_user_password }}"
