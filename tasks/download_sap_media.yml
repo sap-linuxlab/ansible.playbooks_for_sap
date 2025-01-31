@@ -1,0 +1,126 @@
+---
+# Task executes following actions:
+# 1. Checks if community.sap_launchpad is present
+# 2. Prepares environment for download
+# 3. Downloads SAP media
+
+# Set Python version for sap_launchpad role execution
+# You can replace auto-detection jinja2 directly by string value.
+- name: Check availability of sap_launchpad collection on execution node
+  delegate_to: localhost
+  ansible.builtin.command:
+    cmd: ansible-galaxy collection list
+  register: collection_list_output
+
+- name: Inform if sap_launchpad collection is not present on execution node
+  ansible.builtin.debug:
+    msg: |
+      Collection community.sap_launchpad was not detected!
+      Ensure that host specification includes disk with SAP Software installation media.
+  when:
+    - not collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+
+
+- name: Block for preparation of environment for sap_launchpad
+  when: collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+  block:
+
+    # Ensure compatibility with python versions
+    - name: Detect and set facts with python version for sap_launchpad
+      ansible.builtin.set_fact:
+        sap_launchpad_python: >-
+            {%- if ansible_distribution.split("_")[0] == 'SLES'
+            and (ansible_distribution_major_version == '15' and ansible_distribution_version.split('.')[1] | int >= 5
+              or ansible_distribution_major_version == '16') -%}
+              python311
+            {%- else -%}
+              python3
+            {%- endif -%}
+
+        sap_launchpad_python_interpreter: >-
+            {%- if ansible_distribution.split("_")[0] == 'SLES'
+            and (ansible_distribution_major_version == '15' and ansible_distribution_version.split('.')[1] | int >= 5
+              or ansible_distribution_major_version == '16') -%}
+              python3.11
+            {%- else -%}
+              python3
+            {%- endif -%}
+
+    - name: Create directories if they do not exist
+      ansible.builtin.file:
+        path: "{{ item }}"
+        state: directory
+        mode: '0755'
+      loop:
+        - "{{ sap_install_media_detect_source_directory }}"
+
+    - name: Install Python and Python package manager pip
+      ansible.builtin.package:
+        name:
+          - "{{ sap_launchpad_python }}"
+          - "{{ sap_launchpad_python }}-pip"
+        state: present
+
+    # Virtual environment in temporary folder is used for python steps
+    - name: Create temporary directory for Python Virtual Environment
+      ansible.builtin.tempfile:
+        state: directory
+        suffix: _sap_launchpad_venv
+      register: sap_launchpad_temp_venv
+
+    - name: Install Python modules to Python Virtual Environment
+      ansible.builtin.pip:
+        name:
+          - wheel
+          - urllib3
+          - requests
+          - beautifulsoup4
+          - lxml
+        virtualenv: "{{ sap_launchpad_temp_venv.path }}"
+        virtualenv_command: "{{ sap_launchpad_python_interpreter }} -m venv"
+
+
+    - name: Execute Ansible Module with system Python to download SAP installation media
+      community.sap_launchpad.software_center_download:
+        suser_id: "{{ sap_id_user }}"
+        suser_password: "{{ sap_id_user_password }}"
+        softwarecenter_search_query: "{{ item }}"
+        dest: "{{ sap_install_media_detect_source_directory }}"
+      loop: "{{ softwarecenter_search_list }}"
+      loop_control:
+        label: "{{ item }} : {{ download_task.msg | d('') }}"
+      register: download_task
+      retries: 1
+      until: download_task is not failed
+      vars:
+        ansible_python_interpreter: "{{ sap_launchpad_temp_venv.path ~ '/bin/' ~ sap_launchpad_python_interpreter }}"
+
+    - name: Remove temporary Python Virtual Environment
+      ansible.builtin.file:
+        path: "{{ sap_launchpad_temp_venv.path }}"
+        state: absent
+
+
+    # Validate downloaded files and generate lists for rsync
+    - name: Find SAP HANA installation media
+      ansible.builtin.find:
+        paths:
+          - "{{ sap_install_media_detect_source_directory }}"
+        patterns: "{{ sap_hana_install_media_dictionary[sap_hana_product_input].software_files_wildcard_list }}"
+        recurse: true
+      register: sap_hana_install_media_files
+
+
+    - name: Prepare for file transfers, copy Private SSH Key used in Terraform deployment (temporary)
+      ansible.builtin.copy:
+        src: "{{ sap_vm_provision_terraform_work_dir_path }}/ssh/hosts_rsa"
+        dest: "/tmp/hosts_rsa"
+        mode: "0400"
+      when: sap_vm_provision_ssh_host_private_key_file_path is undefined
+
+    - name: Prepare for file transfers, copy Private SSH Key from local (Ansible host)
+      ansible.builtin.copy:
+        src: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
+        dest: "/tmp/hosts_rsa"
+        mode: "0400"
+      when: sap_vm_provision_ssh_host_private_key_file_path is defined

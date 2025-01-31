@@ -1,0 +1,23 @@
+---
+name: Sync Main to Main-Auto-Updated
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  sync:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Sync branches
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git checkout -b main-auto-updated
+          git fetch origin main
+          git reset --hard origin/main
+          git push origin main-auto-updated --force
