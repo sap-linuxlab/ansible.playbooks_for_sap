@@ -25,7 +25,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006178.EXE'
       - 'SWPM10SP42_5-20009701.SAR'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22 Linux x86_64
-      - 'SMDA720_SP14_21-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan 7.2 SP12
+      - 'SMDA720_SP14_23-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan 7.2 SP12
       - 'SAPJVM8_96-80000202.SAR' # SAP JVM 8.1
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
@@ -34,7 +34,7 @@ sap_software_templates_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'SWPM10SP42_5-70002492.SAR'
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22 Linux x86_64
-      - 'SMDA720_SP14_21-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan 7.2 SP12
+      - 'SMDA720_SP14_23-80003641.SAR' # SAP Diagnostics Agent 7.53, OS Independent, for SAP SolMan 7.2 SP12
       - 'SAPJVM8_96-70001621.SAR' # SAP JVM 8.1
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
