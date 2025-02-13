@@ -1,0 +1,256 @@
+---
+# Interactive inputs for SWPM
+
+# Mandatory inputs
+- name: Block for sap_swpm_templates_product_input_select
+  when:
+    - sap_swpm_templates_install_dictionary is defined and sap_swpm_templates_install_dictionary
+    - sap_swpm_templates_product_input_select is not defined or not sap_swpm_templates_product_input_select
+      or sap_swpm_templates_product_input_select not in sap_swpm_templates_install_dictionary.keys()
+  block:
+    - name: Interactive input - sap_swpm_templates_product_input_select
+      ansible.builtin.pause:
+        prompt: |
+          Please select SAP product from list: {{ sap_swpm_templates_install_dictionary.keys() }}
+          Products are defined in variable sap_swpm_templates_install_dictionary.
+      register: sap_swpm_templates_product_input_select_register
+      failed_when: sap_swpm_templates_product_input_select_register.user_input not in sap_swpm_templates_install_dictionary.keys()
+
+    - name: Set fact for sap_swpm_templates_product_input_select
+      ansible.builtin.set_fact:
+        sap_swpm_templates_product_input_select: "{{ sap_swpm_templates_product_input_select_register.user_input }}"
+
+- name: Block for sap_system_sid
+  when: sap_system_sid is not defined or not sap_system_sid
+  no_log: true
+  block:
+    - name: Interactive input - sap_system_sid
+      ansible.builtin.pause:
+        prompt: |
+          Please enter SAP System ID (SID).
+          Example: S01
+      register: sap_system_sid_register
+
+    - name: Set fact for sap_system_sid
+      ansible.builtin.set_fact:
+        sap_system_sid: "{{ sap_system_sid_register.user_input }}"
+        sap_swpm_sid: "{{ sap_system_sid_register.user_input }}"
+
+- name: Block for sap_system_nwas_abap_ascs_instance_nr
+  when: sap_system_nwas_abap_ascs_instance_nr is not defined or not sap_system_nwas_abap_ascs_instance_nr
+  no_log: true
+  block:
+    - name: Interactive input - sap_system_nwas_abap_ascs_instance_nr
+      ansible.builtin.pause:
+        prompt: |
+          Please enter SAP ASCS Instance Number.
+          Example: 00
+      register: sap_system_nwas_abap_ascs_instance_nr_register
+      failed_when: sap_system_nwas_abap_ascs_instance_nr_register.user_input | length != 2
+
+    - name: Set fact for sap_system_nwas_abap_ascs_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
+        sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
+
+- name: Block for sap_system_nwas_abap_ers_instance_nr
+  when:
+    - interactive_input_type == 's4hana_ha'
+    - sap_system_nwas_abap_ers_instance_nr is not defined or not sap_system_nwas_abap_ers_instance_nr
+  no_log: true
+  block:
+    - name: Interactive input - sap_system_nwas_abap_ers_instance_nr
+      ansible.builtin.pause:
+        prompt: |
+          Please enter SAP ERS Instance Number.
+          Example: 01
+      register: sap_system_nwas_abap_ers_instance_nr_register
+      failed_when: sap_system_nwas_abap_ers_instance_nr_register.user_input | length != 2
+
+    - name: Set fact for sap_system_nwas_abap_ers_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
+        sap_swpm_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
+
+
+# Passwords
+- name: Interactive input - sap_swpm_use_master_password
+  ansible.builtin.pause:
+    prompt: |
+      Please enter y to use Master password for all passwords during SAP installation (y/n).
+      Default: n
+      Press enter to skip.
+  register: sap_swpm_use_master_password_register
+
+- name: Block for sap_swpm_master_password
+  when:
+    - sap_swpm_use_master_password_register.user_input | d('n') == 'y'
+    - sap_swpm_master_password is not defined or not sap_swpm_master_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_swpm_master_password
+      ansible.builtin.pause:
+        prompt: "Please enter SAP Master Password."
+      register: sap_swpm_master_password_register
+
+    - name: Set fact for sap_swpm_master_password
+      ansible.builtin.set_fact:
+        sap_swpm_master_password: "{{ sap_swpm_master_password_register.user_input }}"
+
+- name: Block for sap_swpm_ddic_000_password
+  when:
+    - sap_swpm_use_master_password_register.user_input | d('n') != 'y'
+    - sap_swpm_ddic_000_password is not defined or not sap_swpm_ddic_000_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_swpm_ddic_000_password
+      ansible.builtin.pause:
+        prompt: Please enter password for DDIC user in client 000.
+      register: sap_swpm_ddic_000_password_register
+
+    - name: Set fact for sap_swpm_ddic_000_password
+      ansible.builtin.set_fact:
+        sap_swpm_ddic_000_password: "{{ sap_swpm_ddic_000_password_register.user_input }}"
+
+# Database inputs - ABAP
+- name: Block for sap_swpm_db_schema_abap
+  when: sap_swpm_db_schema_abap is not defined or not sap_swpm_db_schema_abap
+  no_log: true
+  block:
+    - name: Interactive input - sap_swpm_db_schema_abap
+      ansible.builtin.pause:
+        prompt: |
+          Please enter ABAP database schema name.
+          Example: SAPHANADB
+      register: sap_swpm_db_schema_abap_register
+
+    - name: Set fact for sap_swpm_db_schema_abap
+      ansible.builtin.set_fact:
+        sap_swpm_db_schema_abap: "{{ sap_swpm_db_schema_abap_register.user_input }}"
+
+- name: Block for sap_swpm_db_schema_abap_password
+  when: sap_swpm_db_schema_abap_password is not defined or not sap_swpm_db_schema_abap_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_swpm_db_schema_abap_password
+      ansible.builtin.pause:
+        prompt: "Please enter password for ABAP database schema."
+      register: sap_swpm_db_schema_abap_password_register
+
+    - name: Set fact for sap_swpm_db_schema_abap_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_schema_abap_password: "{{ sap_swpm_db_schema_abap_password_register.user_input }}"
+
+# Database inputs - Shared
+- name: Block for sap_swpm_db_sidadm_password
+  when: sap_swpm_db_sidadm_password is not defined or not sap_swpm_db_sidadm_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_swpm_db_sidadm_password
+      ansible.builtin.pause:
+        prompt: "Please enter password of sidadm user of database."
+      register: sap_swpm_db_sidadm_password_register
+
+    - name: Set fact for sap_swpm_db_sidadm_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_sidadm_password: "{{ sap_swpm_db_sidadm_password_register.user_input }}"
+
+- name: Block for sap_swpm_db_system_password
+  when: sap_swpm_db_system_password is not defined or not sap_swpm_db_system_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_swpm_db_system_password
+      ansible.builtin.pause:
+        prompt: "Please enter password of SYSTEM user in database."
+      register: sap_swpm_db_system_password_register
+
+    - name: Set fact for sap_swpm_db_system_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_system_password: "{{ sap_swpm_db_system_password_register.user_input }}"
+
+- name: Block for sap_swpm_db_systemdb_password
+  when: sap_swpm_db_systemdb_password is not defined or not sap_swpm_db_systemdb_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_swpm_db_systemdb_password
+      ansible.builtin.pause:
+        prompt: "Please enter password of SYSTEMDB user in database."
+      register: sap_swpm_db_systemdb_password_register
+
+    - name: Set fact for sap_swpm_db_systemdb_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_systemdb_password: "{{ sap_swpm_db_systemdb_password_register.user_input }}"
+
+
+# Optional inputs
+- name: Interactive input - Optional inputs for SWPM
+  ansible.builtin.pause:
+    prompt: |
+      Please enter y if you would like to enter optional inputs for SWPM. (y/n). Default: n
+      Press enter to skip.
+  register: __optional_inputs_swpm
+  no_log: true
+
+- name: Block for sap_swpm_sapadm_uid
+  when:
+    - __optional_inputs_swpm.user_input == 'y'
+    - sap_swpm_sapadm_uid is not defined or not sap_swpm_sapadm_uid
+  block:
+    - name: Interactive input - sap_swpm_sapadm_uid
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Please enter unix User ID for user sapadm.
+          Example: 3000
+      register: sap_swpm_sapadm_uid_register
+
+    - name: Set fact for sap_swpm_sapadm_uid
+      ansible.builtin.set_fact:
+        sap_swpm_sapadm_uid: "{{ sap_swpm_sapadm_uid_register.user_input }}"
+
+- name: Block for sap_swpm_sidadm_uid
+  when:
+    - __optional_inputs_swpm.user_input == 'y'
+    - sap_swpm_sidadm_uid is not defined or not sap_swpm_sidadm_uid
+  block:
+    - name: Interactive input - sap_swpm_sidadm_uid
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Please enter unix User ID for user sidadm.
+          Example: 3001
+      register: sap_swpm_sidadm_uid_register
+
+    - name: Set fact for sap_swpm_sidadm_uid
+      ansible.builtin.set_fact:
+        sap_swpm_sidadm_uid: "{{ sap_swpm_sidadm_uid_register.user_input }}"
+
+- name: Block for sap_swpm_sapsys_gid
+  when:
+    - __optional_inputs_swpm.user_input == 'y'
+    - sap_swpm_sapsys_gid is not defined or not sap_swpm_sapsys_gid
+  block:
+    - name: Interactive input - sap_swpm_sapsys_gid
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Please enter unix Group ID for SAP System users.
+          Example: 3002
+      register: sap_swpm_sapsys_gid_register
+
+    - name: Set fact for sap_swpm_sapsys_gid
+      ansible.builtin.set_fact:
+        sap_swpm_sapsys_gid: "{{ sap_swpm_sapsys_gid_register.user_input }}"
+
+- name: Block for sap_swpm_update_etchosts
+  when:
+    - __optional_inputs_swpm.user_input == 'y'
+    - sap_swpm_update_etchosts is not defined or not sap_swpm_update_etchosts
+  block:
+    - name: Interactive input - sap_swpm_update_etchosts
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Please enter true to configure /etc/hosts in sap_swpm role.
+          Default: false
+      register: sap_swpm_update_etchosts_register
+
+    - name: Set fact for sap_swpm_update_etchosts
+      ansible.builtin.set_fact:
+        sap_swpm_update_etchosts: "{{ sap_swpm_update_etchosts_register.user_input | d('false') }}"

@@ -6,8 +6,7 @@
 
 
 #### Begin Infrastructure-as-Code provisioning ####
-
-- name: Ansible Play to gather input for gathering vars and VM provisioning
+- name: Ansible Play to gather mandatory variables
   hosts: localhost
   gather_facts: false
   pre_tasks:
@@ -29,7 +28,6 @@
 
 
 #### Provision VM ####
-
 - name: Ansible Play to create dynamic inventory group for provisioning
   hosts: localhost
   gather_facts: false
@@ -45,8 +43,9 @@
       when: sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
 
 
+# Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
 - name: Ansible Play to provision hosts for SAP
-  hosts: sap_vm_provision_target_inventory_group # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
+  hosts: sap_vm_provision_target_inventory_group
   gather_facts: false
   tasks:
 
@@ -64,7 +63,6 @@
 
 
 #### VM storage filesystem setup ####
-
 - name: Ansible Play for hosts storage setup
   hosts: hana_primary, hana_secondary
   become: true
@@ -76,17 +74,9 @@
       ansible.builtin.include_role:
         name: community.sap_infrastructure.sap_vm_temp_vip
 
-
-    # Use inventory_hostname_short to retrieve host specification from the dictionary.
-    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
     - name: Execute Ansible Role sap_storage_setup
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
-      vars:
-        sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
-        sap_storage_setup_host_type: "{{ host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-          [inventory_hostname_short].sap_storage_setup_host_type | list }}"
-        # sap_storage_setup_definition set for the host by sap_vm_provision Ansible Role
       when:
         - sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
         - not sap_vm_provision_iac_type == "existing_hosts"
@@ -99,20 +89,20 @@
 
 
 #### Begin downloading SAP software installation media to hosts ####
-
-- name: Ansible Play for download of SAP Software installation media
+- name: Ansible Play for downloading of SAP Software installation media
   hosts: hana_primary
   become: true
   any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
-    - name: Check availability of community.sap_launchpad and prepare environment
+    - name: Prepare environment and download software
       ansible.builtin.include_tasks:
         file: ../../tasks/download_sap_media.yml
       vars:
         softwarecenter_search_list:
-          "{{ sap_hana_install_media_dictionary[sap_hana_product_input]['softwarecenter_search_list_saphana_' ~ ansible_architecture] }}"
+          "{{ sap_hana_install_media_dictionary[sap_hana_product_input]
+            ['softwarecenter_search_list_saphana_' ~ ansible_architecture] }}"
 
 
 - name: Ansible Play for copying SAP HANA Database Server installation media to other hosts
@@ -157,7 +147,6 @@
 
 
 #### Begin SAP software hosts preparation ####
-
 - name: Ansible Play for preparing all SAP software hosts
   hosts: hana_primary, hana_secondary
   become: true
@@ -187,7 +176,6 @@
 
 
 #### Begin SAP software installations ####
-
 - name: Ansible Play for SAP HANA Database Server installation
   hosts: hana_primary, hana_secondary
   become: true
@@ -253,7 +241,6 @@
 
 
 #### Post-install alterations for Infrastructure Platform ####
-
 - name: "Ansible Play for Post-install alterations for Infrastructure Platform"
   hosts: localhost
   gather_facts: false

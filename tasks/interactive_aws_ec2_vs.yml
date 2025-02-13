@@ -2,221 +2,248 @@
 # Interactive inputs for specific platform
 
 # Credentials
-- name: Interactive input - sap_vm_provision_aws_access_key
-  ansible.builtin.pause:
-    prompt: |
-      Please enter AWS Access Key.
-  register: sap_vm_provision_aws_access_key_register
-  no_log: true
+- name: Block for sap_vm_provision_aws_access_key
   when: sap_vm_provision_aws_access_key is not defined or not sap_vm_provision_aws_access_key
-
-- name: Interactive input - sap_vm_provision_aws_secret_access_key
-  ansible.builtin.pause:
-    prompt: |
-      Please enter AWS Secret Access Key.
-  register: sap_vm_provision_aws_secret_access_key_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_aws_access_key
+      ansible.builtin.pause:
+        prompt: Please enter AWS Access Key.
+      register: sap_vm_provision_aws_access_key_register
+
+    - name: Set fact for sap_vm_provision_aws_access_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_access_key: "{{ sap_vm_provision_aws_access_key_register.user_input }}"
+        sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key_register.user_input }}"
+
+- name: Block for sap_vm_provision_aws_secret_access_key
   when: sap_vm_provision_aws_secret_access_key is not defined or not sap_vm_provision_aws_secret_access_key
+  no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_aws_secret_access_key
+      ansible.builtin.pause:
+        prompt: Please enter AWS Secret Access Key.
+      register: sap_vm_provision_aws_secret_access_key_register
+
+    - name: Set fact for sap_vm_provision_aws_secret_access_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key_register.user_input }}"
+        sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key_register.user_input }}"
 
 
 # Infrastructure details
-- name: Interactive input - sap_vm_provision_aws_vpc_availability_zone
-  ansible.builtin.pause:
-    prompt: |
-      Please enter AWS VPC Availability zone. Example: eu-central-1a
-  register: sap_vm_provision_aws_vpc_availability_zone_register
-  no_log: true
+- name: Block for sap_vm_provision_aws_vpc_availability_zone
   when: sap_vm_provision_aws_vpc_availability_zone is not defined or not sap_vm_provision_aws_vpc_availability_zone
-
-- name: Interactive input - sap_vm_provision_aws_region
-  ansible.builtin.pause:
-    prompt: |
-      Please enter AWS Region. Example: eu-central-1
-  register: sap_vm_provision_aws_region_register
   no_log: true
-  when: sap_vm_provision_aws_region is not defined or not sap_vm_provision_aws_region
+  block:
+    - name: Interactive input - sap_vm_provision_aws_vpc_availability_zone
+      ansible.builtin.pause:
+        prompt: |
+          Please enter AWS VPC Availability zone.
+          Example: eu-central-1a
+      register: sap_vm_provision_aws_vpc_availability_zone_register
 
-- name: Interactive input - sap_vm_provision_aws_vpc_subnet_create_boolean
-  ansible.builtin.pause:
-    prompt: |
-      (ansible_to_terraform) Please enter true if you want VPC subnet creation (true/false).
-  register: sap_vm_provision_aws_vpc_subnet_create_boolean_register
-  # no_log: true
+    - name: Set fact for sap_vm_provision_aws_vpc_availability_zone
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_availability_zone: "{{ sap_vm_provision_aws_vpc_availability_zone_register.user_input }}"
+
+- name: Block for sap_vm_provision_aws_region
+  when: sap_vm_provision_aws_region is not defined or not sap_vm_provision_aws_region
+  no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_aws_region
+      ansible.builtin.pause:
+        prompt: |
+          Please enter AWS Region.
+          Example: eu-central-1
+          Default: {{ sap_vm_provision_aws_vpc_availability_zone[:-1] }} based on availability zone.
+      register: sap_vm_provision_aws_region_register
+
+    - name: Set fact for sap_vm_provision_aws_region
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_region: "{{ sap_vm_provision_aws_region_register.user_input | d(sap_vm_provision_aws_vpc_availability_zone[:-1]) }}"
+        sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_region_register.user_input | d(sap_vm_provision_aws_vpc_availability_zone[:-1]) }}"
+
+- name: Block for sap_vm_provision_aws_vpc_subnet_create_boolean
   when:
     - sap_vm_provision_iac_type == 'ansible_to_terraform'
     - sap_vm_provision_aws_vpc_subnet_create_boolean is not defined or not sap_vm_provision_aws_vpc_subnet_create_boolean
+  block:
+    - name: Interactive input - sap_vm_provision_aws_vpc_subnet_create_boolean
+      ansible.builtin.pause:
+        prompt: |
+          (ansible_to_terraform) Please enter true if you want VPC subnet creation (true/false).
+          Default: false
+      register: sap_vm_provision_aws_vpc_subnet_create_boolean_register
 
-- name: Interactive input - sap_vm_provision_aws_vpc_subnet_id
-  ansible.builtin.pause:
-    prompt: |
-      Please enter AWS VPC Subnet ID or new, when using ansible_to_terraform.
-  register: sap_vm_provision_aws_vpc_subnet_id_register
-  no_log: true
+    - name: Set fact for sap_vm_provision_aws_vpc_subnet_create_boolean
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_subnet_create_boolean: "{{ sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input | d('false') }}"
+
+- name: Block for sap_vm_provision_aws_vpc_subnet_id
   when: sap_vm_provision_aws_vpc_subnet_id is not defined or not sap_vm_provision_aws_vpc_subnet_id
-
-
-- name: Interactive input - sap_vm_provision_host_specification_plan
-  ansible.builtin.pause:
-    prompt: |
-      Please select deployment plan defined in sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.
-      Available values: {{ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys() | list }}
-  register: sap_vm_provision_host_specification_plan_register
-  failed_when: sap_vm_provision_host_specification_plan_register.user_input
-   not in sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys()
-  when: sap_vm_provision_host_specification_plan is not defined or not sap_vm_provision_host_specification_plan
-
-- name: Interactive input - sap_vm_provision_aws_ec2_vs_host_os_image
-  ansible.builtin.pause:
-    prompt: |
-      Please select OS image defined in sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.
-      Available values: {{ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys() | list }}
-  register: sap_vm_provision_aws_ec2_vs_host_os_image_register
-  failed_when: sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input
-   not in sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys()
-  when: sap_vm_provision_aws_ec2_vs_host_os_image is not defined or not sap_vm_provision_aws_ec2_vs_host_os_image
-
-- name: Interactive input - sap_vm_provision_aws_dns_overwrite
-  ansible.builtin.pause:
-    prompt: |
-      Please select true to enable overwrite of DNS (true/false). Default: false
-      Creation of DNS entries will fail, if name is already present.
-  register: sap_vm_provision_aws_dns_overwrite_register
   no_log: true
-  when: sap_vm_provision_aws_dns_overwrite is not defined or not sap_vm_provision_aws_dns_overwrite
+  block:
+    - name: Interactive input - sap_vm_provision_aws_vpc_subnet_id
+      ansible.builtin.pause:
+        prompt: Please enter AWS VPC Subnet ID or new, when using ansible_to_terraform.
+      register: sap_vm_provision_aws_vpc_subnet_id_register
 
+    - name: Set fact for sap_vm_provision_aws_vpc_subnet_id
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_subnet_id: "{{ sap_vm_provision_aws_vpc_subnet_id_register.user_input }}"
+
+- name: Block for sap_vm_provision_host_specification_plan
+  when: sap_vm_provision_host_specification_plan is not defined or not sap_vm_provision_host_specification_plan
+  block:
+    - name: Interactive input - sap_vm_provision_host_specification_plan
+      ansible.builtin.pause:
+        prompt: |
+          Please select deployment plan defined in sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.
+          Available values: {{ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys() | list }}
+      register: sap_vm_provision_host_specification_plan_register
+      failed_when: sap_vm_provision_host_specification_plan_register.user_input
+        not in sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys()
+
+    - name: Set fact for sap_vm_provision_host_specification_plan
+      ansible.builtin.set_fact:
+        sap_vm_provision_host_specification_plan: "{{ sap_vm_provision_host_specification_plan_register.user_input }}"
+
+- name: Block for sap_vm_provision_aws_ec2_vs_host_os_image
+  when: sap_vm_provision_aws_ec2_vs_host_os_image is not defined or not sap_vm_provision_aws_ec2_vs_host_os_image
+  block:
+    - name: Interactive input - sap_vm_provision_aws_ec2_vs_host_os_image
+      ansible.builtin.pause:
+        prompt: |
+          Please select OS image defined in sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.
+          Available values: {{ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys() | list }}
+      register: sap_vm_provision_aws_ec2_vs_host_os_image_register
+      failed_when: sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input
+        not in sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys()
+
+    - name: Set fact for sap_vm_provision_aws_ec2_vs_host_os_image
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_ec2_vs_host_os_image: "{{ sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input }}"
+
+- name: Block for sap_vm_provision_aws_dns_overwrite
+  when: sap_vm_provision_aws_dns_overwrite is not defined or not sap_vm_provision_aws_dns_overwrite
+  block:
+    - name: Interactive input - sap_vm_provision_aws_dns_overwrite
+      ansible.builtin.pause:
+        prompt: |
+          Please enter true to enable overwrite of DNS (true/false).
+          Default: false
+          Creation of DNS entries will fail, if name is already present.
+      register: sap_vm_provision_aws_dns_overwrite_register
+
+    - name: Set fact for sap_vm_provision_aws_dns_overwrite
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_dns_overwrite: "{{ sap_vm_provision_aws_dns_overwrite_register.user_input }}"
 
 
 # Bastion details
-- name: Interactive input - sap_vm_provision_bastion_user
-  ansible.builtin.pause:
-    prompt: |
-      Please enter name of Bastion user on Bastion server.
-  register: sap_vm_provision_bastion_user_register
-  no_log: true
+- name: Block for sap_vm_provision_bastion_user
   when: sap_vm_provision_bastion_user is not defined or not sap_vm_provision_bastion_user
-
-- name: Interactive input - sap_vm_provision_bastion_ssh_port
-  ansible.builtin.pause:
-    prompt: |
-      Please enter number of SSH port on Bastion server.
-  register: sap_vm_provision_bastion_ssh_port_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_bastion_user
+      ansible.builtin.pause:
+        prompt: Please enter name of Bastion user on Bastion server.
+      register: sap_vm_provision_bastion_user_register
+
+    - name: Set fact for sap_vm_provision_bastion_user
+      ansible.builtin.set_fact:
+        sap_vm_provision_bastion_user: "{{ sap_vm_provision_bastion_user_register.user_input }}"
+
+- name: Block for sap_vm_provision_bastion_ssh_port
   when: sap_vm_provision_bastion_ssh_port is not defined or not sap_vm_provision_bastion_ssh_port
-
-- name: Interactive input - sap_vm_provision_bastion_public_ip
-  ansible.builtin.pause:
-    prompt: |
-      Please enter Public IP of Bastion server.
-  register: sap_vm_provision_bastion_public_ip_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_bastion_ssh_port
+      ansible.builtin.pause:
+        prompt: |
+          Please enter number of SSH port on Bastion server.
+          Default: 22
+      register: sap_vm_provision_bastion_ssh_port_register
+
+    - name: Set fact for sap_vm_provision_bastion_ssh_port
+      ansible.builtin.set_fact:
+        sap_vm_provision_bastion_ssh_port: "{{ sap_vm_provision_bastion_ssh_port_register.user_input | d('22') }}"
+
+- name: Block for sap_vm_provision_bastion_public_ip
   when: sap_vm_provision_bastion_public_ip is not defined or not sap_vm_provision_bastion_public_ip
-
-- name: Interactive input - sap_vm_provision_ssh_bastion_private_key_file_path
-  ansible.builtin.pause:
-    prompt: |
-      Please enter path to Bastion user private key located on execution server.
-  register: sap_vm_provision_ssh_bastion_private_key_file_path_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_bastion_public_ip
+      ansible.builtin.pause:
+        prompt: Please enter Public IP of Bastion server.
+      register: sap_vm_provision_bastion_public_ip_register
+
+    - name: Set fact for sap_vm_provision_bastion_public_ip
+      ansible.builtin.set_fact:
+        sap_vm_provision_bastion_public_ip: "{{ sap_vm_provision_bastion_public_ip_register.user_input }}"
+
+- name: Block for sap_vm_provision_ssh_bastion_private_key_file_path
   when: sap_vm_provision_ssh_bastion_private_key_file_path is not defined or not sap_vm_provision_ssh_bastion_private_key_file_path
-
-- name: Interactive input - sap_vm_provision_ssh_host_private_key_file_path
-  ansible.builtin.pause:
-    prompt: |
-      Please enter path to target host user private key located on execution server.
-  register: sap_vm_provision_ssh_host_private_key_file_path_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_ssh_bastion_private_key_file_path
+      ansible.builtin.pause:
+        prompt: Please enter path to Bastion user private key located on execution server.
+      register: sap_vm_provision_ssh_bastion_private_key_file_path_register
+
+    - name: Set fact for sap_vm_provision_ssh_bastion_private_key_file_path
+      ansible.builtin.set_fact:
+        sap_vm_provision_ssh_bastion_private_key_file_path: "{{ sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input }}"
+
+- name: Block for sap_vm_provision_ssh_host_private_key_file_path
   when: sap_vm_provision_ssh_host_private_key_file_path is not defined or not sap_vm_provision_ssh_host_private_key_file_path
-
-- name: Interactive input - sap_vm_provision_aws_key_pair_name_ssh_host_public_key
-  ansible.builtin.pause:
-    prompt: |
-      Please enter name of AWS SSH key name to be used for provisioning.
-  register: sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.pause:
+        prompt: Please enter path to target host user private key located on execution server.
+      register: sap_vm_provision_ssh_host_private_key_file_path_register
+
+    - name: Set fact for sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.set_fact:
+        sap_vm_provision_ssh_host_private_key_file_path: "{{ sap_vm_provision_ssh_host_private_key_file_path_register.user_input }}"
+
+- name: Block for sap_vm_provision_aws_key_pair_name_ssh_host_public_key
   when: sap_vm_provision_aws_key_pair_name_ssh_host_public_key is not defined or not sap_vm_provision_aws_key_pair_name_ssh_host_public_key
-
-- name: Interactive input - sap_vm_provision_aws_vpc_sg_names
-  ansible.builtin.pause:
-    prompt: |
-      Please enter list of AWS Security group IDs to attach to provisioned host.
-  register: sap_vm_provision_aws_vpc_sg_names_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_aws_key_pair_name_ssh_host_public_key
+      ansible.builtin.pause:
+        prompt: Please enter name of AWS SSH key name to be used for provisioning.
+      register: sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register
+
+    - name: Set fact for sap_vm_provision_aws_key_pair_name_ssh_host_public_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_key_pair_name_ssh_host_public_key: "{{ sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register.user_input }}"
+
+- name: Block for sap_vm_provision_aws_vpc_sg_names
   when: sap_vm_provision_aws_vpc_sg_names is not defined or not sap_vm_provision_aws_vpc_sg_names
-
-- name: Interactive input - sap_ha_pacemaker_cluster_aws_vip_update_rt
-  ansible.builtin.pause:
-    prompt: |
-      Please enter routing table IDs for managing Virtual IP failover as comma separated list.
-  register: sap_ha_pacemaker_cluster_aws_vip_update_rt_register
   no_log: true
+  block:
+    - name: Interactive input - sap_vm_provision_aws_vpc_sg_names
+      ansible.builtin.pause:
+        prompt: Please enter comma separated list of AWS Security group IDs to attach to provisioned host.
+      register: sap_vm_provision_aws_vpc_sg_names_register
+
+    - name: Set fact for sap_vm_provision_aws_vpc_sg_names
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_sg_names: "{{ sap_vm_provision_aws_vpc_sg_names_register.user_input }}"
+
+- name: Block for sap_ha_pacemaker_cluster_aws_vip_update_rt
   when: sap_ha_pacemaker_cluster_aws_vip_update_rt is not defined or not sap_ha_pacemaker_cluster_aws_vip_update_rt
+  no_log: true
+  block:
+    - name: Interactive input - sap_ha_pacemaker_cluster_aws_vip_update_rt
+      ansible.builtin.pause:
+        prompt: Please enter comma separated list of routing table IDs for managing Virtual IP failover.
+      register: sap_ha_pacemaker_cluster_aws_vip_update_rt_register
 
-
-- name: Interactive input - Set facts from prompts - aws_ec2_vs
-  ansible.builtin.set_fact:
-    sap_vm_provision_aws_access_key: "{{ sap_vm_provision_aws_access_key_register.user_input
-      if sap_vm_provision_aws_access_key_register.user_input is defined and sap_vm_provision_aws_access_key_register.user_input
-      else sap_vm_provision_aws_access_key }}"
-    sap_vm_provision_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key_register.user_input
-      if sap_vm_provision_aws_secret_access_key_register.user_input is defined and sap_vm_provision_aws_secret_access_key_register.user_input
-      else sap_vm_provision_aws_secret_access_key }}"
-
-    sap_vm_provision_aws_vpc_availability_zone: "{{ sap_vm_provision_aws_vpc_availability_zone_register.user_input
-      if sap_vm_provision_aws_vpc_availability_zone_register.user_input is defined and sap_vm_provision_aws_vpc_availability_zone_register.user_input
-      else sap_vm_provision_aws_vpc_availability_zone }}"
-    sap_vm_provision_aws_region: "{{ sap_vm_provision_aws_region_register.user_input
-      if sap_vm_provision_aws_region_register.user_input is defined and sap_vm_provision_aws_region_register.user_input
-      else sap_vm_provision_aws_region }}"
-    sap_vm_provision_aws_vpc_subnet_create_boolean: "{{ sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input
-      if sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input is defined
-      else sap_vm_provision_aws_vpc_subnet_create_boolean | d('false') }}"
-    sap_vm_provision_aws_vpc_subnet_id: "{{ sap_vm_provision_aws_vpc_subnet_id_register.user_input
-      if sap_vm_provision_aws_vpc_subnet_id_register.user_input is defined and sap_vm_provision_aws_vpc_subnet_id_register.user_input
-      else sap_vm_provision_aws_vpc_subnet_id }}"
-
-    sap_vm_provision_host_specification_plan: "{{ sap_vm_provision_host_specification_plan_register.user_input
-      if sap_vm_provision_host_specification_plan_register.user_input is defined and sap_vm_provision_host_specification_plan_register.user_input
-      else sap_vm_provision_host_specification_plan }}"
-    sap_vm_provision_aws_ec2_vs_host_os_image: "{{ sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input
-      if sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input is defined and sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input
-      else sap_vm_provision_aws_ec2_vs_host_os_image }}"
-    sap_vm_provision_aws_dns_overwrite: "{{ sap_vm_provision_aws_dns_overwrite_register.user_input | bool
-      if sap_vm_provision_aws_dns_overwrite_register.user_input is defined and sap_vm_provision_aws_dns_overwrite_register.user_input
-      else sap_vm_provision_aws_dns_overwrite | d(false) }}"
-
-    sap_vm_provision_bastion_user: "{{ sap_vm_provision_bastion_user_register.user_input
-      if sap_vm_provision_bastion_user_register.user_input is defined and sap_vm_provision_bastion_user_register.user_input
-      else sap_vm_provision_bastion_user }}"
-    sap_vm_provision_bastion_ssh_port: "{{ sap_vm_provision_bastion_ssh_port_register.user_input
-      if sap_vm_provision_bastion_ssh_port_register.user_input is defined and sap_vm_provision_bastion_ssh_port_register.user_input
-      else sap_vm_provision_bastion_ssh_port }}"
-    sap_vm_provision_bastion_public_ip: "{{ sap_vm_provision_bastion_public_ip_register.user_input
-      if sap_vm_provision_bastion_public_ip_register.user_input is defined and sap_vm_provision_bastion_public_ip_register.user_input
-      else sap_vm_provision_bastion_public_ip }}"
-    sap_vm_provision_ssh_bastion_private_key_file_path: "{{ sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input
-      if sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input is defined and sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input
-      else sap_vm_provision_ssh_bastion_private_key_file_path }}"
-    sap_vm_provision_ssh_host_private_key_file_path: "{{ sap_vm_provision_ssh_host_private_key_file_path_register.user_input
-      if sap_vm_provision_ssh_host_private_key_file_path_register.user_input is defined and sap_vm_provision_ssh_host_private_key_file_path_register.user_input
-      else sap_vm_provision_ssh_host_private_key_file_path }}"
-    sap_vm_provision_aws_key_pair_name_ssh_host_public_key: "{{ sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register.user_input
-      if sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register.user_input is defined and sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register.user_input
-      else sap_vm_provision_aws_key_pair_name_ssh_host_public_key }}"
-    sap_vm_provision_aws_vpc_sg_names: "{{ sap_vm_provision_aws_vpc_sg_names_register.user_input
-      if sap_vm_provision_aws_vpc_sg_names_register.user_input is defined and sap_vm_provision_aws_vpc_sg_names_register.user_input
-      else sap_vm_provision_aws_vpc_sg_names }}"
-
-- name: Interactive input - Set facts from prompts - aws_ec2_vs sap_ha_pacemaker_cluster variables
-  ansible.builtin.set_fact:
-    sap_ha_pacemaker_cluster_aws_vip_update_rt: "{{ sap_vm_provision_aws_secret_access_key
-      if sap_ha_pacemaker_cluster_aws_vip_update_rt_register is defined or sap_ha_pacemaker_cluster_aws_vip_update_rt_register
-      else sap_ha_pacemaker_cluster_aws_vip_update_rt }}"
-    sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1]
-      if sap_ha_pacemaker_cluster_aws_region is not defined or not sap_ha_pacemaker_cluster_aws_region
-      else sap_ha_pacemaker_cluster_aws_region }}"
-    sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key
-      if sap_ha_pacemaker_cluster_aws_access_key_id is not defined or not sap_ha_pacemaker_cluster_aws_access_key_id
-      else sap_ha_pacemaker_cluster_aws_access_key_id }}"
-    sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key
-      if sap_ha_pacemaker_cluster_aws_secret_access_key is not defined or not sap_ha_pacemaker_cluster_aws_secret_access_key
-      else sap_ha_pacemaker_cluster_aws_secret_access_key }}"
+    - name: Set fact for sap_ha_pacemaker_cluster_aws_vip_update_rt
+      ansible.builtin.set_fact:
+        sap_ha_pacemaker_cluster_aws_vip_update_rt: "{{ sap_ha_pacemaker_cluster_aws_vip_update_rt_register.user_input }}"

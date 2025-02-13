@@ -7,14 +7,11 @@ sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
 
-
 #### Mandatory parameters : Virtual instance names ####
-
 # See virtual hostname information in SAP Note 2279110 and 962955
 # Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
 # sap_swpm_virtual_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_ascs_hostname }}-ha"
 sap_swpm_db_host: "{{ sap_vm_provision_dynamic_inventory_hana_primary_hostname }}-ha" # Must be SAP HANA Virtual Hostname
-
 
 #### Mandatory parameters : Preconfigure OS for SAP Software ####
 sap_general_preconfigure_modify_etc_hosts: false
@@ -25,9 +22,7 @@ sap_hana_preconfigure_fail_if_reboot_required: false
 sap_hana_preconfigure_update: true
 sap_hana_update_etchosts: true
 
-
 ### Mandatory parameters : Ansible Dictionary for SAP HANA installation media
-
 sap_hana_install_media_dictionary:
 
   sap_hana_2_sps07_install:
@@ -63,7 +58,6 @@ sap_hana_install_media_dictionary:
       - 'SAPCAR*'
       - 'IMDB_*'
       - 'SAPHOSTAGENT*'
-
 
 #### Dynamic assignment of SAP HANA variables ####
 sap_hana_sid: "{{ sap_system_hana_db_sid }}"

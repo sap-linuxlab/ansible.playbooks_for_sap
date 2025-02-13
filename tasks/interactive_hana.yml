@@ -2,155 +2,269 @@
 # Interactive inputs for HANA
 
 # Mandatory inputs
-- name: Interactive input - sap_hana_product_input
+- name: Block for sap_hana_product_input
+  when:
+    - sap_hana_install_media_dictionary is defined and sap_hana_install_media_dictionary
+    - sap_hana_product_input is not defined or not sap_hana_product_input
+      or sap_hana_product_input not in sap_hana_install_media_dictionary.keys()
+  block:
+    - name: Interactive input - sap_hana_product_input
+      ansible.builtin.pause:
+        prompt: |
+          Please select HANA product from list: {{ sap_hana_install_media_dictionary.keys() }}
+          Products are defined in variable sap_hana_install_media_dictionary.
+      register: sap_hana_product_input_register
+      failed_when: sap_hana_product_input_register.user_input not in sap_hana_install_media_dictionary.keys()
+
+    - name: Set fact for sap_hana_product_input
+      ansible.builtin.set_fact:
+        sap_hana_product_input: "{{ sap_hana_product_input_register.user_input }}"
+
+- name: Block for sap_system_hana_db_sid
+  when: sap_system_hana_db_sid is not defined or not sap_system_hana_db_sid
+  block:
+    - name: Interactive input - sap_system_hana_db_sid
+      ansible.builtin.pause:
+        prompt: |
+          Please enter SAP HANA System ID (SID).
+          Example: H01
+      register: sap_system_hana_db_sid_register
+
+    - name: Set fact for sap_system_hana_db_sid
+      ansible.builtin.set_fact:
+        sap_system_hana_db_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
+        sap_swpm_db_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
+
+- name: Block for sap_system_hana_db_instance_nr
+  when: sap_system_hana_db_instance_nr is not defined or not sap_system_hana_db_instance_nr
+  block:
+    - name: Interactive input - sap_system_hana_db_instance_nr
+      ansible.builtin.pause:
+        prompt: |
+          Please enter SAP HANA Instance Number.
+          Example: 90
+      register: sap_system_hana_db_instance_nr_register
+      failed_when: sap_system_hana_db_instance_nr_register.user_input | length != 2
+
+    - name: Set fact for sap_system_hana_db_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_hana_db_instance_nr: "{{ sap_system_hana_db_instance_nr_register.user_input }}"
+        sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr_register.user_input }}"
+
+
+# Passwords
+- name: Block for sap_hana_install_use_master_password
+  when: sap_hana_install_use_master_password is not defined or not sap_hana_install_use_master_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_hana_install_use_master_password
+      ansible.builtin.pause:
+        prompt: |
+          Please enter y to use Master password for all passwords during HANA installation (y/n).
+          Default: y
+          Press enter to skip.
+      register: sap_hana_install_use_master_password_register
+
+    - name: Set fact for sap_hana_install_use_master_password
+      ansible.builtin.set_fact:
+        sap_hana_install_use_master_password: "{{ sap_hana_install_use_master_password_register.user_input | d('y') }}"
+
+- name: Block for sap_hana_install_master_password
+  when: sap_hana_install_master_password is not defined or not sap_hana_install_master_password
+  no_log: true
+  block:
+    - name: Interactive input - sap_hana_install_master_password
+      ansible.builtin.pause:
+        prompt: "Please enter SAP HANA Master Password."
+      register: sap_hana_install_master_password_register
+
+    - name: Set fact for sap_hana_install_master_password
+      ansible.builtin.set_fact:
+        sap_hana_install_master_password: "{{ sap_hana_install_master_password_register.user_input }}"
+
+
+# Optional inputs verification
+- name: Interactive input - Optional inputs for SAP HANA
   ansible.builtin.pause:
     prompt: |
-      Please select HANA product from list: {{ sap_hana_install_media_dictionary.keys() }}
-      Products are defined in sap_hana_install_media_dictionary
-  register: sap_hana_product_input_register
-  failed_when: sap_hana_product_input_register.user_input not in sap_hana_install_media_dictionary.keys()
-  when: sap_hana_product_input is not defined or not sap_hana_product_input
-
-- name: Interactive input - sap_hana_install_use_master_password
-  ansible.builtin.pause:
-    prompt: "Please select if SAP HANA master password should be used for all passwords (y/n). Default: y"
-  register: sap_hana_install_use_master_password_register
-  no_log: true
-  when: sap_hana_install_use_master_password is not defined
-
-- name: Interactive input - sap_hana_install_master_password
-  ansible.builtin.pause:
-    prompt: "Please enter master password of SAP HANA."
-  register: sap_hana_install_master_password_register
-  no_log: true
-  when: sap_hana_install_master_password is not defined or not sap_hana_install_master_password
-
-- name: Interactive input - sap_system_hana_db_sid
-  ansible.builtin.pause:
-    prompt: "Please enter System ID (SID) of SAP HANA."
-  register: sap_system_hana_db_sid_register
-  no_log: true
-  when: sap_system_hana_db_sid is not defined
-
-- name: Interactive input - sap_system_hana_db_instance_nr
-  ansible.builtin.pause:
-    prompt: "Please enter Instance number of SAP HANA."
-  register: sap_system_hana_db_instance_nr_register
-  no_log: true
-  when: sap_system_hana_db_instance_nr is not defined
-
-
-- name: Interactive input - Set facts from prompts
-  ansible.builtin.set_fact:
-    sap_hana_product_input: "{{ sap_hana_product_input_register.user_input
-      if sap_hana_product_input_register.user_input is defined and sap_hana_product_input_register.user_input
-      else sap_hana_product_input }}"
-    sap_hana_install_use_master_password: "{{ sap_hana_install_use_master_password_register.user_input
-      if sap_hana_install_use_master_password_register.user_input is defined and sap_hana_install_use_master_password_register.user_input
-      else sap_hana_install_use_master_password | d('y')}}"
-    sap_hana_install_master_password: "{{ sap_hana_install_master_password_register.user_input
-      if sap_hana_install_master_password_register.user_input is defined and sap_hana_install_master_password_register.user_input
-      else sap_hana_install_master_password }}"
-
-    # Assignment of playbook wide variables
-    sap_system_hana_db_sid: "{{ sap_system_hana_db_sid_register.user_input
-      if sap_system_hana_db_sid_register.user_input is defined
-      else sap_system_hana_db_sid }}"
-    sap_system_hana_db_instance_nr: "{{ sap_system_hana_db_instance_nr_register.user_input
-      if sap_system_hana_db_instance_nr_register.user_input is defined
-      else sap_system_hana_db_instance_nr }}"
-
-
-# Optional inputs
-- name: Interactive input - Optional inputs
-  ansible.builtin.pause:
-    prompt: "Please enter yes if you would like to enter optional inputs. (yes/no). Default: no"
+      Please enter y if you would like to enter optional inputs for HANA. (y/n).
+      Default: n
+      Press enter to skip.
   register: __optional_inputs_hana
-  no_log: true
 
-- name: Block for optional interactive inputs
-  when: __optional_inputs_hana.user_input== 'yes'
+- name: Block for sap_hana_install_log_mode
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_log_mode is not defined or not sap_hana_install_log_mode
   block:
     - name: Interactive input - sap_hana_install_log_mode
       ansible.builtin.pause:
-        prompt: "Please enter Log mode of SAP HANA from list: normal, overwrite. Default: normal"
+        prompt: |
+          Please enter SAP HANA Log mode from list: normal, overwrite.
+          Default: normal
+          Press enter to skip.
       register: sap_hana_install_log_mode_register
       failed_when: sap_hana_install_log_mode_register.user_input not in ['normal', 'overwrite']
-      when: sap_hana_install_log_mode is not defined or not sap_hana_install_log_mode
 
-    - name: Interactive input - sap_hana_install_update_etchosts
-      ansible.builtin.pause:
-        prompt: "(Optional) Please select if /etc/hosts should be updated (true/false). Default: false"
-      register: sap_hana_install_update_etchosts_register
-      failed_when: sap_hana_install_update_etchosts_register.user_input not in ['true', 'false']
-      when: sap_hana_install_update_etchosts is not defined
+    - name: Set fact for sap_hana_install_log_mode
+      ansible.builtin.set_fact:
+        sap_hana_install_log_mode: "{{ sap_hana_install_log_mode_register.user_input | d('normal')}}"
 
+- name: Block for sap_hana_install_components
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_components is not defined or not sap_hana_install_components
+  block:
     - name: Interactive input - sap_hana_install_components
       ansible.builtin.pause:
-        prompt: "(Optional) Please enter comma separated list of components to install. Default: all"
+        prompt: |
+          (Optional) Please enter comma separated list of SAP HANA components to install.
+          Default: all
+          Press enter to skip.
       register: sap_hana_install_components_register
-      no_log: true
-      when: sap_hana_install_components is not defined or not sap_hana_install_components
 
+    - name: Set fact for sap_hana_install_components
+      ansible.builtin.set_fact:
+        sap_hana_install_components: "{{ sap_hana_install_components_register.user_input | d('all') }}"
+
+- name: Block for sap_hana_install_userid
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_userid is not defined or not sap_hana_install_userid
+  block:
     - name: Interactive input - sap_hana_install_userid
       ansible.builtin.pause:
-        prompt: "(Optional) Please enter user ID of unix user."
+        prompt: |
+          (Optional) Please enter unix User ID for SAP HANA user.
+          Example: 3002
       register: sap_hana_install_userid_register
-      no_log: true
-      when: sap_hana_install_userid is not defined or not sap_hana_install_userid
 
+    - name: Set fact for sap_hana_install_userid
+      ansible.builtin.set_fact:
+        sap_hana_install_userid: "{{ sap_hana_install_userid_register.user_input }}"
+
+- name: Block for sap_hana_install_groupid
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_groupid is not defined or not sap_hana_install_groupid
+  block:
     - name: Interactive input - sap_hana_install_groupid
       ansible.builtin.pause:
-        prompt: "(Optional) Please enter group ID of unix user."
+        prompt: |
+          (Optional) Please enter unix Group ID for SAP HANA user.
+          Example: 3003
       register: sap_hana_install_groupid_register
-      no_log: true
-      when: sap_hana_install_groupid is not defined or not sap_hana_install_groupid
 
+    - name: Set fact for sap_hana_install_groupid
+      ansible.builtin.set_fact:
+        sap_hana_install_groupid: "{{ sap_hana_install_groupid_register.user_input }}"
+
+- name: Block for sap_hana_install_system_usage
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_system_usage is not defined or not sap_hana_install_system_usage
+  block:
     - name: Interactive input - sap_hana_install_system_usage
       ansible.builtin.pause:
-        prompt: "(Optional) Please enter hdblcm parameter system_usage. Default: custom"
+        prompt: |
+          (Optional) Please enter hdblcm parameter system_usage from list: custom, production, development, test, demo
+          Default: custom
+          Press enter to skip.
       register: sap_hana_install_system_usage_register
-      no_log: true
-      when: sap_hana_install_system_usage is not defined or not sap_hana_install_system_usage
 
+    - name: Set fact for sap_hana_install_system_usage
+      ansible.builtin.set_fact:
+        sap_hana_install_system_usage: "{{ sap_hana_install_system_usage_register.user_input | d('custom')}}"
+
+- name: Block for sap_hana_install_restrict_max_mem
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_restrict_max_mem is not defined or not sap_hana_install_restrict_max_mem
+  block:
     - name: Interactive input - sap_hana_install_restrict_max_mem
       ansible.builtin.pause:
-        prompt: "(Optional) Please enter hdblcm parameter restrict_max_mem (y/n). Default: n"
+        prompt: |
+          (Optional) Please enter hdblcm parameter restrict_max_mem (y/n).
+          Default: n
       register: sap_hana_install_restrict_max_mem_register
       failed_when: sap_hana_install_restrict_max_mem_register.user_input not in ['y', 'n']
-      when: sap_hana_install_restrict_max_mem is not defined
 
+    - name: Set fact for sap_hana_install_restrict_max_mem
+      ansible.builtin.set_fact:
+        sap_hana_install_restrict_max_mem: "{{ sap_hana_install_restrict_max_mem_register.user_input | d('n') }}"
+
+- name: Block for sap_hana_install_max_mem
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_max_mem is not defined or not sap_hana_install_max_mem
+    - sap_hana_install_restrict_max_mem == 'y'
+  block:
     - name: Interactive input - sap_hana_install_max_mem
       ansible.builtin.pause:
-        prompt: "(Optional) Please enter hdblcm parameter max_mem in MB. Required when restrict_max_mem is y"
+        prompt: |
+          (Optional) Please enter hdblcm parameter max_mem in MB.
+          Required when restrict_max_mem is y
       register: sap_hana_install_max_mem_register
-      no_log: true
-      when: sap_hana_install_max_mem is not defined
 
+    - name: Set fact for sap_hana_install_max_mem
+      ansible.builtin.set_fact:
+        sap_hana_install_max_mem: "{{ sap_hana_install_max_mem_register.user_input }}"
+
+- name: Block for sap_hana_install_system_restart
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_system_restart is not defined or not sap_hana_install_system_restart
+  block:
     - name: Interactive input - sap_hana_install_system_restart
       ansible.builtin.pause:
-        prompt: "(Optional) Please select if role should start SAP HANA after each system boot (y/n). Default: n"
+        prompt: |
+          (Optional) Please select if role should start SAP HANA after each system boot (y/n).
+          Default: n
       register: sap_hana_install_system_restart_register
       failed_when: sap_hana_install_system_restart_register.user_input not in ['y', 'n']
-      when: sap_hana_install_system_restart is not defined
 
+    - name: Set fact for sap_hana_install_system_restart
+      ansible.builtin.set_fact:
+        sap_hana_install_system_restart: "{{ sap_hana_install_system_restart_register.user_input | d('n') }}"
+
+- name: Block for sap_hana_install_hdblcm_extraargs
+  when:
+    - __optional_inputs_hana.user_input == 'y'
+    - sap_hana_install_hdblcm_extraargs is not defined or not sap_hana_install_hdblcm_extraargs
+  block:
     - name: Interactive input - sap_hana_install_hdblcm_extraargs
       ansible.builtin.pause:
-        prompt: "(Optional) Please enter list of extra arguments to hdblcm cli, e.g.  --ignore=<check1>[,<check2>]..."
+        prompt: |
+          (Optional) Please enter list of extra arguments to hdblcm cli.
+          Example:  --ignore=<check1>[,<check2>]...
       register: sap_hana_install_hdblcm_extraargs_register
-      no_log: true
-      when: sap_hana_install_hdblcm_extraargs is not defined or not sap_hana_install_hdblcm_extraargs
 
-
-    - name: Interactive input - Set facts from prompts
+    - name: Set fact for sap_hana_install_hdblcm_extraargs
       ansible.builtin.set_fact:
-        sap_hana_install_log_mode: "{{ sap_hana_install_log_mode_register.user_input }}"
-        sap_hana_install_update_etchosts: "{{ sap_hana_install_update_etchosts_register.user_input | bool }}"
-        sap_hana_install_components: "{{ sap_hana_install_components_register.user_input }}"
-        sap_hana_install_userid: "{{ sap_hana_install_userid_register.user_input }}"
-        sap_hana_install_groupid: "{{ sap_hana_install_groupid_register.user_input }}"
-        sap_hana_install_system_usage: "{{ sap_hana_install_system_usage_register.user_input }}"
-        sap_hana_install_restrict_max_mem: "{{ sap_hana_install_restrict_max_mem_register.user_input }}"
-        sap_hana_install_max_mem: "{{ sap_hana_install_max_mem_register.user_input }}"
-        sap_hana_install_system_restart: "{{ sap_hana_install_system_restart_register.user_input }}"
         sap_hana_install_hdblcm_extraargs: "{{ sap_hana_install_hdblcm_extraargs_register.user_input }}"
+
+
+# Mandatory inputs for HANA HA
+- name: Block for sap_vm_provision_ha_vip_hana_primary
+  when:
+    - interactive_input_type == 'hana_ha'
+    - sap_vm_provision_ha_vip_hana_primary is not defined or not sap_vm_provision_ha_vip_hana_primary
+  block:
+    - name: Interactive input - sap_vm_provision_ha_vip_hana_primary
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Virtual IP for HANA Primary server. Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_hana_primary_register
+      when: sap_vm_provision_ha_vip_hana_primary is not defined or not sap_vm_provision_ha_vip_hana_primary
+
+    - name: Set fact for sap_vm_provision_ha_vip_hana_primary
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_hana_primary: "{{ sap_vm_provision_ha_vip_hana_primary_register.user_input }}"
