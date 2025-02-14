@@ -5,9 +5,17 @@
 name: ansible-lint of all Ansible Playbooks for SAP
 
 on:
+  # Runs at 10:00 on every Monday
   schedule:
-    - cron: '10 10 * * 1'
+    - cron: '0 10 * * 1'
 
+  # Runs on push to dev and main branches
+  push:
+    branches:
+      - dev
+      - main
+
+  # Enable manual start button
   workflow_dispatch:
 
 jobs:
@@ -17,6 +25,8 @@ jobs:
     steps:
       - name: Check out the code
         uses: actions/checkout@v4
+        with:
+          path: playbooks
 
       - name: Set up Python 3
         uses: actions/setup-python@v5
@@ -31,8 +41,10 @@ jobs:
           pip3 install ansible-lint==6.22.1
 
       - name: Install dependencies for Ansible
-        run: ansible-galaxy collection install -r /home/runner/work/ansible.playbooks_for_sap/ansible.playbooks_for_sap/deploy_scenarios/sap_hana/ansible_requirements.yml
+        run: |
+          ansible-galaxy collection install \
+          -r playbooks/vars/ansible_requirements.yml
 
       - name: Run ansible-lint
-        working-directory: /home/runner/work/ansible.playbooks_for_sap/
+        working-directory: playbooks
         run: ansible-lint

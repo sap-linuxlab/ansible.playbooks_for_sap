@@ -5,22 +5,25 @@
 # Amend GitHub Action 'Artifact and log retention' to 60 days to avoid error
 # 'You are running out of disk space. The runner will stop working when the machine runs out of disk space.'
 
-name: SAP Software Availability Tests
+name: Update SAP Software versions
 
 on:
-  # At 05:00 on every day-of-week from Monday through Friday
+  # Runs at 05:00 on every day-of-week from Monday through Friday
   schedule:
     - cron: '0 5 * * 1-5'
 
-  push:
-    branches:
-      - main-auto-updated
+  # Execute after sync from main is completed
+  workflow_run:
+    workflows: ["Sync Main to Main-Auto-Updated"]
+    types: [completed]
+
+  # Enable manual start button
+  workflow_dispatch:
 
 jobs:
   sap_software_availability:
-    name: 'SAP software availability CRON job'
+    name: 'Update SAP Software versions'
     runs-on: ubuntu-latest
-    if: github.ref == 'refs/heads/main-auto-updated'
     strategy:
       fail-fast: false
       max-parallel: 1
@@ -29,7 +32,7 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
         with:
-          path: gh_repo
+          path: playbooks
 
       - name: Python setup
         id: local_setup
@@ -48,7 +51,7 @@ jobs:
           if ! which python > /dev/null; then echo 'Python binary not available' && exit 1 ; fi
           # Extract from softwarecenter_search_list_.* until first empty line, then remove yaml formatting and sort for unique
           # Each file on newline and strip whitespaces or tabs
-          export software_list=$(cat ./gh_repo/**/**/ansible_extravars.yml \
+          export software_list=$(cat ./playbooks/**/**/ansible_extravars.yml \
             | awk '!NF{f=0} /^.*softwarecenter_search_list.*/{f=1} f{print}' | awk '!/.*softwarecenter_search_list.*/' \
             | awk '{sub(/#.*/,""); print}' | awk '{sub(/ .*- '\''/,""); print}' | sed '/^ *$/d' \
             | sed '/^---*$/d' | tr -d "'" | sort | uniq  | tr -d " \t")
@@ -57,7 +60,7 @@ jobs:
           echo "$software_list" # Quote command substitution to preserve newline
 
           cd $GITHUB_WORKSPACE/community.sap_launchpad/plugins
-          cp $GITHUB_WORKSPACE/gh_repo/scripts/python_module_search_script.py .
+          cp $GITHUB_WORKSPACE/playbooks/scripts/python_module_search_script.py .
 
           # Pass multi-line string to Python
           # Runtime ~30 min to search for ~350 files
@@ -78,7 +81,7 @@ jobs:
             sleep 10
             cd $GITHUB_WORKSPACE/community.sap_launchpad/plugins
             sed -i "s|python3|python|g" ./modules/software_center_download.py
-            cp $GITHUB_WORKSPACE/gh_repo/scripts/python_module_fuzzy_call_script.py .
+            cp $GITHUB_WORKSPACE/playbooks/scripts/python_module_fuzzy_call_script.py .
             export exit1_check=0
 
             # Pass list to for loop, not multi-line string. Do not use quote command substitution
@@ -108,7 +111,7 @@ jobs:
                 echo "Skipped file $filename"
               elif [[ "$search_file" == *"IMDB_SERVER"* ]]; then
                 echo "Perform recursive sed for SAP HANA and SAP HANA Components"
-                cd $GITHUB_WORKSPACE/gh_repo
+                cd $GITHUB_WORKSPACE/playbooks
                 echo "$search_file" | while IFS= read -r line ; do
                   stripped_search_file=$(echo $line | tr -d '\n')
                   if [[ "$stripped_search_file" == *.* ]]; then
@@ -125,7 +128,7 @@ jobs:
               else
                 echo "Perform recursive sed for $filename change to $search_file"
                 stripped_search_file=$(echo $search_file | tr -d '\n')
-                cd $GITHUB_WORKSPACE/gh_repo
+                cd $GITHUB_WORKSPACE/playbooks
                 find . -type f -not -path '*/\.*' -exec sed -i "s/$filename/$stripped_search_file/g" {} \;
 
               fi
@@ -139,7 +142,7 @@ jobs:
         if: always() # Ensure even if errors on previous step, that any replaced filenames are committed
         id: git_commit_auto
         run: |
-          cd ./gh_repo
+          cd $GITHUB_WORKSPACE/playbooks
           if [[ $(git status --porcelain) ]]; then
             git config user.name github-actions
             git config user.email github-actions@github.com

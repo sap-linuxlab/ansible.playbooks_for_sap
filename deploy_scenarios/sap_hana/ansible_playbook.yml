@@ -112,7 +112,6 @@
         name: community.sap_install.sap_hana_preconfigure
 
 
-
 #### Begin SAP software installations ####
 - name: Ansible Play for SAP HANA Database Server installation
   hosts: hana_primary

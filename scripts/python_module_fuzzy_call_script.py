@@ -96,7 +96,7 @@ if len(query_result) >= 2:
         print(imdb_lcapps20_existing_version + ';' + imdb_lcapps20_result_prefix)
         print(imdb_afl20_existing_version + ';' + imdb_afl20_result_prefix)
     elif any('SAPWEBDISP' in sublist['Title'] for sublist in query_result):
-        # As SAP WebDisp file name numbering does not use preceeding 0's, manually filter out v7 which is older than v69:
+        # As SAP WebDisp file name numbering does not use preceding 0's, manually filter out v7 which is older than v69:
         input_webdisp = input_search_file_name_and_version_only[:-2]
         list_webdisp = []
         for sublist in query_result:

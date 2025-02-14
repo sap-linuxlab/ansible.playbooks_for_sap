@@ -6,6 +6,7 @@ exclude_paths:
   - .github/
   #- docs/
   #- roles/sap_vm_provision
+  - vars/ansible_requirements.yml
 
 enable_list:
   - yaml
