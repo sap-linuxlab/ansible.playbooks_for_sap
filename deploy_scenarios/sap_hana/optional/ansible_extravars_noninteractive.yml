@@ -25,7 +25,7 @@ sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /sof
 
 #### SAP HANA Product selection ####
 # (see ansible_extravars.yml in parent directory of this Ansible Playbook for full definitions)
-sap_hana_product_input: "ENTER_STRING_VALUE_HERE" # sap_hana_2_sps07_install , sap_hana_2_sps06_install
+sap_software_product: "ENTER_STRING_VALUE_HERE" # sap_hana_2_sps07_install , sap_hana_2_sps06_install
 
 #### SAP HANA Database Server installation ####
 # SAP HANA master password

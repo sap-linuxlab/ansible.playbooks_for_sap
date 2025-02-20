@@ -3,6 +3,7 @@
 # 1. Checks if community.sap_launchpad is present
 # 2. Prepares environment for download
 # 3. Downloads SAP media
+# 4. Search downloaded media and prepare file list for rsync
 
 # Set Python version for sap_launchpad role execution
 # You can replace auto-detection jinja2 directly by string value.
@@ -16,7 +17,8 @@
   ansible.builtin.debug:
     msg: |
       Collection community.sap_launchpad was not detected!
-      Ensure that host specification includes disk with SAP Software installation media.
+      Download of SAP Software Installation Media will not be executed with sap_launchpad,
+      but pre-downloaded software can be mounted as NFS in host dictionary.
   when:
     - not collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
@@ -80,7 +82,7 @@
         virtualenv_command: "{{ sap_launchpad_python_interpreter }} -m venv"
 
 
-    - name: Execute Ansible Module with system Python to download SAP installation media
+    - name: Execute Ansible Module with venv Python to download SAP installation media
       community.sap_launchpad.software_center_download:
         suser_id: "{{ sap_id_user }}"
         suser_password: "{{ sap_id_user_password }}"
@@ -101,26 +103,64 @@
         state: absent
 
 
-    # Validate downloaded files and generate lists for rsync
-    - name: Find SAP HANA installation media
-      ansible.builtin.find:
-        paths:
-          - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_hana_install_media_dictionary[sap_hana_product_input].software_files_wildcard_list }}"
-        recurse: true
-      register: sap_hana_install_media_files
+# Validate downloaded files and generate lists for rsync
+- name: Find SAP HANA installation media
+  ansible.builtin.find:
+    paths:
+      - "{{ sap_install_media_detect_source_directory }}"
+    patterns: "{{ sap_software_hana_wildcard_list }}"
+    recurse: true
+  register: sap_hana_install_media_files
+  when: sap_software_hana_wildcard_list is defined and sap_software_hana_wildcard_list
+
+- name: Find SAP NetWeaver ASCS installation media
+  ansible.builtin.find:
+    paths:
+      - "{{ sap_install_media_detect_source_directory }}"
+    patterns: "{{ __pattern }}"
+    recurse: true
+  register: sap_nwas_ascs_install_media_files
+  vars:
+    __pattern: "{{ sap_software_install_dictionary[sap_software_product]['nwas_ascs_ha']['software_files_wildcard_list'] | d([]) }}"
+  when: __pattern is defined and __pattern | length > 0
+
+- name: Find SAP NetWeaver ERS installation media
+  ansible.builtin.find:
+    paths:
+      - "{{ sap_install_media_detect_source_directory }}"
+    patterns: "{{ __pattern }}"
+    recurse: true
+  register: sap_nwas_ers_install_media_files
+  vars:
+    __pattern: "{{ sap_software_install_dictionary[sap_software_product]['nwas_ers_ha']['software_files_wildcard_list'] }}"
+  when: __pattern is defined and __pattern | length > 0
+
+- name: Find SAP NetWeaver AAS installation media
+  ansible.builtin.find:
+    paths:
+      - "{{ sap_install_media_detect_source_directory }}"
+    patterns: "{{ __pattern }}"
+    recurse: true
+  register: sap_nwas_aas_install_media_files
+  vars:
+    __pattern: "{{ sap_software_install_dictionary[sap_software_product]['nwas_aas']['software_files_wildcard_list'] }}"
+  when: __pattern is defined and __pattern | length > 0
 
 
-    - name: Prepare for file transfers, copy Private SSH Key used in Terraform deployment (temporary)
-      ansible.builtin.copy:
-        src: "{{ sap_vm_provision_terraform_work_dir_path }}/ssh/hosts_rsa"
-        dest: "/tmp/hosts_rsa"
-        mode: "0400"
-      when: sap_vm_provision_ssh_host_private_key_file_path is undefined
+- name: Prepare for file transfers, copy Private SSH Key used in Terraform deployment (temporary)
+  ansible.builtin.copy:
+    src: "{{ sap_vm_provision_terraform_work_dir_path }}/ssh/hosts_rsa"
+    dest: "/tmp/hosts_rsa"
+    mode: "0400"
+  when:
+    - sap_vm_provision_ssh_host_private_key_file_path is undefined
+    - sap_vm_provision_iac_type == 'ansible_to_terraform'
 
-    - name: Prepare for file transfers, copy Private SSH Key from local (Ansible host)
-      ansible.builtin.copy:
-        src: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
-        dest: "/tmp/hosts_rsa"
-        mode: "0400"
-      when: sap_vm_provision_ssh_host_private_key_file_path is defined
+- name: Prepare for file transfers, copy Private SSH Key from local (Ansible host)
+  ansible.builtin.copy:
+    src: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
+    dest: "/tmp/hosts_rsa"
+    mode: "0400"
+  when:
+    - sap_vm_provision_ssh_host_private_key_file_path is defined
+    - sap_vm_provision_iac_type == 'ansible'

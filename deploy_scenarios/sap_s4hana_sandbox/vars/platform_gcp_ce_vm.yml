@@ -1,5 +1,5 @@
 ---
-# Scenario specific platform variables for specific platform
+# Infrastructure provisioning definitions
 
 sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 

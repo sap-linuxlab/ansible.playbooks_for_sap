@@ -36,33 +36,37 @@ sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /sof
 
 #### SAP HANA Product selection ####
 # (see ansible_extravars.yml in parent directory of this Ansible Playbook for full definitions)
-sap_hana_product_input: "ENTER_STRING_VALUE_HERE" # sap_hana_2_sps07_install , sap_hana_2_sps06_install
+sap_software_product: "ENTER_STRING_VALUE_HERE" # sap_hana_2_sps07, sap_hana_2_sps06
 
 #### SAP HANA Database Server installation ####
 # SAP HANA master password
 sap_hana_install_use_master_password: "y"
 sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"
 
+#### Linux Pacemaker cluster setup for SAP - Cluster details ####
+sap_system_hana_cluster_name: 'clusterhdb'
+sap_system_hana_hacluster_user_password: 'clusterpass'
+
 #### Linux Pacemaker cluster setup for SAP - variables for AWS ####
-sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
-sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
-sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
+sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] | d('') }}"
+sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key | d('') }}"
+sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key | d('') }}"
 
 #### Linux Pacemaker cluster setup for SAP - variables for Google Cloud ####
-sap_ha_pacemaker_cluster_gcp_project: "{{ sap_vm_provision_gcp_project }}"
-sap_ha_pacemaker_cluster_gcp_region_zone: "{{ sap_vm_provision_gcp_region_zone }}"
+sap_ha_pacemaker_cluster_gcp_project: "{{ sap_vm_provision_gcp_project | d('') }}"
+sap_ha_pacemaker_cluster_gcp_region_zone: "{{ sap_vm_provision_gcp_region_zone | d('') }}"
 
 #### Linux Pacemaker cluster setup for SAP - variables for IBM Cloud, IBM Power Virtual Servers ####
-sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key | d('') }}"
 #sap_ha_pacemaker_cluster_ibmcloud_region: "" # Use sap_vm_provision to set automatically
 #sap_ha_pacemaker_cluster_ibmcloud_powervs_workspace_crn: "" # Use sap_vm_provision to set automatically
 sap_ha_pacemaker_cluster_ibmcloud_powervs_api_type: private
 sap_ha_pacemaker_cluster_ibmcloud_powervs_forward_proxy_url:
-  "http://{{ sap_vm_provision_proxy_web_forward_proxy_ip }}"
+  "http://{{ sap_vm_provision_proxy_web_forward_proxy_ip | d('') }}"
 
 #### Linux Pacemaker cluster setup for SAP - variables for Microsoft Azure ####
-sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ sap_vm_provision_msazure_subscription_id }}"
-sap_ha_pacemaker_cluster_msazure_resource_group: "{{ sap_vm_provision_msazure_resource_group_name }}"
+sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ sap_vm_provision_msazure_subscription_id | d('') }}"
+sap_ha_pacemaker_cluster_msazure_resource_group: "{{ sap_vm_provision_msazure_resource_group_name | d('') }}"
 
 #### Linux Pacemaker cluster setup for SAP - variables for IBM PowerVM ####
 # IBM Power Hardware Management Console (HMC), not to be confused with IBM PowerVC host and credentials
@@ -90,4 +94,3 @@ sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_version: "4"
 # sap_hana_install_system_restart: 'n'  # select if role should start SAP HANA after each system boot
 # Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
 # sap_hana_install_hdblcm_extraargs:
-

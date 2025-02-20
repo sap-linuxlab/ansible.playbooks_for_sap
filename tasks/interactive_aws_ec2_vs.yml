@@ -78,7 +78,8 @@
 
     - name: Set fact for sap_vm_provision_aws_vpc_subnet_create_boolean
       ansible.builtin.set_fact:
-        sap_vm_provision_aws_vpc_subnet_create_boolean: "{{ sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input | d('false') }}"
+        sap_vm_provision_aws_vpc_subnet_create_boolean: "{{ 'false' if not sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input
+          else sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input }}"
 
 - name: Block for sap_vm_provision_aws_vpc_subnet_id
   when: sap_vm_provision_aws_vpc_subnet_id is not defined or not sap_vm_provision_aws_vpc_subnet_id
@@ -168,7 +169,8 @@
 
     - name: Set fact for sap_vm_provision_bastion_ssh_port
       ansible.builtin.set_fact:
-        sap_vm_provision_bastion_ssh_port: "{{ sap_vm_provision_bastion_ssh_port_register.user_input | d('22') }}"
+        sap_vm_provision_bastion_ssh_port: "{{ '22' if not sap_vm_provision_bastion_ssh_port_register.user_input
+          else sap_vm_provision_bastion_ssh_port_register.user_input }}"
 
 - name: Block for sap_vm_provision_bastion_public_ip
   when: sap_vm_provision_bastion_public_ip is not defined or not sap_vm_provision_bastion_public_ip

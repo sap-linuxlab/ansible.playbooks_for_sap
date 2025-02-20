@@ -22,43 +22,6 @@ sap_hana_preconfigure_fail_if_reboot_required: false
 sap_hana_preconfigure_update: true
 sap_hana_update_etchosts: true
 
-### Mandatory parameters : Ansible Dictionary for SAP HANA installation media
-sap_hana_install_media_dictionary:
-
-  sap_hana_2_sps07_install:
-
-    softwarecenter_search_list_saphana_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
-
-    softwarecenter_search_list_saphana_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent 7.22
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
-
-  sap_hana_2_sps06_install:
-
-    softwarecenter_search_list_saphana_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-
-    softwarecenter_search_list_saphana_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_067_4-80002046.SAR'
-      - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
-
 #### Dynamic assignment of SAP HANA variables ####
 sap_hana_sid: "{{ sap_system_hana_db_sid }}"
 sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
@@ -79,3 +42,38 @@ sap_ha_pacemaker_cluster_vip_hana_primary_ip_address: "{{ sap_vm_provision_ha_vi
 # Override of AWS IAM HA roles is required if 'HA-Role-Pacemaker' already exists
 sap_vm_provision_aws_ha_iam_role: "HA-Role-Pacemaker-{{ sap_system_hana_db_sid }}"
 sap_vm_provision_aws_ha_iam_instance_profile: "HA-Role-Pacemaker-{{ sap_system_hana_db_sid }}-profile"
+
+#### Dynamic assignment of sap_storage_setup variables ####
+host_specifications_dictionary: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') }}"
+
+#### Mandatory parameters : Ansible Dictionary for SAP Installation Media ####
+sap_software_hana_wildcard_list:
+  - 'SAPCAR*'
+  - 'IMDB_*'
+  - 'SAPHOSTAGENT*'
+
+sap_software_install_dictionary:
+
+  sap_hana_2_sps07:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1115-70006178.EXE'
+      - 'IMDB_SERVER20_077_0-80002031.SAR'
+      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1115-70006238.EXE'
+      - 'IMDB_SERVER20_077_0-80002046.SAR'
+      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent 7.22
+
+  sap_hana_2_sps06:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1115-70006178.EXE'
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1115-70006238.EXE'
+      - 'IMDB_SERVER20_067_4-80002046.SAR'
+      - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22

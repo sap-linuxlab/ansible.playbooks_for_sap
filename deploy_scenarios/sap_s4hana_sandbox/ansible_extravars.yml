@@ -25,12 +25,20 @@ sap_hana_install_log_mode: overwrite
 #### SAP SWPM Installation ####
 sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}"
 sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_install_saphostagent: 'true'
 
-### Mandatory parameters : Ansible Dictionary for SWPM installation media
-sap_swpm_templates_install_dictionary:
+#### Dynamic assignment of SWPM variables ####
+sap_swpm_sid: "{{ sap_system_sid }}"
+sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
+sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
+# sap_software_product is one of keys in sap_software_install_dictionary
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
+#### Mandatory parameters : Ansible Dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
   sap_s4hana_2023_sandbox:
-
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.CORE.HDB.ABAP
 
@@ -53,10 +61,7 @@ sap_swpm_templates_install_dictionary:
       # Variables in this section will be overwritten by top level variables;
       # Examples of suitable variables:
       # sap_swpm_sid, sap_swpm_virtual_hostname, sap_swpm_ascs_instance_nr, sap_swpm_pas_instance_nr
-      # sap_swpm_db_sid, sap_swpm_db_instance_nr
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
+      # sap_swpm_db_sid, sap_swpm_db_instance_nr, sap_swpm_install_saphostagent
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
@@ -152,7 +157,6 @@ sap_swpm_templates_install_dictionary:
 
 
   sap_s4hana_2022_sandbox:
-
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.CORE.HDB.ABAP
 
@@ -171,9 +175,6 @@ sap_swpm_templates_install_dictionary:
       - sap_os_linux_user
 
     sap_swpm_inifile_dictionary:
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
@@ -273,7 +274,6 @@ sap_swpm_templates_install_dictionary:
 
 
   sap_s4hana_2021_sandbox:
-
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2021.CORE.HDB.ABAP
 
@@ -292,9 +292,6 @@ sap_swpm_templates_install_dictionary:
       - sap_os_linux_user
 
     sap_swpm_inifile_dictionary:
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
@@ -382,7 +379,6 @@ sap_swpm_templates_install_dictionary:
 
 
   sap_s4hana_2020_sandbox:
-
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2020.CORE.HDB.ABAP
 
@@ -401,9 +397,6 @@ sap_swpm_templates_install_dictionary:
       - sap_os_linux_user
 
     sap_swpm_inifile_dictionary:
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
 
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'

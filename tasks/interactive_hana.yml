@@ -1,25 +1,13 @@
 ---
 # Interactive inputs for HANA
 
-# Mandatory inputs
-- name: Block for sap_hana_product_input
+- name: Set temporary fact if target has High Availability
+  ansible.builtin.set_fact:
+    interactive_input_type_ha: true
   when:
-    - sap_hana_install_media_dictionary is defined and sap_hana_install_media_dictionary
-    - sap_hana_product_input is not defined or not sap_hana_product_input
-      or sap_hana_product_input not in sap_hana_install_media_dictionary.keys()
-  block:
-    - name: Interactive input - sap_hana_product_input
-      ansible.builtin.pause:
-        prompt: |
-          Please select HANA product from list: {{ sap_hana_install_media_dictionary.keys() }}
-          Products are defined in variable sap_hana_install_media_dictionary.
-      register: sap_hana_product_input_register
-      failed_when: sap_hana_product_input_register.user_input not in sap_hana_install_media_dictionary.keys()
+    - interactive_input_type in ['s4hana_ha', 'hana_ha']
 
-    - name: Set fact for sap_hana_product_input
-      ansible.builtin.set_fact:
-        sap_hana_product_input: "{{ sap_hana_product_input_register.user_input }}"
-
+# Mandatory inputs
 - name: Block for sap_system_hana_db_sid
   when: sap_system_hana_db_sid is not defined or not sap_system_hana_db_sid
   block:
@@ -67,7 +55,8 @@
 
     - name: Set fact for sap_hana_install_use_master_password
       ansible.builtin.set_fact:
-        sap_hana_install_use_master_password: "{{ sap_hana_install_use_master_password_register.user_input | d('y') }}"
+        sap_hana_install_use_master_password: "{{ 'y' if not sap_hana_install_use_master_password_register.user_input
+          else sap_hana_install_use_master_password_register.user_input }}"
 
 - name: Block for sap_hana_install_master_password
   when: sap_hana_install_master_password is not defined or not sap_hana_install_master_password
@@ -81,6 +70,67 @@
     - name: Set fact for sap_hana_install_master_password
       ansible.builtin.set_fact:
         sap_hana_install_master_password: "{{ sap_hana_install_master_password_register.user_input }}"
+
+
+# Mandatory inputs for HANA High Availability
+- name: Block for sap_vm_provision_ha_vip_hana_primary
+  when:
+    - interactive_input_type_ha | d(false)
+    - sap_vm_provision_ha_vip_hana_primary is not defined or not sap_vm_provision_ha_vip_hana_primary
+  block:
+    - name: Interactive input - sap_vm_provision_ha_vip_hana_primary
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Virtual IP for HANA Primary server. Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_hana_primary_register
+
+    - name: Set fact for sap_vm_provision_ha_vip_hana_primary
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_hana_primary: "{{ sap_vm_provision_ha_vip_hana_primary_register.user_input }}"
+
+- name: Block for sap_system_hana_cluster_name
+  when:
+    - interactive_input_type_ha | d(false)
+    - sap_system_hana_cluster_name is not defined or not sap_system_hana_cluster_name
+  block:
+    - name: Interactive input - sap_system_hana_cluster_name
+      ansible.builtin.pause:
+        prompt: |
+          Please enter cluster name for SAP HANA Cluster.
+          Default: clusterhdb
+          Press enter to skip.
+      register: sap_system_hana_cluster_name_register
+
+    - name: Set fact for sap_system_hana_cluster_name
+      ansible.builtin.set_fact:
+        sap_system_hana_cluster_name: "{{ 'clusterhdb' if not sap_system_hana_cluster_name_register.user_input
+          else sap_system_hana_cluster_name_register.user_input}}"
+
+- name: Block for sap_system_hana_hacluster_user_password
+  when:
+    - interactive_input_type_ha | d(false)
+    - sap_system_hana_hacluster_user_password is not defined or not sap_system_hana_hacluster_user_password
+  block:
+    - name: Interactive input - sap_system_hana_hacluster_user_password
+      ansible.builtin.pause:
+        prompt: |
+          Please enter password of hacluster user for SAP HANA Cluster.
+          Default: clusterpass
+          Press enter to skip.
+      register: sap_system_hana_hacluster_user_password_register
+
+    - name: Set fact for sap_system_hana_hacluster_user_password
+      ansible.builtin.set_fact:
+        sap_system_hana_hacluster_user_password: "{{ 'clusterpass' if not sap_system_hana_hacluster_user_password_register.user_input
+          else sap_system_hana_hacluster_user_password_register.user_input }}"
 
 
 # Optional inputs verification
@@ -108,7 +158,8 @@
 
     - name: Set fact for sap_hana_install_log_mode
       ansible.builtin.set_fact:
-        sap_hana_install_log_mode: "{{ sap_hana_install_log_mode_register.user_input | d('normal')}}"
+        sap_hana_install_log_mode: "{{ 'normal' if not sap_hana_install_log_mode_register.user_input
+          else sap_hana_install_log_mode_register.user_input }}"
 
 - name: Block for sap_hana_install_components
   when:
@@ -125,7 +176,8 @@
 
     - name: Set fact for sap_hana_install_components
       ansible.builtin.set_fact:
-        sap_hana_install_components: "{{ sap_hana_install_components_register.user_input | d('all') }}"
+        sap_hana_install_components: "{{ 'all' if not sap_hana_install_components_register.user_input
+          else sap_hana_install_components_register.user_input }}"
 
 - name: Block for sap_hana_install_userid
   when:
@@ -174,7 +226,8 @@
 
     - name: Set fact for sap_hana_install_system_usage
       ansible.builtin.set_fact:
-        sap_hana_install_system_usage: "{{ sap_hana_install_system_usage_register.user_input | d('custom')}}"
+        sap_hana_install_system_usage: "{{ 'custom' if not sap_hana_install_system_usage_register.user_input
+          else sap_hana_install_system_usage_register.user_input }}"
 
 - name: Block for sap_hana_install_restrict_max_mem
   when:
@@ -191,7 +244,8 @@
 
     - name: Set fact for sap_hana_install_restrict_max_mem
       ansible.builtin.set_fact:
-        sap_hana_install_restrict_max_mem: "{{ sap_hana_install_restrict_max_mem_register.user_input | d('n') }}"
+        sap_hana_install_restrict_max_mem: "{{ 'n' if not sap_hana_install_restrict_max_mem_register.user_input
+          else sap_hana_install_restrict_max_mem_register.user_input }}"
 
 - name: Block for sap_hana_install_max_mem
   when:
@@ -225,7 +279,8 @@
 
     - name: Set fact for sap_hana_install_system_restart
       ansible.builtin.set_fact:
-        sap_hana_install_system_restart: "{{ sap_hana_install_system_restart_register.user_input | d('n') }}"
+        sap_hana_install_system_restart: "{{ 'n' if not sap_hana_install_system_restart_register.user_input
+          else sap_hana_install_system_restart_register.user_input }}"
 
 - name: Block for sap_hana_install_hdblcm_extraargs
   when:
@@ -242,29 +297,3 @@
     - name: Set fact for sap_hana_install_hdblcm_extraargs
       ansible.builtin.set_fact:
         sap_hana_install_hdblcm_extraargs: "{{ sap_hana_install_hdblcm_extraargs_register.user_input }}"
-
-
-# Mandatory inputs for HANA HA
-- name: Block for sap_vm_provision_ha_vip_hana_primary
-  when:
-    - interactive_input_type == 'hana_ha'
-    - sap_vm_provision_ha_vip_hana_primary is not defined or not sap_vm_provision_ha_vip_hana_primary
-  block:
-    - name: Interactive input - sap_vm_provision_ha_vip_hana_primary
-      ansible.builtin.pause:
-        prompt: |
-          Please enter Virtual IP for HANA Primary server. Platform specific recommendations:
-          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
-          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
-          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
-          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
-          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
-          IBM PowerVM:          the VIP must be within the VLAN Subnet range
-          OVirt KVM:            the VIP must be within the VLAN Subnet range
-          KubeVirt:             the VIP must be within the VLAN Subnet range
-      register: sap_vm_provision_ha_vip_hana_primary_register
-      when: sap_vm_provision_ha_vip_hana_primary is not defined or not sap_vm_provision_ha_vip_hana_primary
-
-    - name: Set fact for sap_vm_provision_ha_vip_hana_primary
-      ansible.builtin.set_fact:
-        sap_vm_provision_ha_vip_hana_primary: "{{ sap_vm_provision_ha_vip_hana_primary_register.user_input }}"

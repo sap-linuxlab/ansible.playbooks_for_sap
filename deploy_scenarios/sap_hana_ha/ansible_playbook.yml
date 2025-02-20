@@ -5,8 +5,9 @@
 # This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
 
 
-#### Begin Infrastructure-as-Code provisioning ####
-- name: Ansible Play to gather mandatory variables
+#### Interactive Mode ####
+# Interactive mode section can be safely removed without impact if all mandatory variables are provided.
+- name: Ansible Play to Interactively gather all mandatory variables
   hosts: localhost
   gather_facts: false
   pre_tasks:
@@ -14,7 +15,7 @@
     - name: Check if interactive guide is available
       ansible.builtin.stat:
         path: ../../tasks/interactive_inputs.yml
-      register: interactive_guide_availability
+      register: __interactive_guide_availability
       ignore_errors: true
 
     - name: Playbook Interactive - Collection of interactive inputs
@@ -24,23 +25,27 @@
         interactive_input_type: hana_ha
       when:
         - sap_vm_provision_iac_type is undefined or sap_vm_provision_iac_platform is undefined
-        - interactive_guide_availability.stat.exists
+        - __interactive_guide_availability.stat.exists
 
 
-#### Provision VM ####
+#### Begin Infrastructure-as-Code provisioning ####
 - name: Ansible Play to create dynamic inventory group for provisioning
   hosts: localhost
   gather_facts: false
   tasks:
 
+    - name: Set fact __sap_host_dictionary
+      ansible.builtin.set_fact:
+        __sap_host_dictionary:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+           + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+
     - name: Create dynamic inventory group for Ansible Role sap_vm_provision
       ansible.builtin.add_host:
         name: "{{ item }}"
         group: sap_vm_provision_target_inventory_group
-      loop: "{{ lookup('ansible.builtin.vars', host_dictionary)[sap_vm_provision_host_specification_plan].keys() }}"
-      vars:
-        host_dictionary: "{{ 'sap_vm_provision_' ~ sap_vm_provision_iac_platform ~ '_host_specifications_dictionary' }}"
-      when: sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
+      loop: "{{ __sap_host_dictionary.keys() }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
 
 
 # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
@@ -49,6 +54,7 @@
   gather_facts: false
   tasks:
 
+    # Ensure that all sap_* or __sap_* variables set in Interactive Mode are appended to the target inventory Group
     - name: Assign all relevant facts from execution node to provisioned hosts
       ansible.builtin.set_fact:
         "{{ item.key }}": "{{ item.value }}"
@@ -59,7 +65,7 @@
     - name: Execute Ansible Role sap_vm_provision
       ansible.builtin.include_role:
         name: community.sap_infrastructure.sap_vm_provision
-      when: sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
 
 
 #### VM storage filesystem setup ####
@@ -78,8 +84,7 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
       when:
-        - sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
-        - not sap_vm_provision_iac_type == "existing_hosts"
+        - sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
     - name: Install rsync for copying of SAP Software installation media
       ansible.builtin.package:
@@ -101,8 +106,8 @@
         file: ../../tasks/download_sap_media.yml
       vars:
         softwarecenter_search_list:
-          "{{ sap_hana_install_media_dictionary[sap_hana_product_input]
-            ['softwarecenter_search_list_saphana_' ~ ansible_architecture] }}"
+          "{{ sap_software_install_dictionary[sap_software_product]
+            ['softwarecenter_search_list_' ~ ansible_architecture] }}"
 
 
 - name: Ansible Play for copying SAP HANA Database Server installation media to other hosts
@@ -112,14 +117,8 @@
   max_fail_percentage: 0
   tasks:
 
-    - name: Set var of files list from SAP HANA primary, using lookup from Ansible hostvars with key as SAP HANA primary
-      ansible.builtin.set_fact:
-        sap_hana_install_media_files_list:
-          "{{ hostvars[sap_vm_provision_dynamic_inventory_hana_primary_hostname]
-          .sap_hana_install_media_files.files | map(attribute='path') | list }}"
-
     - name: Transfer SAP HANA installation media to SAP HANA Primary and SAP HANA Secondary
-      delegate_to: "{{ sap_vm_provision_dynamic_inventory_hana_primary_ip }}"
+      delegate_to: "{{ hostvars[groups['hana_primary'][0]].ansible_default_ipv4.address }}"
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ item }}"
@@ -130,7 +129,7 @@
         verify_host: false
         private_key: "/tmp/hosts_rsa"
 #        set_remote_user: false
-      loop: "{{ sap_hana_install_media_files_list }}"
+      loop: "{{ hostvars[groups['hana_primary'][0]]['sap_hana_install_media_files'].files | map(attribute='path') | list }}"
 
 
 - name: Ansible Play to remove temporary files from SAP HANA primary host
@@ -228,14 +227,12 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_ha_pacemaker_cluster
       vars:
-        sap_ha_pacemaker_cluster_cluster_name: clusterhdb
-        sap_ha_pacemaker_cluster_hacluster_user_password: 'clusterpass'
+        sap_ha_pacemaker_cluster_cluster_name: "{{ sap_system_hana_cluster_name }}"
+        sap_ha_pacemaker_cluster_hacluster_user_password: "{{ sap_system_hana_hacluster_user_password }}"
         sap_ha_pacemaker_cluster_host_type:
           - hana_scaleup_perf
-
         sap_ha_pacemaker_cluster_hana_sid: "{{ sap_system_hana_db_sid }}"
         sap_ha_pacemaker_cluster_hana_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
-
         sap_ha_pacemaker_cluster_cluster_nodes: "{{ sap_hana_cluster_nodes }}"
         sap_ha_pacemaker_cluster_vip_resource_group_name: viphdb
 

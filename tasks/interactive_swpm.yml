@@ -1,25 +1,13 @@
 ---
 # Interactive inputs for SWPM
 
-# Mandatory inputs
-- name: Block for sap_swpm_templates_product_input_select
+- name: Set temporary fact if target has High Availability
+  ansible.builtin.set_fact:
+    interactive_input_type_ha: true
   when:
-    - sap_swpm_templates_install_dictionary is defined and sap_swpm_templates_install_dictionary
-    - sap_swpm_templates_product_input_select is not defined or not sap_swpm_templates_product_input_select
-      or sap_swpm_templates_product_input_select not in sap_swpm_templates_install_dictionary.keys()
-  block:
-    - name: Interactive input - sap_swpm_templates_product_input_select
-      ansible.builtin.pause:
-        prompt: |
-          Please select SAP product from list: {{ sap_swpm_templates_install_dictionary.keys() }}
-          Products are defined in variable sap_swpm_templates_install_dictionary.
-      register: sap_swpm_templates_product_input_select_register
-      failed_when: sap_swpm_templates_product_input_select_register.user_input not in sap_swpm_templates_install_dictionary.keys()
+    - interactive_input_type in ['s4hana_ha']
 
-    - name: Set fact for sap_swpm_templates_product_input_select
-      ansible.builtin.set_fact:
-        sap_swpm_templates_product_input_select: "{{ sap_swpm_templates_product_input_select_register.user_input }}"
-
+# Mandatory inputs
 - name: Block for sap_system_sid
   when: sap_system_sid is not defined or not sap_system_sid
   no_log: true
@@ -43,7 +31,7 @@
     - name: Interactive input - sap_system_nwas_abap_ascs_instance_nr
       ansible.builtin.pause:
         prompt: |
-          Please enter SAP ASCS Instance Number.
+          Please enter ABAP System Central Service Instance Number (ASCS).
           Example: 00
       register: sap_system_nwas_abap_ascs_instance_nr_register
       failed_when: sap_system_nwas_abap_ascs_instance_nr_register.user_input | length != 2
@@ -55,14 +43,14 @@
 
 - name: Block for sap_system_nwas_abap_ers_instance_nr
   when:
-    - interactive_input_type == 's4hana_ha'
+    - interactive_input_type_ha | d(false)
     - sap_system_nwas_abap_ers_instance_nr is not defined or not sap_system_nwas_abap_ers_instance_nr
   no_log: true
   block:
     - name: Interactive input - sap_system_nwas_abap_ers_instance_nr
       ansible.builtin.pause:
         prompt: |
-          Please enter SAP ERS Instance Number.
+          Please enter Enqueue Replication Service Instance Number (ERS).
           Example: 01
       register: sap_system_nwas_abap_ers_instance_nr_register
       failed_when: sap_system_nwas_abap_ers_instance_nr_register.user_input | length != 2
@@ -71,6 +59,46 @@
       ansible.builtin.set_fact:
         sap_system_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
         sap_swpm_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
+
+- name: Block for sap_system_nwas_abap_pas_instance_nr
+  when:
+    - interactive_input_type_ha | d(false)
+    - interactive_input_type in ['s4hana_ha']
+    - sap_system_nwas_abap_pas_instance_nr is not defined or not sap_system_nwas_abap_pas_instance_nr
+  no_log: true
+  block:
+    - name: Interactive input - sap_system_nwas_abap_pas_instance_nr
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Primary Application Server Instance Number (PAS).
+          Example: 02
+      register: sap_system_nwas_abap_pas_instance_nr_register
+      failed_when: sap_system_nwas_abap_pas_instance_nr_register.user_input | length != 2
+
+    - name: Set fact for sap_system_nwas_abap_pas_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr_register.user_input }}"
+        sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr_register.user_input }}"
+
+- name: Block for sap_system_nwas_abap_aas_instance_nr
+  when:
+    - interactive_input_type_ha | d(false)
+    - interactive_input_type in ['s4hana_ha']
+    - sap_system_nwas_abap_aas_instance_nr is not defined or not sap_system_nwas_abap_aas_instance_nr
+  no_log: true
+  block:
+    - name: Interactive input - sap_system_nwas_abap_aas_instance_nr
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Additional Application Server Instance Number (AAS).
+          Example: 03
+      register: sap_system_nwas_abap_aas_instance_nr_register
+      failed_when: sap_system_nwas_abap_aas_instance_nr_register.user_input | length != 2
+
+    - name: Set fact for sap_system_nwas_abap_aas_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr_register.user_input }}"
+        sap_swpm_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr_register.user_input }}"
 
 
 # Passwords
@@ -182,6 +210,91 @@
         sap_swpm_db_systemdb_password: "{{ sap_swpm_db_systemdb_password_register.user_input }}"
 
 
+# Mandatory inputs for SAP High Availability
+- name: Block for sap_vm_provision_ha_vip_nwas_abap_ascs
+  when:
+    - interactive_input_type_ha | d(false)
+    - sap_vm_provision_ha_vip_nwas_abap_ascs is not defined or not sap_vm_provision_ha_vip_nwas_abap_ascs
+  block:
+    - name: Interactive input - sap_vm_provision_ha_vip_nwas_abap_ascs
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Virtual IP for SAP ASCS Instance. Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_nwas_abap_ascs_register
+
+    - name: Set fact for sap_vm_provision_ha_vip_nwas_abap_ascs
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_nwas_abap_ascs: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs_register.user_input }}"
+
+- name: Block for sap_vm_provision_ha_vip_nwas_abap_ers
+  when:
+    - interactive_input_type_ha | d(false)
+    - sap_vm_provision_ha_vip_nwas_abap_ers is not defined or not sap_vm_provision_ha_vip_nwas_abap_ers
+  block:
+    - name: Interactive input - sap_vm_provision_ha_vip_nwas_abap_ers
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Virtual IP for SAP ERS Instance. Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_nwas_abap_ers_register
+
+    - name: Set fact for sap_vm_provision_ha_vip_nwas_abap_ers
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_nwas_abap_ers: "{{ sap_vm_provision_ha_vip_nwas_abap_ers_register.user_input }}"
+
+- name: Block for sap_system_ascs_ers_cluster_name
+  when:
+    - interactive_input_type_ha | d(false)
+    - sap_system_ascs_ers_cluster_name is not defined or not sap_system_ascs_ers_cluster_name
+  block:
+    - name: Interactive input - sap_system_ascs_ers_cluster_name
+      ansible.builtin.pause:
+        prompt: |
+          Please enter cluster name for SAP ASCS/ERS Cluster.
+          Default: clusterhdb
+          Press enter to skip.
+      register: sap_system_ascs_ers_cluster_name_register
+
+    - name: Set fact for sap_system_ascs_ers_cluster_name
+      ansible.builtin.set_fact:
+        sap_system_ascs_ers_cluster_name: "{{ 'clusterhdb' if not sap_system_ascs_ers_cluster_name_register.user_input
+          else sap_system_ascs_ers_cluster_name_register.user_input }}"
+
+- name: Block for sap_system_ascs_ers_hacluster_user_password
+  when:
+    - interactive_input_type_ha | d(false)
+    - sap_system_ascs_ers_hacluster_user_password is not defined or not sap_system_ascs_ers_hacluster_user_password
+  block:
+    - name: Interactive input - sap_system_ascs_ers_hacluster_user_password
+      ansible.builtin.pause:
+        prompt: |
+          Please enter password of hacluster user for SAP ASCS/ERS Cluster.
+          Default: clusterpass
+          Press enter to skip.
+      register: sap_system_ascs_ers_hacluster_user_password_register
+
+    - name: Set fact for sap_system_ascs_ers_hacluster_user_password
+      ansible.builtin.set_fact:
+        sap_system_ascs_ers_hacluster_user_password:
+          "{{ 'clusterpass' if not sap_system_ascs_ers_hacluster_user_password_register.user_input
+            else sap_system_ascs_ers_hacluster_user_password_register.user_input }}"
+
+
 # Optional inputs
 - name: Interactive input - Optional inputs for SWPM
   ansible.builtin.pause:
@@ -253,4 +366,5 @@
 
     - name: Set fact for sap_swpm_update_etchosts
       ansible.builtin.set_fact:
-        sap_swpm_update_etchosts: "{{ sap_swpm_update_etchosts_register.user_input | d('false') }}"
+        sap_swpm_update_etchosts: "{{ 'false' if not sap_swpm_update_etchosts_register.user_input
+         else sap_swpm_update_etchosts_register.user_input }}"

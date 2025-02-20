@@ -41,23 +41,16 @@ sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 # Values: sap_s4hana_2023_sandbox , sap_s4hana_2022_sandbox , sap_s4hana_2021_sandbox , sap_s4hana_2020_sandbox , sap_s4hana_1909_sandbox
 sap_swpm_templates_product_input_select: "ENTER_STRING_VALUE_HERE"
 
-# NW Passwords
+# SAP Netweaver Passwords
 sap_swpm_master_password: "NewPass$321"
 sap_swpm_ddic_000_password: "NewPass$321"
-# HDB Configuration
+# SAP HANA Schema
 sap_swpm_db_schema_abap: "SAPHANADB"
-# HDB Passwords
+# SAP HANA Passwords
 sap_swpm_db_schema_abap_password: "NewPass$321"
 sap_swpm_db_sidadm_password: "NewPass$321"
 sap_swpm_db_system_password: "NewPass$321"
 sap_swpm_db_systemdb_password: "NewPass$321"
-
-#### Dynamic assignment of SWPM variables ####
-sap_swpm_sid: "{{ sap_system_sid }}"
-sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
-sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
-sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
-sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 
 #### SWPM Installation - Optional variables ####
 # # Unix User ID

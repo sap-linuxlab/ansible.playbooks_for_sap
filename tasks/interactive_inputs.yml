@@ -31,12 +31,46 @@
       ansible.builtin.set_fact:
         sap_vm_provision_iac_platform: "{{ sap_vm_provision_iac_platform_register.user_input }}"
 
+# Interactive input for SAP software selection from dictionary
+- name: Block for sap_software_product
+  when:
+    - sap_software_install_dictionary is defined and sap_software_install_dictionary
+    - sap_software_product is not defined or not sap_software_product
+      or sap_software_product not in sap_software_install_dictionary.keys()
+  block:
+    - name: Interactive input - sap_software_product
+      ansible.builtin.pause:
+        prompt: |
+          Please select SAP Product from list: {{ sap_software_install_dictionary.keys() }}
+          Products are defined in variable sap_software_install_dictionary.
+      register: sap_software_product_register
+      failed_when: sap_software_product_register.user_input not in sap_software_install_dictionary.keys()
 
-# Interactive inputs for specific type
-- name: Interactive input - Gather variables for specific type
+    - name: Set fact for sap_software_product
+      ansible.builtin.set_fact:
+        sap_software_product: "{{ sap_software_product_register.user_input }}"
+
+
+# interactive_input_type defines which type of inputs are gathered
+- name: Execute interactive type - HANA
   ansible.builtin.include_tasks:
-    file: "../../tasks/interactive_type_select.yml"
-  when: interactive_input_type
+    file: "../../tasks/interactive_hana.yml"
+  when: interactive_input_type is defined and interactive_input_type in __hana_types
+  vars:
+    __hana_types:
+      - hana
+      - hana_ha
+      - s4hana
+      - s4hana_ha
+
+- name: Execute interactive type - SWPM
+  ansible.builtin.include_tasks:
+    file: "../../tasks/interactive_swpm.yml"
+  when: interactive_input_type is defined and interactive_input_type in __swpm_types
+  vars:
+    __swpm_types:
+      - s4hana
+      - s4hana_ha
 
 
 # Interactive inputs for specific platform
@@ -81,8 +115,8 @@
 
     - name: Set fact for sap_install_media_detect_source_directory
       ansible.builtin.set_fact:
-        sap_install_media_detect_source_directory:
-          "{{ sap_install_media_detect_source_directory_register.user_input | d('/software') }}"
+        sap_install_media_detect_source_directory: "{{ '/software' if not sap_install_media_detect_source_directory_register.user_input
+          else sap_install_media_detect_source_directory_register.user_input }}"
 
 - name: Block for sap_id_user
   when: sap_id_user is not defined or not sap_id_user
@@ -109,3 +143,21 @@
     - name: Set fact for sap_id_user_password
       ansible.builtin.set_fact:
         sap_id_user_password: "{{ sap_id_user_password_register.user_input }}"
+
+
+# # Interactive inputs for infrastructure
+# - name: Block for sap_vm_provision_nfs_mount_point
+#   when:
+#     - sap_vm_provision_nfs_mount_point is defined
+#       and (sap_vm_provision_nfs_mount_point == ''
+#       or sap_vm_provision_nfs_mount_point == 'ENTER_STRING_VALUE_HERE')
+#   block:
+#     - name: Interactive input - sap_vm_provision_nfs_mount_point
+#       ansible.builtin.pause:
+#         prompt: "Please enter NFS mount."
+#       register: sap_id_user_password_register
+#       no_log: true
+
+#     - name: Set fact for sap_id_user_password
+#       ansible.builtin.set_fact:
+#         sap_id_user_password: "{{ sap_id_user_password_register.user_input }}"
