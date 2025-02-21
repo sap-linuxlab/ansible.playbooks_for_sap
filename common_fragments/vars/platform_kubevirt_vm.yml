@@ -1,0 +1,25 @@
+---
+#### Bastion server details ####
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+
+#### Infrastructure platform variables ####
+sap_vm_provision_kubevirt_cluster_url: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_kubevirt_api_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_kubevirt_target_namespace: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_kubevirt_vm_host_os_image_url: "ENTER_STRING_VALUE_HERE" # "docker://registry.redhat.io/rhel8/rhel-guest-image:8.6.0"
+# Optional, create OS User and Password. Otherwise only 'root' will exist using the SSH Key
+sap_vm_provision_kubevirt_os_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_kubevirt_os_user_password: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
