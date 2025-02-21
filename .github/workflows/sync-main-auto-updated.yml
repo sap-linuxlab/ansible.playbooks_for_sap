@@ -16,41 +16,67 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v4
+        with:
+          path: repo_playbooks
 
       - name: Create or update publish branch
+        working-directory: repo_playbooks
         run: |
           git fetch origin main
-          git fetch origin main-auto-updated
-
-          if git ls-remote --heads origin main-auto-updated; then
+          # Check if the branch exists remotely *before* attempting to fetch it.
+          if [[ $(git ls-remote --heads origin main-auto-updated) ]]; then
+            git fetch origin main-auto-updated
             git checkout main-auto-updated
             git reset --hard origin/main
           else
-            git checkout --orphan main-auto-updated # Create an orphan branch
-            git rm -rf. # Remove all files
-            git checkout main. # Copy files from main
+            git checkout --orphan main-auto-updated
+            git rm -rf .
+            git checkout main . # Use main . to copy all files
           fi
 
       - name: Copy shared files to scenarios
+        working-directory: repo_playbooks
         run: |
-          for dir in deploy_scenarios/*; do
+          for dir in ./deploy_scenarios/*; do
             # Copy tasks and update paths
-            mkdir -p $dir/tasks
-            cp tasks/*.yml $dir/tasks/
-            sed -i 's/file: ..\/..\/tasks\//file: tasks\//' $dir/*.yml
+            cp ./common_fragments/tasks/*.yml $dir/optional/
+            sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' $dir/ansible_playbook.yml
 
             # Copy ansible_requirements
-            cp vars/ansible_requirements.yml $dir/
+            cp ./common_fragments/vars/ansible_requirements.yml $dir/
           done
 
       - name: Append shared vars to scenario vars
+        working-directory: repo_playbooks
         run: |
-          for dir in deploy_scenarios/*; do
-            sed 's/^---/\n/g' vars/platform_vars.yml >> $dir/ansible_extravars.yml
-            sed 's/^---/\n/g' vars/platform_noninteractive_vars.yml >> $dir/optional/ansible_extravars_noninteractive.yml
+          # Loop through all scenarios
+          for dir in ./deploy_scenarios/*; do
+            ls -la $dir/
+
+            # Loop through all valid extravars files
+            for file in "$dir"/ansible_extravars_*_base.yml; do
+              # Extract platform name using basename of file
+              basefile=$(basename "$file")
+              platform=$(echo "$basefile" | sed 's/ansible_extravars_\(.*\)_base\.yml/\1/')
+              source_fragment="common_fragments/vars/platform_${platform}.yml"
+
+              # Execute only when source platform vars fragment exists
+              if [ -f "$source_fragment" ]; then
+                sed 's/^---/\n/g' "$source_fragment" >> "$file"
+              fi
+
+            # Remove _base from extravars file name
+            new_file="${file%_base.yml}.yml"
+            mv "$file" "$new_file"
+
+            done
           done
 
+          # Remove fragments after copying them
+          git rm -rf ./common_fragments
+
       - name: Check for changes
+        working-directory: repo_playbooks
         id: check_changes
         run: |
           git add .
@@ -61,6 +87,7 @@ jobs:
           fi
 
       - name: Commit changes
+        working-directory: repo_playbooks
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git config user.name github-actions
@@ -68,6 +95,7 @@ jobs:
           git commit -m "Prepare collection for release"
 
       - name: Push to publish branch
+        working-directory: repo_playbooks
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
           git push origin main-auto-updated --force-with-lease

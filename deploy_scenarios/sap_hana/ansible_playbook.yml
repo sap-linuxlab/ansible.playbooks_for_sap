@@ -14,13 +14,13 @@
 
     - name: Check if interactive guide is available
       ansible.builtin.stat:
-        path: ../../tasks/interactive_inputs.yml
+        path: ../../common_fragments/tasks/task_interactive_inputs.yml
       register: __interactive_guide_availability
       ignore_errors: true
 
     - name: Playbook Interactive - Collection of interactive inputs
       ansible.builtin.include_tasks:
-        file: ../../tasks/interactive_inputs.yml
+        file: ../../common_fragments/tasks/task_interactive_inputs.yml
       vars:
         interactive_input_type: hana
       when:
@@ -93,7 +93,7 @@
 
     - name: Prepare environment and download software
       ansible.builtin.include_tasks:
-        file: ../../tasks/download_sap_media.yml
+        file: ../../common_fragments/tasks/download_sap_media.yml
       vars:
         softwarecenter_search_list:
           "{{ sap_software_install_dictionary[sap_software_product]

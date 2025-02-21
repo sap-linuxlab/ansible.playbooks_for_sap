@@ -43,7 +43,7 @@ jobs:
       - name: Install dependencies for Ansible
         run: |
           ansible-galaxy collection install \
-          -r ./repo_playbooks/vars/ansible_requirements.yml
+          -r ./repo_playbooks/common_fragments/vars/ansible_requirements.yml
 
       - name: Run ansible-lint
         working-directory: repo_playbooks
