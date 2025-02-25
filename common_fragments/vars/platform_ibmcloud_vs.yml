@@ -1,34 +1,34 @@
 ---
 #### Bastion server details ####
-sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
 
 # Variables required for sap_vm_provision_iac_type=ansible
-sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
 
 #### Infrastructure platform variables ####
-sap_vm_provision_ibmcloud_api_key: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ibmcloud_resource_group_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
-sap_vm_provision_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_availability_zone | regex_replace('-[0-9]', '') }}"
-sap_vm_provision_ibmcloud_availability_zone: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ibmcloud_vpc_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
-sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
-sap_vm_provision_ibmcloud_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_api_key: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_resource_group_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+# sap_vm_provision_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_availability_zone | regex_replace('-[0-9]', '') }}"
+# sap_vm_provision_ibmcloud_availability_zone: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_vpc_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+# sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+# sap_vm_provision_ibmcloud_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
 
 # Variables required for sap_vm_provision_iac_type=ansible
-sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ibmcloud_vpc_sg_names: "ENTER_STRING_VALUE_HERE,ENTER_STRING_VALUE_HERE" # comma-separated, if ansible_to_terraform then ignore this variable
+# sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_vpc_sg_names: "ENTER_STRING_VALUE_HERE,ENTER_STRING_VALUE_HERE" # comma-separated, if ansible_to_terraform then ignore this variable
 # sap_vm_provision_ibmcloud_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_ibmcloud_resource_group_name
 
 # Variables required for sap_vm_provision_iac_type=ansible_to_terraform
-sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
-sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 #### Dictionary of operating system images ####
 sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:

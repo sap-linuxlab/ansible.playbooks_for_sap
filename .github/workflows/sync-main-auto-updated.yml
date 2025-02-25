@@ -40,7 +40,9 @@ jobs:
           for dir in ./deploy_scenarios/*; do
             # Copy tasks and update paths
             cp ./common_fragments/tasks/*.yml $dir/optional/
-            sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' $dir/ansible_playbook.yml
+
+            # Update path to copied tasks
+            sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' $dir/ansible_playbook.yml $dir/optional/*.yml
 
             # Copy ansible_requirements
             cp ./common_fragments/vars/ansible_requirements.yml $dir/
