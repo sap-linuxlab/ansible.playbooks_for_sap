@@ -236,6 +236,7 @@ For further details on the output, please see [Host provisioning via Ansible](#h
 
 ### Design assumptions with execution impact
 
+- Throughout Ansible Playbook, use of Ansible Play option `any_errors_fatal: true` to enforce abort on all hosts if there is any error (and therefore stop Ansible Playbook). Please see [Using Ansible Playbooks - Error handling in playbooks - Aborting a play on all hosts](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts) for further information.
 - For Hyperscaler Cloud Service Providers that use Resource Groups (IBM Cloud, Microsoft Azure):
     - Virtual Machine and associated resources (Disks, Network Interfaces, Load Balancer etc.) will be provisioned to the same Resource Group as the targeted network/subnet.
     - Optional: Private DNS may be allocated to another Resource Group, and an optional variable is provided for this.
