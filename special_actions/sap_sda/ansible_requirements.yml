@@ -6,7 +6,7 @@ collections:
 #  - name: community.general
   - name: community.sap_install
     type: galaxy
-    version: 1.5.0
+    version: 1.5.2
   - name: community.sap_launchpad
     type: galaxy
     version: 1.1.1
