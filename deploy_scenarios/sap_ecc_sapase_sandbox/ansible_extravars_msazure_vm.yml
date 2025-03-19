@@ -1,9 +1,6 @@
 ---
 
-####
-# Mandatory parameters : Infrastructure provisioning definitions - MS Azure
-####
-
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
   xsmall_anydb_32vcpu:

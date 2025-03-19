@@ -1,9 +1,6 @@
 ---
 
-####
-# Mandatory parameters : Infrastructure provisioning definitions - IBM PowerVM
-####
-
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
 
   xsmall_256gb:

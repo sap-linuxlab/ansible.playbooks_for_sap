@@ -1,9 +1,6 @@
 ---
 
-####
-# Mandatory parameters : Infrastructure provisioning definitions - AWS
-####
-
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
   xsmall_256gb:

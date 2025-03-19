@@ -1,9 +1,6 @@
 ---
 
-####
-# Mandatory parameters : Infrastructure provisioning definitions - Google Cloud
-####
-
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
   xsmall_256gb:
