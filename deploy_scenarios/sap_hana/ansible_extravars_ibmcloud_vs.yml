@@ -1,10 +1,7 @@
 ---
 
 
-####
-# Mandatory parameters : Infrastructure provisioning definitions - IBM Cloud
-####
-
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
   xsmall_256gb:

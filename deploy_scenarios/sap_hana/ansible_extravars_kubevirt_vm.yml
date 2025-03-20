@@ -1,10 +1,8 @@
 ---
 
-####
 # EXPERIMENTAL
-# Mandatory parameters : Infrastructure provisioning definitions - KubeVirt
-####
 
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_kubevirt_vm_host_specifications_dictionary:
 
   tiny_64gb:
