@@ -1,5 +1,35 @@
 ---
 
+####
+# Infrastructure Provisioning selection
+# Google Cloud
+#
+# Only for use when 'gcp_ce_vm' is value provided for variable sap_vm_provision_iac_platform
+####
+
+sap_vm_provision_gcp_credentials_json: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_project: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"
+sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_hana_data: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
+sap_vm_provision_nfs_mount_point_hana_log: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
+sap_vm_provision_nfs_mount_point_hana_shared: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
+sap_vm_provision_nfs_mount_point_type: nfs
+sap_vm_provision_nfs_mount_point_opts: vers=3,mountvers=3,rw,relatime,hard,proto=tcp,timeo=600,retrans=2,mountport=2050,mountproto=tcp
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
@@ -90,36 +120,6 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           disk_size: 100                 # size in GB, integer
           disk_type: pd-balanced
           filesystem_type: xfs           # default: xfs
-
-
-####
-# Infrastructure Provisioning selection
-# Google Cloud
-#
-# Only for use when 'gcp_ce_vm' is value provided for variable sap_vm_provision_iac_platform
-####
-
-sap_vm_provision_gcp_credentials_json: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_gcp_project: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"
-sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
-
-# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
-####
-sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_nfs_mount_point_hana_data: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
-sap_vm_provision_nfs_mount_point_hana_log: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
-sap_vm_provision_nfs_mount_point_hana_shared: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
-sap_vm_provision_nfs_mount_point_type: nfs
-sap_vm_provision_nfs_mount_point_opts: vers=3,mountvers=3,rw,relatime,hard,proto=tcp,timeo=600,retrans=2,mountport=2050,mountproto=tcp
 
 
 #### Dictionary of operating system images ####
