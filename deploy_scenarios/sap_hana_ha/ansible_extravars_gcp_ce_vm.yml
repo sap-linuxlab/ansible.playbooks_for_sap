@@ -31,6 +31,14 @@ sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
 # sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 
+####
+# Linux Pacemaker cluster setup for SAP - variables for Google Cloud
+####
+
+sap_ha_pacemaker_cluster_gcp_project: "{{ sap_vm_provision_gcp_project }}"
+sap_ha_pacemaker_cluster_gcp_region_zone: "{{ sap_vm_provision_gcp_region_zone }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 

@@ -39,6 +39,14 @@ sap_vm_provision_nfs_mount_point_type: nfs4
 sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,timeo=600,retrans=2,hard # defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
 
 
+####
+# Linux Pacemaker cluster setup for SAP - variables for Microsoft Azure
+####
+
+sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ sap_vm_provision_msazure_subscription_id }}"
+sap_ha_pacemaker_cluster_msazure_resource_group: "{{ sap_vm_provision_msazure_resource_group_name }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_msazure_vm_host_specifications_dictionary:
 

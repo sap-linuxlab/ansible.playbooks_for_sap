@@ -35,6 +35,14 @@ sap_vm_provision_nfs_mount_point_type: nfs
 sap_vm_provision_nfs_mount_point_opts: vers=3,mountvers=3,rw,relatime,hard,proto=tcp,timeo=600,retrans=2,mountport=2050,mountproto=tcp
 
 
+####
+# Linux Pacemaker cluster setup for SAP - variables for Google Cloud
+####
+
+sap_ha_pacemaker_cluster_gcp_project: "{{ gcp_project }}"
+sap_ha_pacemaker_cluster_gcp_region_zone: "{{ gcp_region_zone }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 

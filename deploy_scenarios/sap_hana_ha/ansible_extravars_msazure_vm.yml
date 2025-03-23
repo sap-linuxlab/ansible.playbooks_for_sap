@@ -35,6 +35,14 @@ sap_vm_provision_msazure_key_pair_name_ssh_host_public_key: ""
 # sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 
+####
+# Linux Pacemaker cluster setup for SAP - variables for Microsoft Azure
+####
+
+sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ sap_vm_provision_msazure_subscription_id }}"
+sap_ha_pacemaker_cluster_msazure_resource_group: "{{ sap_vm_provision_msazure_resource_group_name }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_msazure_vm_host_specifications_dictionary:
 

@@ -33,6 +33,14 @@ sap_vm_provision_ibmcloud_vpc_sg_names: "ENTER_STRING_VALUE_HERE,ENTER_STRING_VA
 # sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 
+####
+# Linux Pacemaker cluster setup for SAP - variables for IBM Cloud
+####
+
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+sap_ha_pacemaker_cluster_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_region }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 

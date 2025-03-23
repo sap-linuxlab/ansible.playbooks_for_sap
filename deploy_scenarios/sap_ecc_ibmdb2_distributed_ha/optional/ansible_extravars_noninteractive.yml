@@ -120,39 +120,6 @@ sap_ha_install_anydb_ibmdb2_msazure_lb_health_check_port: 62700
 
 
 ####
-# Linux Pacemaker cluster setup for SAP - variables for AWS
-####
-
-sap_ha_pacemaker_cluster_aws_region: "{{ aws_vpc_availability_zone[:-1] }}"
-sap_ha_pacemaker_cluster_aws_access_key_id: "{{ aws_access_key }}"
-sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ aws_secret_access_key }}"
-
-
-####
-# Linux Pacemaker cluster setup for SAP - variables for Google Cloud
-####
-
-sap_ha_pacemaker_cluster_gcp_project: "{{ gcp_project }}"
-sap_ha_pacemaker_cluster_gcp_region_zone: "{{ gcp_region_zone }}"
-
-
-####
-# Linux Pacemaker cluster setup for SAP - variables for IBM Cloud
-####
-
-sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ ibmcloud_api_key }}"
-sap_ha_pacemaker_cluster_ibmcloud_region: "{{ ibmcloud_region }}"
-
-
-####
-# Linux Pacemaker cluster setup for SAP - variables for Microsoft Azure
-####
-
-sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ az_subscription_id }}"
-sap_ha_pacemaker_cluster_msazure_resource_group: "{{ az_resource_group_name }}"
-
-
-####
 # SAP SWPM, uses the Ansible Role sap_swpm with Default Templates mode
 # (see ansible_extravars.yml in parent directory of this Ansible Playbook for full definitions)
 ####

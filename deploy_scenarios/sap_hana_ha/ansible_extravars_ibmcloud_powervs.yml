@@ -35,6 +35,17 @@ sap_vm_provision_proxy_web_forward_exclusions: "localhost,127.0.0.1,{{ sap_vm_pr
 # sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 
+####
+# Linux Pacemaker cluster setup for SAP - variables for IBM Cloud, IBM Power Virtual Servers
+####
+
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+#sap_ha_pacemaker_cluster_ibmcloud_region: "" # Use sap_vm_provision to set automatically
+#sap_ha_pacemaker_cluster_ibmcloud_powervs_workspace_crn: "" # Use sap_vm_provision to set automatically
+sap_ha_pacemaker_cluster_ibmcloud_powervs_api_type: private
+sap_ha_pacemaker_cluster_ibmcloud_powervs_forward_proxy_url: "http://{{ sap_vm_provision_proxy_web_forward_proxy_ip }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 

@@ -30,6 +30,14 @@ sap_vm_provision_nfs_mount_point_type: nfs4
 sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,sec=sys,_netdev,hard,timeo=600,retrans=2,noresvport,acl # Use sec=sys to prevent file ownership issues e.g. 'Permission denied' error
 
 
+####
+# Linux Pacemaker cluster setup for SAP - variables for IBM Cloud
+####
+
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ ibmcloud_api_key }}"
+sap_ha_pacemaker_cluster_ibmcloud_region: "{{ ibmcloud_region }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
 
