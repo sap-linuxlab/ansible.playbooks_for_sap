@@ -16,18 +16,6 @@ sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
 
 
-####
-# Infrastructure Provisioning selection,
-# when provisioning minimal landing zone and hosts via Terraform
-#
-# Only for use when 'ansible_to_terraform' is value provided for variable sap_vm_provision_iac_type
-####
-
-sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
-sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
-
 
 ####
 # Infrastructure Provisioning selection,
