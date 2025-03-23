@@ -118,6 +118,7 @@ sap_vm_provision_nfs_mount_point_type: nfs4
 sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl
 
 
+#### Dictionary of operating system images ####
 sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
   # rhel-8-2: "*RHEL-8.2*_HVM*x86_64*" # removed

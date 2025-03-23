@@ -99,6 +99,7 @@ sap_vm_provision_aws_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE
 sap_vm_provision_aws_vpc_sg_names: "ENTER_STRING_VALUE_HERE"
 
 
+#### Dictionary of operating system images ####
 sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
   # rhel-8-2: "*RHEL-8.2*_HVM*x86_64*" # removed

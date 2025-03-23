@@ -210,6 +210,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
 
+#### Dictionary of operating system images ####
 # Full Linux subscription ppc64le OS Images with support and activation keys
 sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
   rhel-8-8: ".*RHEL.*8.*8"

@@ -105,6 +105,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
 
+#### Dictionary of operating system images ####
 sap_vm_provision_msazure_vm_host_os_image_dictionary:
   rhel-8-0:
     publisher: "RedHat"
