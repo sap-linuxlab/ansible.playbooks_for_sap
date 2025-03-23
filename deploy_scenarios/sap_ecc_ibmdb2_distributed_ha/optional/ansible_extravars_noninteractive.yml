@@ -30,38 +30,6 @@ sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
 
 ####
 # Infrastructure Provisioning selection
-# MS Azure
-#
-# Only for use when 'msazure_vm' is value provided for variable sap_vm_provision_iac_platform
-####
-
-sap_vm_provision_msazure_subscription_id: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_tenant_id: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_app_client_id: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_app_client_secret: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_resource_group_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_location_availability_zone_no: 1
-sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
-
-# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
-####
-sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
-sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
-sap_vm_provision_nfs_mount_point_type: nfs4
-sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,timeo=600,retrans=2,hard # defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
-
-
-####
-# Infrastructure Provisioning selection
 # OVirt
 #
 # Only for use when 'ovirt_vm' is value provided for variable sap_vm_provision_iac_platform
