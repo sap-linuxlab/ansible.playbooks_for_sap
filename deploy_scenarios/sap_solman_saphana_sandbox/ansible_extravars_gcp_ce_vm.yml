@@ -1,5 +1,36 @@
 ---
 
+####
+# Infrastructure Provisioning selection
+# Google Cloud
+#
+# Only for use when 'gcp_ce_vm' is value provided for variable sap_vm_provision_iac_platform
+####
+
+sap_vm_provision_gcp_credentials_json: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_project: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"
+sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
@@ -71,6 +102,7 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
 
+#### Dictionary of operating system images ####
 sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
   rhel-8-latest:
     project: "rhel-cloud"

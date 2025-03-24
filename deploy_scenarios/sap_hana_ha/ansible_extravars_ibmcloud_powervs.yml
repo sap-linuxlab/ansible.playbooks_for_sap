@@ -1,5 +1,51 @@
 ---
 
+####
+# Infrastructure Provisioning selection
+# IBM Cloud, IBM Power Virtual Servers
+#
+# Only for use when 'ibmcloud_powervs' is value provided for variable sap_vm_provision_iac_platform
+####
+sap_vm_provision_ibmcloud_api_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_resource_group_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
+sap_vm_provision_ibmcloud_powervs_location: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_powervs_workspace_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
+sap_vm_provision_ibmcloud_powervs_vlan_subnet_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
+sap_vm_provision_ibmcloud_powervs_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE" # only for ansible_to_terraform, can be name or 'new'
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_powervs_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_private_dns_custom_resolver_ip: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_ibmcloud_resource_group_name
+sap_vm_provision_proxy_web_forward_proxy_ip: "ENTER_STRING_VALUE_HERE" # IP:Port only, no http:// prefix
+sap_vm_provision_proxy_web_forward_exclusions: "localhost,127.0.0.1,{{ sap_vm_provision_dns_root_domain }}"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+
+
+####
+# Linux Pacemaker cluster setup for SAP - variables for IBM Cloud, IBM Power Virtual Servers
+####
+
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+#sap_ha_pacemaker_cluster_ibmcloud_region: "" # Use sap_vm_provision to set automatically
+#sap_ha_pacemaker_cluster_ibmcloud_powervs_workspace_crn: "" # Use sap_vm_provision to set automatically
+sap_ha_pacemaker_cluster_ibmcloud_powervs_api_type: private
+sap_ha_pacemaker_cluster_ibmcloud_powervs_forward_proxy_url: "http://{{ sap_vm_provision_proxy_web_forward_proxy_ip }}"
+
+
 #### Mandatory parameters : Ansible Dictionary for host specifications ####
 sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 
@@ -112,6 +158,7 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
 
+#### Dictionary of operating system images ####
 # Full Linux subscription ppc64le OS Images with support and activation keys
 sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
   rhel-8-8: ".*RHEL.*8.*8"
