@@ -2,10 +2,13 @@
 
 - **IBM Lab for SAP Solutions**
   - IBM Cloud
-    - **Sean Freeman** - Origin developer of Ansible Playbooks for SAP, project owner
+    - **Sean Freeman** - Origin developer of Ansible Playbooks for SAP
 - **Red Hat**
-    - Red Hat for SAP CoP
-        - **Janine Fuchs** - OVirt KVM and parallelisation developer
+  - Red Hat for SAP CoP
+    - **Janine Fuchs** - Developer of iterative improvements from advanced scenarios (e.g. HA), project co-owner
+- **SUSE**
+  - SUSE SAP Emerging Technology Solutions
+    - **Marcel Mamula** - Developer of iterative improvements from advanced scenarios (e.g. HA), project co-owner
 
 # New contributors
 

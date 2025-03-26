@@ -662,7 +662,21 @@ For first-time user how-to guidance, please also see:
 - [Getting Started - Azure DevOps Pipelines](./GET_STARTED_AZURE_DEVOPS.md)
 
 
-#### Execution Option 1. Interactive variable prompts
+#### Execution Option 1. Standard (non-interactive)
+
+1. Execute the Ansible Playbook using:
+    - the Ansible Extra Vars file (contains static definitions for filenames etc)
+    - another Ansible Extra Vars file for all variables which would otherwise be prompted (such as S-User ID and Password)
+2. Execution of host provisioning and SAP installation
+
+Example:
+```shell
+ansible-playbook ansible_playbook.yml \
+--extra-vars "@./ansible_extravars.yml" \
+--extra-vars "@./ansible_extravars_aws_ec2_vs.yml"
+```
+
+#### Execution Option 2. Interactive variable prompts
 
 1. Execute the Ansible Playbook using the Ansible Extra Vars file (contains static definitions for filenames etc)
 2. Follow Ansible Variable input prompts; depending on selection, different variables will be prompted.
@@ -672,23 +686,6 @@ Example:
 ```shell
 ansible-playbook ansible_playbook.yml \
 --extra-vars "@./ansible_extravars.yml"
-```
-
-#### Execution Option 2. Standard (non-interactive)
-
-1. Execute the Ansible Playbook using:
-    - the Ansible Extra Vars file (contains static definitions for filenames etc)
-    - another Ansible Extra Vars file for all variables which would otherwise be prompted (such as S-User ID and Password)
-2. Execution of host provisioning and SAP installation
-
-*Note: samples of the non-interactive YAML files are provided in `/optional` directory for each Ansible Playbook*
-
-Example:
-```shell
-ansible-playbook ansible_playbook.yml \
---extra-vars "@./ansible_extravars.yml" \
---extra-vars "@./cloud_credentials_extravars.yml" \
---extra-vars "@./sap_system_setup_extravars.yml"
 ```
 
 #### Execution Option 3. Standard (non-interactive) with Existing Hosts
@@ -704,9 +701,8 @@ Alternatively, to execute SAP installation to existing hosts use variable `sap_v
 Example:
 ```shell
 ansible-playbook ansible_playbook.yml \
---inventory "./existing_inventory.yml" \
---extra-vars "@./ansible_extravars.yml" \
---extra-vars "@./sap_system_setup_extravars.yml"
+--inventory "./optional/ansible_inventory_noninteractive.yml" \
+--extra-vars "@./ansible_extravars.yml"
 ```
 
 

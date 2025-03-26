@@ -1,6 +1,17 @@
 ---
 
 ####
+# Infrastructure Provisioning selection
+####
+
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"  # ansible , ansible_to_terraform , existing_hosts
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"  # aws_ec2_vs , gcp_ce_vm , ibmcloud_vs , ibmcloud_powervs , msazure_vm , ibmpowervm_vm , kubevirt_vm , ovirt_vm , vmware_vm
+
+sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
+
+
+####
 # Mandatory parameters : Ansible Defaults
 ####
 
@@ -32,11 +43,11 @@ sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
 ####
 
 # SAP ONE Support Launchpad credentials
-#sap_id_user: "SET_IN_VAR_PROMPT"
-#sap_id_user_password: 'SET_IN_VAR_PROMPT'
+sap_id_user: "ENTER_STRING_VALUE_HERE"
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
 
 # Directory for SAP installation media
-#sap_software_download_directory: "SET_IN_VAR_PROMPT"
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /software
 
 # Configuration for SAP installation media detection
 # sap_install_media_detect_** variables are set for each Ansible Task to the respective host
@@ -48,8 +59,8 @@ sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
 ####
 
 # SAP HANA master password
-#sap_hana_install_use_master_password: "SET_IN_VAR_PROMPT"
-#sap_hana_install_master_password: "SET_IN_VAR_PROMPT"
+sap_hana_install_use_master_password: "y"
+sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"
 
 # SAP HANA database server instance details
 #sap_hana_sid: "SET_IN_VAR_PROMPT"
@@ -110,7 +121,8 @@ sap_hana_install_media_dictionary:
 ####
 
 sap_swpm_ansible_role_mode: default_templates
-#sap_swpm_templates_product_input: "SET_IN_VAR_PROMPT"
+sap_swpm_templates_product_input_prefix: "ENTER_STRING_VALUE_HERE" # sap_s4hana_2023_standard , sap_s4hana_2022_standard , sap_s4hana_2021_standard , sap_s4hana_2020_standard , sap_s4hana_1909_standard
+#sap_swpm_templates_product_input: # Set for each Ansible Task to the respective host
 
 # Override any variable set in sap_swpm_inifile_dictionary
 # NW Passwords
