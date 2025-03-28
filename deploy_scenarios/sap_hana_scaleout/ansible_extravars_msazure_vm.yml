@@ -1,0 +1,278 @@
+---
+
+####
+# Infrastructure Provisioning selection
+# MS Azure
+#
+# Only for use when 'msazure_vm' is value provided for variable sap_vm_provision_iac_platform
+####
+
+sap_vm_provision_msazure_subscription_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_tenant_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_app_client_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_app_client_secret: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_resource_group_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_location_availability_zone_no: 1
+sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_key_pair_name_ssh_host_public_key: ""
+# sap_vm_provision_msazure_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_msazure_resource_group_name
+
+sap_vm_provision_nfs_mount_point_hana_data: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_hana_log: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_hana_shared: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_type: nfs4
+sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,timeo=600,retrans=2,hard # defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+
+
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
+sap_vm_provision_msazure_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hdb-scaleout: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+        - name: hana_data
+          mountpoint: /hana/data
+          nfs_path: /hana/data                                          # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_hana_data | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          nfs_path: /hana/log                                          # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_hana_log | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          nfs_path: /hana/shared                                          # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_hana_shared | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        - name: swap # hdb
+          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 4                 # size in GB, integer
+          disk_type: P1
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+
+#### Dictionary of operating system images ####
+sap_vm_provision_msazure_vm_host_os_image_dictionary:
+  rhel-8-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "8-gen2"
+  rhel-8-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "81-gen2"
+  rhel-8-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "82-gen2"
+  rhel-8-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "83-gen2"
+  rhel-8-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "84-gen2"
+  rhel-8-5:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "85-gen2"
+  rhel-8-6:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "86-gen2"
+  rhel-8-7:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "87-gen2"
+  rhel-8-8:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "88-gen2"
+  rhel-8-9:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "89-gen2"
+  rhel-8-10:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "810-gen2"
+  rhel-9-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "90-gen2"
+  rhel-9-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "91-gen2"
+  rhel-9-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "92-gen2"
+  rhel-9-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "93-gen2"
+  rhel-9-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "94-gen2"
+  sles-12-5:
+    publisher: "SUSE"
+    offer: "sles-12-sp5"
+    sku: "gen2"
+  sles-15-1:
+    publisher: "SUSE"
+    offer: "sles-15-sp1"
+    sku: "gen2"
+  sles-15-2:
+    publisher: "SUSE"
+    offer: "sles-15-sp2"
+    sku: "gen2"
+  sles-15-3:
+    publisher: "SUSE"
+    offer: "sles-15-sp3"
+    sku: "gen2"
+  sles-15-4:
+    publisher: "SUSE"
+    offer: "sles-15-sp4"
+    sku: "gen2"
+  sles-15-5:
+    publisher: "SUSE"
+    offer: "sles-15-sp5"
+    sku: "gen2"
+  sles-15-6:
+    publisher: "SUSE"
+    offer: "sles-15-sp6"
+    sku: "gen2"
+  rhel-8-1-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "81sapha-gen2"
+  rhel-8-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "82sapha-gen2"
+  rhel-8-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "84sapha-gen2"
+  rhel-8-6-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "86sapha-gen2"
+  rhel-8-8-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "88sapha-gen2"
+  rhel-8-10-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "810sapha-gen2"
+  rhel-9-0-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "90sapha-gen2"
+  rhel-9-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "92sapha-gen2"
+  rhel-9-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "94sapha-gen2"
+  sles-12-5-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-12-sp5"
+    sku: "gen2"
+  sles-15-1-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1"
+    sku: "gen2"
+  sles-15-2-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2"
+    sku: "gen2"
+  sles-15-3-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3"
+    sku: "gen2"
+  sles-15-4-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4"
+    sku: "gen2"
+  sles-15-5-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5"
+    sku: "gen2"
+  sles-15-6-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6"
+    sku: "gen2"
+  sles-15-1-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1-byos"
+    sku: "gen2"
+  sles-15-2-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2-byos"
+    sku: "gen2"
+  sles-15-3-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3-byos"
+    sku: "gen2"
+  sles-15-4-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4-byos"
+    sku: "gen2"
+  sles-15-5-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5-byos"
+    sku: "gen2"
+  sles-15-6-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6-byos"
+    sku: "gen2"

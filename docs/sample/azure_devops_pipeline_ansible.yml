@@ -152,7 +152,7 @@ stages:
           # By appending the variable to the end of the file, the last defined value will be used
           # However, this approach should not be used for DevOps Pipelines long-term or for any non-Sandbox Ansible Playbooks for SAP
           - script: |
-              cp "./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/optional/ansible_extravars_noninteractive.yml" ./generate_ansible_extravars_noninteractive.yml
+              cp "./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/ansible_extravars.yml" ./generate_ansible_extravars.yml
 
               # Avoid error "Permissions 0644 for '/home/vsts/work/_temp/*_rsa' are too open"
               chmod 400 $(ssh_key_private_bastion.secureFilePath)
@@ -164,37 +164,37 @@ stages:
               VAR_AZ_CLIENT_ID=$(echo "$(AZ_CLIENT_ID)")
               VAR_AZ_CLIENT_SECRET=$(echo "$(AZ_CLIENT_SECRET)")
 
-              sed -i "s/sap_vm_provision_iac_type.*/sap_vm_provision_iac_type: ansible/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_iac_platform.*/sap_vm_provision_iac_platform: msazure_vm/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_host_specification_plan.*/sap_vm_provision_host_specification_plan: ${{ parameters.sap_vm_provision_host_specification_plan }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_dns_root_domain:.*/sap_vm_provision_dns_root_domain: ${{ parameters.sap_vm_provision_dns_root_domain }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_iac_type.*/sap_vm_provision_iac_type: ansible/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_iac_platform.*/sap_vm_provision_iac_platform: msazure_vm/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_host_specification_plan.*/sap_vm_provision_host_specification_plan: ${{ parameters.sap_vm_provision_host_specification_plan }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_dns_root_domain:.*/sap_vm_provision_dns_root_domain: ${{ parameters.sap_vm_provision_dns_root_domain }}/g" ./generate_ansible_extravars.yml
 
-              sed -i "s/sap_vm_provision_msazure_subscription_id.*/sap_vm_provision_msazure_subscription_id: "$VAR_AZ_SUBSCRIPTION_ID"/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_tenant_id.*/sap_vm_provision_msazure_tenant_id: "$VAR_AZ_TENANT_ID"/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_app_client_id.*/sap_vm_provision_msazure_app_client_id: "$VAR_AZ_CLIENT_ID"/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_app_client_secret.*/sap_vm_provision_msazure_app_client_secret: "$VAR_AZ_CLIENT_SECRET"/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_subscription_id.*/sap_vm_provision_msazure_subscription_id: "$VAR_AZ_SUBSCRIPTION_ID"/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_tenant_id.*/sap_vm_provision_msazure_tenant_id: "$VAR_AZ_TENANT_ID"/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_app_client_id.*/sap_vm_provision_msazure_app_client_id: "$VAR_AZ_CLIENT_ID"/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_app_client_secret.*/sap_vm_provision_msazure_app_client_secret: "$VAR_AZ_CLIENT_SECRET"/g" ./generate_ansible_extravars.yml
 
-              sed -i "s/sap_vm_provision_msazure_resource_group_name.*/sap_vm_provision_msazure_resource_group_name: ${{ parameters.sap_vm_provision_msazure_resource_group_name }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_location_region.*/sap_vm_provision_msazure_location_region: ${{ parameters.sap_vm_provision_msazure_location_region }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_location_availability_zone_no.*/sap_vm_provision_msazure_location_availability_zone_no: ${{ parameters.sap_vm_provision_msazure_location_availability_zone_no }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_vnet_name.*/sap_vm_provision_msazure_vnet_name: ${{ parameters.sap_vm_provision_msazure_vnet_name }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_vnet_subnet_name.*/sap_vm_provision_msazure_vnet_subnet_name: ${{ parameters.sap_vm_provision_msazure_vnet_subnet_name }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_msazure_vm_host_os_image.*/sap_vm_provision_msazure_vm_host_os_image: ${{ parameters.sap_vm_provision_msazure_vm_host_os_image }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_msazure_resource_group_name.*/sap_vm_provision_msazure_resource_group_name: ${{ parameters.sap_vm_provision_msazure_resource_group_name }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_location_region.*/sap_vm_provision_msazure_location_region: ${{ parameters.sap_vm_provision_msazure_location_region }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_location_availability_zone_no.*/sap_vm_provision_msazure_location_availability_zone_no: ${{ parameters.sap_vm_provision_msazure_location_availability_zone_no }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_vnet_name.*/sap_vm_provision_msazure_vnet_name: ${{ parameters.sap_vm_provision_msazure_vnet_name }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_vnet_subnet_name.*/sap_vm_provision_msazure_vnet_subnet_name: ${{ parameters.sap_vm_provision_msazure_vnet_subnet_name }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_msazure_vm_host_os_image.*/sap_vm_provision_msazure_vm_host_os_image: ${{ parameters.sap_vm_provision_msazure_vm_host_os_image }}/g" ./generate_ansible_extravars.yml
 
-              sed -i "s/sap_vm_provision_bastion_user.*/sap_vm_provision_bastion_user: ${{ parameters.sap_vm_provision_bastion_user }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_bastion_ssh_port.*/sap_vm_provision_bastion_ssh_port: ${{ parameters.sap_vm_provision_bastion_ssh_port }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_vm_provision_bastion_public_ip.*/sap_vm_provision_bastion_public_ip: ${{ parameters.sap_vm_provision_bastion_public_ip }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_vm_provision_bastion_user.*/sap_vm_provision_bastion_user: ${{ parameters.sap_vm_provision_bastion_user }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_bastion_ssh_port.*/sap_vm_provision_bastion_ssh_port: ${{ parameters.sap_vm_provision_bastion_ssh_port }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_vm_provision_bastion_public_ip.*/sap_vm_provision_bastion_public_ip: ${{ parameters.sap_vm_provision_bastion_public_ip }}/g" ./generate_ansible_extravars.yml
 
-              sed -i "s|sap_vm_provision_ssh_bastion_private_key_file_path.*|sap_vm_provision_ssh_bastion_private_key_file_path: $(ssh_key_private_bastion.secureFilePath)|g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s|sap_vm_provision_ssh_host_private_key_file_path.*|sap_vm_provision_ssh_host_private_key_file_path: $(ssh_key_private_hosts.secureFilePath)|g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s|sap_vm_provision_ssh_host_public_key_file_path.*|sap_vm_provision_ssh_host_public_key_file_path: $(ssh_key_public_hosts.secureFilePath)|g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s|sap_vm_provision_ssh_bastion_private_key_file_path.*|sap_vm_provision_ssh_bastion_private_key_file_path: $(ssh_key_private_bastion.secureFilePath)|g" ./generate_ansible_extravars.yml
+              sed -i "s|sap_vm_provision_ssh_host_private_key_file_path.*|sap_vm_provision_ssh_host_private_key_file_path: $(ssh_key_private_hosts.secureFilePath)|g" ./generate_ansible_extravars.yml
+              sed -i "s|sap_vm_provision_ssh_host_public_key_file_path.*|sap_vm_provision_ssh_host_public_key_file_path: $(ssh_key_public_hosts.secureFilePath)|g" ./generate_ansible_extravars.yml
 
-              sed -i "s/sap_id_user_password:.*/sap_id_user_password: ${{ parameters.sap_id_user_password }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_id_user:.*/sap_id_user: ${{ parameters.sap_id_user }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s/sap_id_user_password:.*/sap_id_user_password: ${{ parameters.sap_id_user_password }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_id_user:.*/sap_id_user: ${{ parameters.sap_id_user }}/g" ./generate_ansible_extravars.yml
 
-              sed -i "s|sap_software_download_directory.*|sap_software_download_directory: ${{ parameters.sap_software_download_directory }}|g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_hana_install_master_password.*/sap_hana_install_master_password: ${{ parameters.sap_hana_install_master_password }}/g" ./generate_ansible_extravars_noninteractive.yml
-              sed -i "s/sap_swpm_templates_product_input.*/sap_swpm_templates_product_input: ${{ parameters.sap_swpm_templates_product_input }}/g" ./generate_ansible_extravars_noninteractive.yml
+              sed -i "s|sap_software_download_directory.*|sap_software_download_directory: ${{ parameters.sap_software_download_directory }}|g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_hana_install_master_password.*/sap_hana_install_master_password: ${{ parameters.sap_hana_install_master_password }}/g" ./generate_ansible_extravars.yml
+              sed -i "s/sap_swpm_templates_product_input.*/sap_swpm_templates_product_input: ${{ parameters.sap_swpm_templates_product_input }}/g" ./generate_ansible_extravars.yml
 
             displayName: Copy non-interactive extravars file and edit
 
@@ -231,7 +231,7 @@ stages:
           #       sap_software_download_directory: ""
           #       sap_hana_install_master_password: ""
           #       sap_swpm_templates_product_input: ""
-          #     TargetFolder: './templated_ansible_extravars_noninteractive.yml'
+          #     TargetFolder: './templated_ansible_extravars.yml'
           #   displayName: Create non-interactive extravars file from template contents
 
 
@@ -242,7 +242,7 @@ stages:
           - bash: |
               ansible-playbook ./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/ansible_playbook.yml \
               --extra-vars "@./deploy_scenarios/${{ parameters.ansible_playbook_scenario_sandbox }}/ansible_extravars.yml" \
-              --extra-vars "@./generate_ansible_extravars_noninteractive.yml"
+              --extra-vars "@./generate_ansible_extravars.yml"
             displayName: Execute Ansible Playbook for SAP
 
           # - task: Ansible@0

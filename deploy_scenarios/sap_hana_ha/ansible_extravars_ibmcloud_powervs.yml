@@ -1,0 +1,184 @@
+---
+
+####
+# Infrastructure Provisioning selection
+# IBM Cloud, IBM Power Virtual Servers
+#
+# Only for use when 'ibmcloud_powervs' is value provided for variable sap_vm_provision_iac_platform
+####
+sap_vm_provision_ibmcloud_api_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_resource_group_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
+sap_vm_provision_ibmcloud_powervs_location: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_powervs_workspace_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
+sap_vm_provision_ibmcloud_powervs_vlan_subnet_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
+sap_vm_provision_ibmcloud_powervs_host_os_image: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE" # only for ansible_to_terraform, can be name or 'new'
+
+# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
+####
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_powervs_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ibmcloud_private_dns_custom_resolver_ip: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_ibmcloud_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_ibmcloud_resource_group_name
+sap_vm_provision_proxy_web_forward_proxy_ip: "ENTER_STRING_VALUE_HERE" # IP:Port only, no http:// prefix
+sap_vm_provision_proxy_web_forward_exclusions: "localhost,127.0.0.1,{{ sap_vm_provision_dns_root_domain }}"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+
+
+####
+# Linux Pacemaker cluster setup for SAP - variables for IBM Cloud, IBM Power Virtual Servers
+####
+
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+#sap_ha_pacemaker_cluster_ibmcloud_region: "" # Use sap_vm_provision to set automatically
+#sap_ha_pacemaker_cluster_ibmcloud_powervs_workspace_crn: "" # Use sap_vm_provision to set automatically
+sap_ha_pacemaker_cluster_ibmcloud_powervs_api_type: private
+sap_ha_pacemaker_cluster_ibmcloud_powervs_forward_proxy_url: "http://{{ sap_vm_provision_proxy_web_forward_proxy_ip }}"
+
+
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
+sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana-p: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+          #lvm_lv_name:                  # default: lv_<element_name>
+          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          #lvm_vg_name:                  # default: vg_<element name>
+          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          #nfs_path:                     # subdirectory path on the NFS server
+          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 144                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+    hana-s: # Hostname, must be 13 characters or less
+      sap_host_type: hana_secondary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_secondary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 144                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+
+#### Dictionary of operating system images ####
+# Full Linux subscription ppc64le OS Images with support and activation keys
+sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
+  rhel-8-8: ".*RHEL.*8.*8"
+  rhel-9-2: ".*RHEL.*9.*2"
+  rhel-9-4: ".*RHEL.*9.*4"
+  sles-15-5: ".*SLES.*15.*5$"
+  rhel-8-4-sap-ha: "RHEL8-SP4-SAP"
+  rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
+  rhel-8-8-sap-ha: ".*RHEL.*8.*8.*SAP$" # ensure string suffix using $
+  rhel-9-2-sap-ha: ".*RHEL.*9.*2.*SAP$" # ensure string suffix using $
+  sles-15-2-sap-ha: ".*SLES.*15.*2.*SAP$" # ensure string suffix using $
+  sles-15-3-sap-ha: ".*SLES.*15.*3.*SAP$" # ensure string suffix using $
+  sles-15-4-sap-ha: ".*SLES.*15.*4.*SAP$" # ensure string suffix using $
+  sles-15-5-sap-ha: "SLES15-SP5-SAP"
+  # rhel-8-4-sap-ha-byol: "RHEL8-SP4-SAP-BYOL"
+  # rhel-8-6-sap-ha-byol: ".*RHEL.*8.*6.*SAP-BYOL$" # ensure string suffix using $
+  # rhel-8-8-sap-ha-byol: ".*RHEL.*8.*8.*SAP-BYOL$" # ensure string suffix using $
+  # rhel-9-2-sap-ha-byol: ".*RHEL.*9.*2.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-2-sap-ha-byol: ".*SLES.*15.*2.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-3-sap-ha-byol: ".*SLES.*15.*3.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-4-sap-ha-byol: ".*SLES.*15.*4.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-5-sap-ha-byol: "SLES15-SP5-SAP-BYOL"
+
