@@ -46,10 +46,6 @@
         playbook_enable_default_vars_sap: "{{ playbook_enable_default_vars_sap_register.user_input }}"
       when: playbook_enable_interactive_prompts
 
-    - name: Playbook Interactive - Trigger prompts for VM provisioning via {{ sap_vm_provision_iac_type }}
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/interactive/ansible_tasks_control_inputs.yml"
-      when: playbook_enable_interactive_prompts
-
 
 #### Provision VM ####
 
@@ -135,49 +131,6 @@
 
 #### Begin downloading SAP software installation media to hosts ####
 
-- name: Ansible Play for preparing downloads of SAP Software installation media
-  hosts: nwas_pas
-  become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
-  max_fail_percentage: 0
-  tasks:
-
-    - name: Create directories if does not exist
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-        mode: '0755'
-      loop:
-        - "{{ sap_install_media_detect_source_directory }}"
-
-    - name: Install Python package manager pip3 to system Python
-      ansible.builtin.package:
-        name: python3-pip
-        state: present
-
-    - name: Ensure OS Packages for lxml are installed
-      ansible.builtin.package:
-        name:
-          - python3-lxml
-          - libxslt-devel
-          - libxml2-devel
-        state: present
-
-    - name: Install Python dependency wheel to system Python
-      ansible.builtin.pip:
-        name:
-          - wheel
-
-    - name: Install Python dependencies for Ansible Modules to system Python
-      ansible.builtin.pip:
-        name:
-          - urllib3
-          - requests
-          - beautifulsoup4
-          - lxml
-
-
-
 - name: Ansible Play for downloading SAP S/4HANA installation media
   hosts: nwas_pas
   become: true
@@ -185,64 +138,27 @@
   max_fail_percentage: 0
   tasks:
 
-    - name: Set fact x86_64 softwarecenter_search_list_sapcar
-      ansible.builtin.set_fact:
-        softwarecenter_search_list_sapcar: "{{ softwarecenter_search_list_sapcar_x86_64 }}"
-      when:
-        - ansible_architecture == "x86_64"
+    # SAP software download will only occur if the 'community.sap_launchpad' collection is installed.
+    # Playbook will continue without the collection, assuming SAP software is already available.
+    - name: Check availability of sap_launchpad collection on execution node
+      delegate_to: localhost
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection list
+      register: sap_playbook_collection_list_output
 
-    - name: Set fact ppc64le softwarecenter_search_list_sapcar
-      ansible.builtin.set_fact:
-        softwarecenter_search_list_sapcar: "{{ softwarecenter_search_list_sapcar_ppc64le }}"
-      when:
-        - ansible_architecture == "ppc64le"
+    - name: Execute Ansible Role sap_software_download
+      ansible.builtin.include_role:
+        name: community.sap_launchpad.sap_software_download
+      vars:
+        sap_software_download_suser_id: "{{ sap_id_user }}"
+        sap_software_download_suser_password: "{{ sap_id_user_password }}"
+        sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
+        sap_software_download_deduplicate: first
+        sap_software_download_files: "{{ softwarecenter_search_list_sapcar_x86_64
+          if ansible_architecture == 'x86_64' else softwarecenter_search_list_sapcar_ppc64le }}"
+        sap_software_download_mp_transaction: "{{ sap_maintenance_planner_transaction_name }}"
+      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
-    - name: Execute Ansible Module with system Python to download SAPCAR
-      community.sap_launchpad.software_center_download:
-        suser_id: "{{ sap_id_user }}"
-        suser_password: "{{ sap_id_user_password }}"
-        softwarecenter_search_query: "{{ item }}"
-        dest: "{{ sap_install_media_detect_source_directory }}"
-      loop: "{{ softwarecenter_search_list_sapcar }}"
-      loop_control:
-        label: "{{ item }} : {{ download_task.msg }}"
-      register: download_task
-      retries: 1
-      until: download_task is not failed
-
-
-# Use task block to call Ansible Module
-    - name: Execute Ansible Module with system Python to download SAP Maintenance Planner Stack XML for the SAP S/4HANA installation
-      community.sap_launchpad.maintenance_planner_stack_xml_download:
-        suser_id: "{{ sap_id_user }}"
-        suser_password: "{{ sap_id_user_password }}"
-        transaction_name: "{{ sap_maintenance_planner_transaction_name }}"
-        dest: "{{ sap_install_media_detect_source_directory }}"
-
-
-# Use task block to call Ansible Module
-    - name: Execute Ansible Module with system Python to get installation files list from SAP Maintenance Planner for an SAP S/4HANA installation
-      community.sap_launchpad.maintenance_planner_files:
-        suser_id: "{{ sap_id_user }}"
-        suser_password: "{{ sap_id_user_password }}"
-        transaction_name: "{{ sap_maintenance_planner_transaction_name }}"
-      register: sap_maintenance_planner_basket_register
-
-
-# Use task block to call Ansible Module
-    - name: Execute Ansible Module with system Python to download files returned from SAP Maintenance Planner for an SAP S/4HANA installation
-      community.sap_launchpad.software_center_download:
-        suser_id: "{{ sap_id_user }}"
-        suser_password: "{{ sap_id_user_password }}"
-        download_link: "{{ item.DirectLink }}"
-        download_filename: "{{ item.Filename }}"
-        dest: "{{ sap_install_media_detect_source_directory }}"
-      loop: "{{ sap_maintenance_planner_basket_register.download_basket }}"
-      loop_control:
-        label: "{{ item.Filename }} : {{ download_task.msg }}"
-      register: download_task
-      retries: 1
-      until: download_task is not failed
 
     - name: Find SAP HANA installation media
       ansible.builtin.find:
