@@ -46,10 +46,6 @@
         playbook_enable_default_vars_sap: "{{ playbook_enable_default_vars_sap_register.user_input }}"
       when: playbook_enable_interactive_prompts
 
-    - name: Playbook Interactive - Trigger prompts for VM provisioning via {{ sap_vm_provision_iac_type }}
-      ansible.builtin.include_tasks: "{{ playbook_dir }}/interactive/ansible_tasks_control_inputs.yml"
-      when: playbook_enable_interactive_prompts
-
 
 #### Provision VM ####
 
@@ -115,49 +111,6 @@
 
 #### Begin downloading SAP software installation media to hosts ####
 
-- name: Ansible Play for preparing downloads of SAP Software installation media
-  hosts: hana_primary
-  become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
-  max_fail_percentage: 0
-  tasks:
-
-    - name: Create directories if does not exist
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-        mode: '0755'
-      loop:
-        - "{{ sap_install_media_detect_source_directory }}"
-
-    - name: Install Python package manager pip3 to system Python
-      ansible.builtin.package:
-        name: python3-pip
-        state: present
-
-    - name: Ensure OS Packages for lxml are installed
-      ansible.builtin.package:
-        name:
-          - python3-lxml
-          - libxslt-devel
-          - libxml2-devel
-        state: present
-
-    - name: Install Python dependency wheel to system Python
-      ansible.builtin.pip:
-        name:
-          - wheel
-
-    - name: Install Python dependencies for Ansible Modules to system Python
-      ansible.builtin.pip:
-        name:
-          - urllib3
-          - requests
-          - beautifulsoup4
-          - lxml
-
-
-
 - name: Ansible Play for downloading installation media
   hosts: hana_primary
   become: true
@@ -165,32 +118,25 @@
   max_fail_percentage: 0
   tasks:
 
-    # Set facts based on the install dictionary and the default template selected
-    - name: Set fact x86_64 softwarecenter_search_list
-      ansible.builtin.set_fact:
-        softwarecenter_search_list: "{{ sap_swpm_templates_install_dictionary[sap_swpm_templates_product_input].softwarecenter_search_list_x86_64 }}"
-      when:
-        - ansible_architecture == "x86_64"
+    # SAP software download will only occur if the 'community.sap_launchpad' collection is installed.
+    # Playbook will continue without the collection, assuming SAP software is already available.
+    - name: Check availability of sap_launchpad collection on execution node
+      delegate_to: localhost
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection list
+      register: sap_playbook_collection_list_output
 
-    # Set facts based on the install dictionary and the default template selected
-    - name: Set fact ppc64le softwarecenter_search_list
-      ansible.builtin.set_fact:
-        softwarecenter_search_list: "{{ sap_swpm_templates_install_dictionary[sap_swpm_templates_product_input].softwarecenter_search_list_ppc64le }}"
-      when:
-        - ansible_architecture == "ppc64le"
-
-    - name: Execute Ansible Module with system Python to download installation media for SAP HANA and SAP NetWeaver
-      community.sap_launchpad.software_center_download:
-        suser_id: "{{ sap_id_user }}"
-        suser_password: "{{ sap_id_user_password }}"
-        softwarecenter_search_query: "{{ item }}"
-        dest: "{{ sap_install_media_detect_source_directory }}"
-      loop: "{{ softwarecenter_search_list }}"
-      loop_control:
-        label: "{{ item }} : {{ download_task.msg }}"
-      register: download_task
-      retries: 1
-      until: download_task is not failed
+    - name: Execute Ansible Role sap_software_download
+      ansible.builtin.include_role:
+        name: community.sap_launchpad.sap_software_download
+      vars:
+        sap_software_download_suser_id: "{{ sap_id_user }}"
+        sap_software_download_suser_password: "{{ sap_id_user_password }}"
+        sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
+        sap_software_download_deduplicate: first
+        sap_software_download_files: "{{ sap_swpm_templates_install_dictionary[sap_swpm_templates_product_input]
+          ['softwarecenter_search_list_saphana_' ~ ansible_architecture] }}"
+      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
 
 
