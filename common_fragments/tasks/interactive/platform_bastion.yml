@@ -1,0 +1,126 @@
+---
+# Interactive prompts - Bastion
+
+# Following variables are defined and validated:
+# - sap_vm_provision_bastion_user
+# - sap_vm_provision_bastion_ssh_port
+# - sap_vm_provision_bastion_public_ip
+# - sap_vm_provision_ssh_bastion_private_key_file_path
+
+
+- name: Block for sap_vm_provision_bastion_user
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_bastion_user
+      ansible.builtin.pause:
+        prompt: Please enter name of Bastion user on Bastion server.
+      register: sap_vm_provision_bastion_user_register
+      when: sap_vm_provision_bastion_user is not defined
+
+    - name: Set fact for sap_vm_provision_bastion_user
+      ansible.builtin.set_fact:
+        sap_vm_provision_bastion_user: "{{ sap_vm_provision_bastion_user_register.user_input }}"
+      when: sap_vm_provision_bastion_user is not defined
+
+    - name: Interactive prompt - sap_vm_provision_bastion_user - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_bastion_user' value '{{ sap_vm_provision_bastion_user }}' is invalid.
+          {% if sap_vm_provision_bastion_user_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_bastion_user | length == 0
+          or sap_vm_provision_bastion_user == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_bastion_ssh_port
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_bastion_ssh_port
+      ansible.builtin.pause:
+        prompt: |
+          Please enter number of SSH port on Bastion server.
+          Press enter to skip and use the default value ('22').
+      register: sap_vm_provision_bastion_ssh_port_register
+      when: sap_vm_provision_bastion_ssh_port is not defined
+
+    - name: Set fact for sap_vm_provision_bastion_ssh_port
+      ansible.builtin.set_fact:
+        sap_vm_provision_bastion_ssh_port: "{{ sap_vm_provision_bastion_ssh_port_register.user_input
+          if sap_vm_provision_bastion_ssh_port_register.user_input | length > 0
+          else '22' }}"
+      when: sap_vm_provision_bastion_ssh_port is not defined
+
+    - name: Interactive prompt - sap_vm_provision_bastion_ssh_port - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_bastion_ssh_port' value '{{ sap_vm_provision_bastion_ssh_port }}' is invalid.
+          {% if sap_vm_provision_bastion_ssh_port_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_bastion_ssh_port | length == 0
+          or sap_vm_provision_bastion_ssh_port == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_bastion_public_ip
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_bastion_public_ip
+      ansible.builtin.pause:
+        prompt: Please enter Public IP of Bastion server.
+      register: sap_vm_provision_bastion_public_ip_register
+      when: sap_vm_provision_bastion_public_ip is not defined
+
+    - name: Set fact for sap_vm_provision_bastion_public_ip
+      ansible.builtin.set_fact:
+        sap_vm_provision_bastion_public_ip: "{{ sap_vm_provision_bastion_public_ip_register.user_input }}"
+      when: sap_vm_provision_bastion_public_ip is not defined
+
+    - name: Interactive prompt - sap_vm_provision_bastion_public_ip - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_bastion_public_ip' value '{{ sap_vm_provision_bastion_public_ip }}' is invalid.
+          {% if sap_vm_provision_bastion_public_ip_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_bastion_public_ip | length == 0
+          or sap_vm_provision_bastion_public_ip == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ssh_bastion_private_key_file_path
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_ssh_bastion_private_key_file_path
+      ansible.builtin.pause:
+        prompt: Please enter path to Bastion user private key located on execution server.
+      register: sap_vm_provision_ssh_bastion_private_key_file_path_register
+      when: sap_vm_provision_ssh_bastion_private_key_file_path is not defined
+
+    - name: Set fact for sap_vm_provision_ssh_bastion_private_key_file_path
+      ansible.builtin.set_fact:
+        sap_vm_provision_ssh_bastion_private_key_file_path:
+          "{{ sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input }}"
+      when: sap_vm_provision_ssh_bastion_private_key_file_path is not defined
+
+    - name: Interactive prompt - sap_vm_provision_ssh_bastion_private_key_file_path - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_ssh_bastion_private_key_file_path' value '{{
+            sap_vm_provision_ssh_bastion_private_key_file_path }}' is invalid.
+          {% if sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ssh_bastion_private_key_file_path | length == 0
+          or sap_vm_provision_ssh_bastion_private_key_file_path == 'ENTER_STRING_VALUE_HERE'

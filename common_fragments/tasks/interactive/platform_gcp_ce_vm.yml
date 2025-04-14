@@ -1,0 +1,365 @@
+---
+# Interactive prompts - Platform - gcp_ce_vm
+
+# Following variables are defined and validated:
+# - sap_vm_provision_gcp_credentials_json
+# - sap_vm_provision_gcp_project, sap_ha_pacemaker_cluster_gcp_project
+# - sap_vm_provision_gcp_region_zone, sap_ha_pacemaker_cluster_gcp_region_zone
+# - sap_vm_provision_gcp_region
+# - sap_vm_provision_gcp_vpc_name
+# - sap_vm_provision_gcp_vpc_subnet_name
+# - sap_vm_provision_host_specification_plan
+# - sap_vm_provision_gcp_ce_vm_host_os_image
+# - sap_vm_provision_ssh_host_private_key_file_path
+# - sap_vm_provision_ssh_host_public_key_file_path
+
+
+# Credentials section
+- name: Block for sap_vm_provision_gcp_credentials_json
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_gcp_credentials_json
+      ansible.builtin.pause:
+        prompt: Please enter path to Google Cloud JSON credential file on execution server.
+      register: sap_vm_provision_gcp_credentials_json_register
+      when: sap_vm_provision_gcp_credentials_json is not defined
+
+    - name: Set fact for sap_vm_provision_gcp_credentials_json
+      ansible.builtin.set_fact:
+        sap_vm_provision_gcp_credentials_json: "{{ sap_vm_provision_gcp_credentials_json_register.user_input }}"
+      when: sap_vm_provision_gcp_credentials_json is not defined
+
+    - name: Interactive prompt - sap_vm_provision_gcp_credentials_json - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_gcp_credentials_json' value '{{ sap_vm_provision_gcp_credentials_json }}' is invalid.
+          {% if sap_vm_provision_gcp_credentials_json_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_gcp_credentials_json | length == 0
+          or sap_vm_provision_gcp_credentials_json == 'ENTER_STRING_VALUE_HERE'
+
+
+# Infrastructure details section
+- name: Block for sap_vm_provision_gcp_project
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_gcp_project
+      ansible.builtin.pause:
+        prompt: Please enter Google Cloud Project.
+      register: sap_vm_provision_gcp_project_register
+      when: sap_vm_provision_gcp_project is not defined
+
+    - name: Set fact for sap_vm_provision_gcp_project
+      ansible.builtin.set_fact:
+        sap_vm_provision_gcp_project: "{{ sap_vm_provision_gcp_project_register.user_input }}"
+        sap_ha_pacemaker_cluster_gcp_project: "{{ sap_vm_provision_gcp_project_register.user_input }}"
+      when: sap_vm_provision_gcp_project is not defined
+
+    - name: Interactive prompt - sap_vm_provision_gcp_project - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_gcp_project' value '{{ sap_vm_provision_gcp_project }}' is invalid.
+          {% if sap_vm_provision_gcp_project_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_gcp_project | length == 0
+          or sap_vm_provision_gcp_project == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_gcp_region_zone
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_gcp_region_zone
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Google Cloud Region zone ID.
+          Example: europe-west1-b
+      register: sap_vm_provision_gcp_region_zone_register
+      when: sap_vm_provision_gcp_region_zone is not defined
+
+    - name: Set fact for sap_vm_provision_gcp_region_zone
+      ansible.builtin.set_fact:
+        sap_vm_provision_gcp_region_zone: "{{ sap_vm_provision_gcp_region_zone_register.user_input }}"
+        sap_ha_pacemaker_cluster_gcp_region_zone: "{{ sap_vm_provision_gcp_region_zone_register.user_input }}"
+      when: sap_vm_provision_gcp_region_zone is not defined
+
+    - name: Interactive prompt - sap_vm_provision_gcp_region_zone - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_gcp_region_zone' value '{{ sap_vm_provision_gcp_region_zone }}' is invalid.
+          {% if sap_vm_provision_gcp_region_zone_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_gcp_region_zone | length == 0
+          or sap_vm_provision_gcp_region_zone == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_gcp_region
+  vars:
+    __sap_vm_provision_gcp_region_default: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_gcp_region
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Google Cloud Region ID.
+          Example: europe-west1
+          Default: {{ __sap_vm_provision_gcp_region_default }} based on Region zone ID.
+          Press enter to skip and use the default value ('{{ __sap_vm_provision_gcp_region_default }}').
+      register: sap_vm_provision_gcp_region_register
+      when: sap_vm_provision_gcp_region is not defined
+
+    - name: Set fact for sap_vm_provision_gcp_region
+      ansible.builtin.set_fact:
+        sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_register.user_input
+          if sap_vm_provision_gcp_region_register.user_input | length > 0
+          else __sap_vm_provision_gcp_region_default }}"
+      when: sap_vm_provision_gcp_region is not defined
+
+    - name: Interactive prompt - sap_vm_provision_gcp_region - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_gcp_region' value '{{ sap_vm_provision_gcp_region }}' is invalid.
+          {% if sap_vm_provision_gcp_region_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_gcp_region | length == 0
+          or sap_vm_provision_gcp_region == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_gcp_vpc_name
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_gcp_vpc_name
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Google Cloud VPC name.
+      register: sap_vm_provision_gcp_vpc_name_register
+      when: sap_vm_provision_gcp_vpc_name is not defined
+
+    - name: Set fact for sap_vm_provision_gcp_vpc_name
+      ansible.builtin.set_fact:
+        sap_vm_provision_gcp_vpc_name: "{{ sap_vm_provision_gcp_vpc_name_register.user_input }}"
+      when: sap_vm_provision_gcp_vpc_name is not defined
+
+    - name: Interactive prompt - sap_vm_provision_gcp_vpc_name - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_gcp_vpc_name' value '{{ sap_vm_provision_gcp_vpc_name }}' is invalid.
+          {% if sap_vm_provision_gcp_vpc_name_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_gcp_vpc_name | length == 0
+          or sap_vm_provision_gcp_vpc_name == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_gcp_vpc_subnet_name
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_gcp_vpc_subnet_name
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Google Cloud VPC subnet name.
+      register: sap_vm_provision_gcp_vpc_subnet_name_register
+      when: sap_vm_provision_gcp_vpc_subnet_name is not defined
+
+    - name: Set fact for sap_vm_provision_gcp_vpc_subnet_name
+      ansible.builtin.set_fact:
+        sap_vm_provision_gcp_vpc_subnet_name: "{{ sap_vm_provision_gcp_vpc_subnet_name_register.user_input }}"
+      when: sap_vm_provision_gcp_vpc_subnet_name is not defined
+
+    - name: Interactive prompt - sap_vm_provision_gcp_vpc_subnet_name - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_gcp_vpc_subnet_name' value '{{ sap_vm_provision_gcp_vpc_subnet_name }}' is invalid.
+          {% if sap_vm_provision_gcp_vpc_subnet_name_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_gcp_vpc_subnet_name | length == 0
+          or sap_vm_provision_gcp_vpc_subnet_name == 'ENTER_STRING_VALUE_HERE'
+
+
+# Host specification and Image selection section
+- name: Ensure that sap_vm_provision_gcp_ce_vm_host_specifications_dictionary is defined
+  ansible.builtin.fail:
+    msg: |
+      Mandatory variable 'sap_vm_provision_gcp_ce_vm_host_specifications_dictionary' is not defined.
+      Please ensure this dictionary variable is present in extra vars and re-run the playbook.
+  when:
+    - sap_vm_provision_gcp_ce_vm_host_specifications_dictionary is not defined
+      or sap_vm_provision_gcp_ce_vm_host_specifications_dictionary | length == 0
+
+- name: Block for sap_vm_provision_host_specification_plan
+  block:
+    - name: Interactive prompt - sap_vm_provision_host_specification_plan
+      ansible.builtin.pause:
+        prompt: |
+          Please select deployment plan defined in sap_vm_provision_gcp_ce_vm_host_specifications_dictionary.
+          Available values: {{ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary.keys() | list }}
+          Press enter to skip and use the default value ('{{ __default_plan }}').
+      register: sap_vm_provision_host_specification_plan_register
+      vars:
+        __default_plan: "{{ (sap_vm_provision_gcp_ce_vm_host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Set fact for sap_vm_provision_host_specification_plan
+      ansible.builtin.set_fact:
+        sap_vm_provision_host_specification_plan:
+          "{{ sap_vm_provision_host_specification_plan_register.user_input
+            if sap_vm_provision_host_specification_plan_register.user_input | length > 0
+            else (sap_vm_provision_gcp_ce_vm_host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Interactive prompt - sap_vm_provision_host_specification_plan - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_host_specification_plan' value '{{ sap_vm_provision_host_specification_plan }}' is invalid.
+          Available options: {{ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary.keys() }}
+          {% if sap_vm_provision_host_specification_plan_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_host_specification_plan not in sap_vm_provision_gcp_ce_vm_host_specifications_dictionary.keys()
+
+
+- name: Ensure that sap_vm_provision_gcp_ce_vm_host_os_image_dictionary is defined
+  ansible.builtin.fail:
+    msg: |
+      Mandatory variable 'sap_vm_provision_gcp_ce_vm_host_os_image_dictionary' is not defined.
+      Please ensure this dictionary variable is present in extra vars and re-run the playbook.
+  when:
+    - sap_vm_provision_gcp_ce_vm_host_os_image_dictionary is not defined
+      or sap_vm_provision_gcp_ce_vm_host_os_image_dictionary | length == 0
+
+- name: Block for sap_vm_provision_gcp_ce_vm_host_os_image
+  block:
+    - name: Interactive prompt - sap_vm_provision_gcp_ce_vm_host_os_image
+      ansible.builtin.pause:
+        prompt: |
+          Please select OS image defined in sap_vm_provision_gcp_ce_vm_host_os_image_dictionary.
+          Available values: {{ sap_vm_provision_gcp_ce_vm_host_os_image_dictionary.keys() | list }}
+      register: sap_vm_provision_host_os_image_register
+      when: sap_vm_provision_gcp_ce_vm_host_os_image is not defined
+
+    - name: Set fact for sap_vm_provision_gcp_ce_vm_host_os_image
+      ansible.builtin.set_fact:
+        sap_vm_provision_gcp_ce_vm_host_os_image: "{{ sap_vm_provision_host_os_image_register.user_input }}"
+      when: sap_vm_provision_gcp_ce_vm_host_os_image is not defined
+
+    - name: Interactive prompt - sap_vm_provision_gcp_ce_vm_host_os_image - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_gcp_ce_vm_host_os_image' value '{{ sap_vm_provision_gcp_ce_vm_host_os_image }}' is invalid.
+          Available options: {{ sap_vm_provision_gcp_ce_vm_host_os_image_dictionary.keys() }}
+          {% if sap_vm_provision_host_os_image_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_gcp_ce_vm_host_os_image not in sap_vm_provision_gcp_ce_vm_host_os_image_dictionary.keys()
+
+
+# Bastion section
+- name: Block for interactive tasks - Bastion
+  when: sap_vm_provision_bastion_execution is not defined or sap_vm_provision_bastion_execution
+  block:
+    - name: Check if interactive tasks are available - Bastion
+      ansible.builtin.stat:
+        path: "../../common_fragments/tasks/interactive/platform_bastion.yml"
+      register: sap_playbook_interactive_tasks_bastion_availability
+      ignore_errors: true
+
+    - name: Execute interactive type - Bastion
+      ansible.builtin.include_tasks:
+        file: "../../common_fragments/tasks/interactive/platform_bastion.yml"
+      when: sap_playbook_interactive_tasks_bastion_availability.stat.exists
+
+    - name: Execute interactive type - Bastion - File not found
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/platform_bastion.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_bastion_availability.stat.exists
+
+
+- name: Block for sap_vm_provision_ssh_host_private_key_file_path
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.pause:
+        prompt: Please enter path to target host user private key located on execution server.
+      register: sap_vm_provision_ssh_host_private_key_file_path_register
+      when: sap_vm_provision_ssh_host_private_key_file_path is not defined
+
+    - name: Set fact for sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.set_fact:
+        sap_vm_provision_ssh_host_private_key_file_path:
+          "{{ sap_vm_provision_ssh_host_private_key_file_path_register.user_input }}"
+      when: sap_vm_provision_ssh_host_private_key_file_path is not defined
+
+    - name: Interactive prompt - sap_vm_provision_ssh_host_private_key_file_path - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_ssh_host_private_key_file_path' value '{{
+            sap_vm_provision_ssh_host_private_key_file_path }}' is invalid.
+          {% if sap_vm_provision_ssh_host_private_key_file_path_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ssh_host_private_key_file_path | length == 0
+          or sap_vm_provision_ssh_host_private_key_file_path == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ssh_host_public_key_file_path
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_ssh_host_public_key_file_path
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Please enter path to target host user private key located on execution server.
+          Press enter to skip.
+      register: sap_vm_provision_ssh_host_public_key_file_path_register
+      when: sap_vm_provision_ssh_host_public_key_file_path is not defined
+
+    - name: Set fact for sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.set_fact:
+        sap_vm_provision_ssh_host_public_key_file_path:
+          "{{ sap_vm_provision_ssh_host_public_key_file_path_register.user_input }}"
+      when:
+        - sap_vm_provision_ssh_host_public_key_file_path is not defined
+        - not sap_vm_provision_ssh_host_public_key_file_path_register.user_input == ''
+
+    - name: Interactive prompt - sap_vm_provision_ssh_host_public_key_file_path - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_ssh_host_public_key_file_path' value '{{
+            sap_vm_provision_ssh_host_public_key_file_path }}' is invalid.
+          {% if sap_vm_provision_ssh_host_public_key_file_path_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ssh_host_public_key_file_path is defined
+        - sap_vm_provision_ssh_host_public_key_file_path | length == 0
+          or sap_vm_provision_ssh_host_public_key_file_path == 'ENTER_STRING_VALUE_HERE'

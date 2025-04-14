@@ -1,0 +1,461 @@
+---
+# Interactive prompts - Platform - aws_ec2_vs
+
+# Following variables are defined and validated:
+# - sap_vm_provision_aws_access_key, sap_ha_pacemaker_cluster_aws_access_key_id
+# - sap_vm_provision_aws_secret_access_key, sap_ha_pacemaker_cluster_aws_secret_access_key
+# - sap_vm_provision_aws_vpc_availability_zone
+# - sap_vm_provision_aws_region, sap_ha_pacemaker_cluster_aws_region
+# - sap_vm_provision_aws_vpc_subnet_create_boolean
+# - sap_vm_provision_aws_vpc_subnet_id
+# - sap_vm_provision_aws_vpc_sg_names
+# - sap_ha_pacemaker_cluster_aws_vip_update_rt
+# - sap_vm_provision_host_specification_plan
+# - sap_vm_provision_aws_ec2_vs_host_os_image
+# - sap_vm_provision_aws_dns_overwrite
+# - sap_vm_provision_ssh_host_private_key_file_path
+# - sap_vm_provision_aws_key_pair_name_ssh_host_public_key
+
+
+# Credentials section
+- name: Block for sap_vm_provision_aws_access_key
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_access_key
+      ansible.builtin.pause:
+        prompt: Please enter AWS Access Key.
+      register: sap_vm_provision_aws_access_key_register
+      when: sap_vm_provision_aws_access_key is not defined
+
+    - name: Set fact for sap_vm_provision_aws_access_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_access_key: "{{ sap_vm_provision_aws_access_key_register.user_input }}"
+        sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key_register.user_input }}"
+      when: sap_vm_provision_aws_access_key is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_access_key - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_access_key' value '{{ sap_vm_provision_aws_access_key }}' is invalid.
+          {% if sap_vm_provision_aws_access_key_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_aws_access_key | length == 0
+          or sap_vm_provision_aws_access_key == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_aws_secret_access_key
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_secret_access_key
+      ansible.builtin.pause:
+        prompt: Please enter AWS Secret Access Key.
+      register: sap_vm_provision_aws_secret_access_key_register
+      when: sap_vm_provision_aws_secret_access_key is not defined
+
+    - name: Set fact for sap_vm_provision_aws_secret_access_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key_register.user_input }}"
+        sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key_register.user_input }}"
+      when: sap_vm_provision_aws_secret_access_key is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_secret_access_key - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_secret_access_key' value '{{ sap_vm_provision_aws_secret_access_key }}' is invalid.
+          {% if sap_vm_provision_aws_secret_access_key_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_aws_secret_access_key | length == 0
+          or sap_vm_provision_aws_secret_access_key == 'ENTER_STRING_VALUE_HERE'
+
+
+# Infrastructure details section
+- name: Block for sap_vm_provision_aws_vpc_availability_zone
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_availability_zone
+      ansible.builtin.pause:
+        prompt: |
+          Please enter AWS VPC Availability zone.
+          Example: eu-central-1a
+      register: sap_vm_provision_aws_vpc_availability_zone_register
+      when: sap_vm_provision_aws_vpc_availability_zone is not defined
+
+    - name: Set fact for sap_vm_provision_aws_vpc_availability_zone
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_availability_zone: "{{ sap_vm_provision_aws_vpc_availability_zone_register.user_input }}"
+      when: sap_vm_provision_aws_vpc_availability_zone is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_availability_zone - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_vpc_availability_zone' value '{{ sap_vm_provision_aws_vpc_availability_zone }}' is invalid.
+          {% if sap_vm_provision_aws_vpc_availability_zone_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_aws_vpc_availability_zone | length == 0
+          or sap_vm_provision_aws_vpc_availability_zone == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_aws_region
+  vars:
+    __sap_vm_provision_aws_region_default: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_region
+      ansible.builtin.pause:
+        prompt: |
+          Please enter AWS Region.
+          Example: eu-central-1
+          Default: {{ __sap_vm_provision_aws_region_default }} based on availability zone.
+          Press enter to skip and use the default value ('{{ __sap_vm_provision_aws_region_default }}').
+      register: sap_vm_provision_aws_region_register
+      when: sap_vm_provision_aws_region is not defined
+
+    - name: Set fact for sap_vm_provision_aws_region
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_region: "{{ sap_vm_provision_aws_region_register.user_input
+          if sap_vm_provision_aws_region_register.user_input | length > 0
+          else __sap_vm_provision_aws_region_default }}"
+        sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_region_register.user_input
+          if sap_vm_provision_aws_region_register.user_input | length > 0
+          else __sap_vm_provision_aws_region_default }}"
+      when: sap_vm_provision_aws_region is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_region - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_region' value '{{ sap_vm_provision_aws_region }}' is invalid.
+          {% if sap_vm_provision_aws_region_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_aws_region | length == 0
+          or sap_vm_provision_aws_region == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_aws_vpc_subnet_create_boolean
+  when: sap_vm_provision_iac_type == 'ansible_to_terraform'
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_subnet_create_boolean
+      ansible.builtin.pause:
+        prompt: |
+          (ansible_to_terraform) Please enter true if you want VPC subnet creation (true/false).
+          Default: false
+      register: sap_vm_provision_aws_vpc_subnet_create_boolean_register
+      when: sap_vm_provision_aws_vpc_subnet_create_boolean is not defined
+
+    - name: Set fact for sap_vm_provision_aws_vpc_subnet_create_boolean
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_subnet_create_boolean:
+          "{{ true if sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input == 'true'
+            else (sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input
+              if sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input | length > 0 else false) }}"
+      when: sap_vm_provision_aws_vpc_subnet_create_boolean is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_subnet_create_boolean - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_vpc_subnet_create_boolean' value '{{
+            sap_vm_provision_aws_vpc_subnet_create_boolean }}' is invalid.
+          Available options: true, false
+          {% if sap_vm_provision_aws_vpc_subnet_create_boolean_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_aws_vpc_subnet_create_boolean is not boolean
+
+
+- name: Block for sap_vm_provision_aws_vpc_subnet_id
+  when: sap_vm_provision_iac_type == 'ansible'
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_subnet_id
+      ansible.builtin.pause:
+        prompt: |
+          Please enter AWS VPC Subnet ID or new, when using ansible_to_terraform.
+          {% if sap_vm_provision_iac_type == 'ansible_to_terraform' %}
+          Use 'new' for ansible_to_terraform.
+          {% endif %}
+      register: sap_vm_provision_aws_vpc_subnet_id_register
+      when: sap_vm_provision_aws_vpc_subnet_id is not defined
+
+    - name: Set fact for sap_vm_provision_aws_vpc_subnet_id
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_subnet_id: "{{ sap_vm_provision_aws_vpc_subnet_id_register.user_input }}"
+      when: sap_vm_provision_aws_vpc_subnet_id is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_subnet_id - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_vpc_subnet_id' value '{{ sap_vm_provision_aws_vpc_subnet_id }}' is invalid.
+          {% if sap_vm_provision_aws_vpc_subnet_id_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_aws_vpc_subnet_id | length == 0
+          or sap_vm_provision_aws_vpc_subnet_id == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_aws_vpc_sg_names
+  when: sap_vm_provision_iac_type == 'ansible'
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_sg_names
+      ansible.builtin.pause:
+        prompt: Please enter comma separated list of AWS Security group IDs to attach to provisioned host.
+      register: sap_vm_provision_aws_vpc_sg_names_register
+      when: sap_vm_provision_aws_vpc_sg_names is not defined
+
+    - name: Set fact for sap_vm_provision_aws_vpc_sg_names
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_vpc_sg_names: "{{ sap_vm_provision_aws_vpc_sg_names_register.user_input }}"
+      when: sap_vm_provision_aws_vpc_sg_names is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_vpc_sg_names - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_vpc_sg_names' value '{{ sap_vm_provision_aws_vpc_sg_names }}' is invalid.
+          {% if sap_vm_provision_aws_vpc_sg_names_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_aws_vpc_sg_names | length == 0
+          or 'ENTER_STRING_VALUE_HERE' in sap_vm_provision_aws_vpc_sg_names
+
+
+- name: Block for sap_ha_pacemaker_cluster_aws_vip_update_rt
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_ha_pacemaker_cluster_aws_vip_update_rt
+      ansible.builtin.pause:
+        prompt: Please enter comma separated list of routing table IDs for managing Virtual IP failover.
+      register: sap_ha_pacemaker_cluster_aws_vip_update_rt_register
+      when: sap_ha_pacemaker_cluster_aws_vip_update_rt is not defined
+
+    - name: Set fact for sap_ha_pacemaker_cluster_aws_vip_update_rt
+      ansible.builtin.set_fact:
+        sap_ha_pacemaker_cluster_aws_vip_update_rt: "{{ sap_ha_pacemaker_cluster_aws_vip_update_rt_register.user_input }}"
+      when: sap_ha_pacemaker_cluster_aws_vip_update_rt is not defined
+
+    - name: Interactive prompt - sap_ha_pacemaker_cluster_aws_vip_update_rt - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_ha_pacemaker_cluster_aws_vip_update_rt' value '{{ sap_ha_pacemaker_cluster_aws_vip_update_rt }}' is invalid.
+          {% if sap_ha_pacemaker_cluster_aws_vip_update_rt_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_ha_pacemaker_cluster_aws_vip_update_rt | length == 0
+          or sap_ha_pacemaker_cluster_aws_vip_update_rt == 'ENTER_STRING_VALUE_HERE'
+
+
+# Host specification and Image selection section
+- name: Ensure that sap_vm_provision_aws_ec2_vs_host_specifications_dictionary is defined
+  ansible.builtin.fail:
+    msg: |
+      Mandatory variable 'sap_vm_provision_aws_ec2_vs_host_specifications_dictionary' is not defined.
+      Please ensure this dictionary variable is present in extra vars and re-run the playbook.
+  when:
+    - sap_vm_provision_aws_ec2_vs_host_specifications_dictionary is not defined
+      or sap_vm_provision_aws_ec2_vs_host_specifications_dictionary | length == 0
+
+- name: Block for sap_vm_provision_host_specification_plan
+  block:
+    - name: Interactive prompt - sap_vm_provision_host_specification_plan
+      ansible.builtin.pause:
+        prompt: |
+          Please select deployment plan defined in sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.
+          Available values: {{ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys() | list }}
+          Press enter to skip and use the default value ('{{ __default_plan }}').
+      register: sap_vm_provision_host_specification_plan_register
+      vars:
+        __default_plan: "{{ (sap_vm_provision_aws_ec2_vs_host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Set fact for sap_vm_provision_host_specification_plan
+      ansible.builtin.set_fact:
+        sap_vm_provision_host_specification_plan:
+          "{{ sap_vm_provision_host_specification_plan_register.user_input
+            if sap_vm_provision_host_specification_plan_register.user_input | length > 0
+            else (sap_vm_provision_aws_ec2_vs_host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Interactive prompt - sap_vm_provision_host_specification_plan - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_host_specification_plan' value '{{ sap_vm_provision_host_specification_plan }}' is invalid.
+          Available options: {{ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys() }}
+          {% if sap_vm_provision_host_specification_plan_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_host_specification_plan not in sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys()
+
+
+- name: Ensure that sap_vm_provision_aws_ec2_vs_host_os_image_dictionary is defined
+  ansible.builtin.fail:
+    msg: |
+      Mandatory variable 'sap_vm_provision_aws_ec2_vs_host_os_image_dictionary' is not defined.
+      Please ensure this dictionary variable is present in extra vars and re-run the playbook.
+  when:
+    - sap_vm_provision_aws_ec2_vs_host_os_image_dictionary is not defined
+      or sap_vm_provision_aws_ec2_vs_host_os_image_dictionary | length == 0
+
+- name: Block for sap_vm_provision_aws_ec2_vs_host_os_image
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_ec2_vs_host_os_image
+      ansible.builtin.pause:
+        prompt: |
+          Please select OS image defined in sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.
+          Available values: {{ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys() | list }}
+      register: sap_vm_provision_aws_ec2_vs_host_os_image_register
+      when: sap_vm_provision_aws_ec2_vs_host_os_image is not defined
+
+    - name: Set fact for sap_vm_provision_aws_ec2_vs_host_os_image
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_ec2_vs_host_os_image: "{{ sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input }}"
+      when: sap_vm_provision_aws_ec2_vs_host_os_image is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_ec2_vs_host_os_image - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_ec2_vs_host_os_image' value '{{ sap_vm_provision_aws_ec2_vs_host_os_image }}' is invalid.
+          Available options: {{ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys() }}
+          {% if sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_aws_ec2_vs_host_os_image not in sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys()
+
+
+- name: Block for sap_vm_provision_aws_dns_overwrite
+  when: sap_vm_provision_iac_type == 'ansible'
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_dns_overwrite
+      ansible.builtin.pause:
+        prompt: |
+          Please enter 'true' to enable overwrite of AWS DNS.
+          Press enter to skip and use the default value ('false').
+      register: sap_vm_provision_aws_dns_overwrite_register
+      when: sap_vm_provision_aws_dns_overwrite is not defined
+
+    - name: Set fact for sap_vm_provision_aws_dns_overwrite
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_dns_overwrite:
+          "{{ true if sap_vm_provision_aws_dns_overwrite_register.user_input == 'true'
+            else (sap_vm_provision_aws_dns_overwrite_register.user_input
+              if sap_vm_provision_aws_dns_overwrite_register.user_input | length > 0 else false) }}"
+      when: sap_vm_provision_aws_dns_overwrite is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_dns_overwrite - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_dns_overwrite' value '{{ sap_vm_provision_aws_dns_overwrite }}' is invalid.
+          Available options: true, false
+          {% if sap_vm_provision_aws_dns_overwrite_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_aws_dns_overwrite is not boolean
+
+
+# Bastion section
+- name: Block for interactive tasks - Bastion
+  when: sap_vm_provision_bastion_execution is not defined or sap_vm_provision_bastion_execution
+  block:
+    - name: Check if interactive tasks are available - Bastion
+      ansible.builtin.stat:
+        path: "../../common_fragments/tasks/interactive/platform_bastion.yml"
+      register: sap_playbook_interactive_tasks_bastion_availability
+      ignore_errors: true
+
+    - name: Execute interactive type - Bastion
+      ansible.builtin.include_tasks:
+        file: "../../common_fragments/tasks/interactive/platform_bastion.yml"
+      when: sap_playbook_interactive_tasks_bastion_availability.stat.exists
+
+    - name: Execute interactive type - Bastion - File not found
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/platform_bastion.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_bastion_availability.stat.exists
+
+
+- name: Block for sap_vm_provision_ssh_host_private_key_file_path
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.pause:
+        prompt: Please enter path to target host user private key located on execution server.
+      register: sap_vm_provision_ssh_host_private_key_file_path_register
+      when: sap_vm_provision_ssh_host_private_key_file_path is not defined
+
+    - name: Set fact for sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.set_fact:
+        sap_vm_provision_ssh_host_private_key_file_path:
+          "{{ sap_vm_provision_ssh_host_private_key_file_path_register.user_input }}"
+      when: sap_vm_provision_ssh_host_private_key_file_path is not defined
+
+    - name: Interactive prompt - sap_vm_provision_ssh_host_private_key_file_path - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_ssh_host_private_key_file_path' value '{{
+            sap_vm_provision_ssh_host_private_key_file_path }}' is invalid.
+          {% if sap_vm_provision_ssh_host_private_key_file_path_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ssh_host_private_key_file_path | length == 0
+          or sap_vm_provision_ssh_host_private_key_file_path == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_aws_key_pair_name_ssh_host_public_key
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_vm_provision_aws_key_pair_name_ssh_host_public_key
+      ansible.builtin.pause:
+        prompt: Please enter name of AWS SSH key name to be used for provisioning.
+      register: sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register
+      when: sap_vm_provision_aws_key_pair_name_ssh_host_public_key is not defined
+
+    - name: Set fact for sap_vm_provision_aws_key_pair_name_ssh_host_public_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_aws_key_pair_name_ssh_host_public_key:
+          "{{ sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register.user_input }}"
+      when: sap_vm_provision_aws_key_pair_name_ssh_host_public_key is not defined
+
+    - name: Interactive prompt - sap_vm_provision_aws_key_pair_name_ssh_host_public_key - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_vm_provision_aws_key_pair_name_ssh_host_public_key' value '{{
+            sap_vm_provision_aws_key_pair_name_ssh_host_public_key }}' is invalid.
+          {% if sap_vm_provision_aws_key_pair_name_ssh_host_public_key_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_aws_key_pair_name_ssh_host_public_key | length == 0
+          or sap_vm_provision_aws_key_pair_name_ssh_host_public_key == 'ENTER_STRING_VALUE_HERE'
