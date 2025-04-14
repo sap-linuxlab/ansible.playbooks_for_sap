@@ -1,0 +1,31 @@
+---
+#### Bastion server details ####
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+
+#### Infrastructure platform variables ####
+sap_vm_provision_msazure_subscription_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_tenant_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_app_client_id: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_app_client_secret: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_resource_group_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_msazure_location_availability_zone_no: 1  # ansible_to_terraform
+sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_msazure_key_pair_name_ssh_host_public_key: ""
+sap_vm_provision_msazure_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_msazure_resource_group_name
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"

@@ -1,0 +1,25 @@
+---
+#### Bastion server details ####
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
+
+#### Infrastructure platform variables ####
+sap_vm_provision_gcp_credentials_json: "ENTER_STRING_VALUE_HERE"  # Path to JSON file
+sap_vm_provision_gcp_project: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"
+sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
