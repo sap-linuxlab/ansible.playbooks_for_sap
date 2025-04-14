@@ -1,0 +1,139 @@
+---
+name: Publish Stage branch to Main
+
+on:
+  # Runs on merged pull_request: to stage branch
+  pull_request:
+    branches:
+      - stage
+    types:
+      - closed
+
+  # Enable manual start button
+  workflow_dispatch:
+
+jobs:
+  sync:
+    name: 'Publish Stage branch to Main'
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout branch stage
+        uses: actions/checkout@v4
+        with:
+          path: repo_playbooks_stage
+          ref: stage
+
+      - name: Checkout branch main
+        uses: actions/checkout@v4
+        with:
+          path: repo_playbooks_main
+          ref: main
+
+      - name: Copy shared files to scenarios
+        working-directory: repo_playbooks_stage
+        run: |
+          shopt -s nullglob  # Ensures that empty results are empty
+          
+          # Loop through all deploy_scenarios
+          for dir in ./deploy_scenarios/*; do
+            # check if there are base files present, identifying reworked scenario
+            files=("$dir"/ansible_extravars_*_base*.yml)
+
+            if [[ ${#files[@]} -gt 0 ]]; then
+              # Copy tasks
+              cp -r ./common_fragments/tasks/* $dir/optional/
+
+              # Update path to copied tasks
+              sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' $dir/ansible_playbook.yml $dir/optional/interactive/*.yml
+
+              # Copy ansible_requirements
+              cp ./common_fragments/ansible_requirements.yml $dir/
+            fi  # if base files were found
+          done
+          
+          shopt -u nullglob
+
+      - name: Append shared fragments to deploy_scenarios files
+        working-directory: repo_playbooks_stage
+        run: |
+          # Loop through all deploy_scenarios
+          for dir in ./deploy_scenarios/*; do
+
+            # Loop through all valid extravars files
+            for file in "$dir"/ansible_extravars_*_base.yml; do
+              if [[ -f "$file" ]]; then
+                # Extract platform name using basename of file
+                platform=$(basename "$file" | sed 's/ansible_extravars_\(.*\)_base\.yml/\1/')
+                
+                # Define files for appending
+                fragment_vars="common_fragments/vars/platform_vars_${platform}.yml"
+                fragment_images="common_fragments/vars/platform_images_${platform}.yml"
+                scenario_spec="$dir"/ansible_extravars_"$platform"_base_spec.yml
+                interactive_vars="$dir"/optional/ansible_extravars_interactive.yml
+
+                # Append shared platform vars fragment when it exists
+                if [ -f "$fragment_vars" ]; then
+                  sed 's/^---/\n/g' "$fragment_vars" >> "$file"
+                fi  # if fragment_vars exists
+
+                # Append scenario spec vars when it exists
+                # Spec is also appended to interactive vars
+                if [ -f "$scenario_spec" ]; then
+                  sed 's/^---/\n/g' "$scenario_spec" >> "$file"
+                  sed 's/^---/\n/g' "$scenario_spec" >> "$interactive_vars"
+                  rm -f "$scenario_spec"
+                fi  # if scenario_spec exists
+
+                # Append shared platform image fragment when it exists
+                # Images are also appended to interactive vars
+                if [ -f "$fragment_images" ]; then
+                  sed 's/^---/\n/g' "$fragment_images" >> "$file"
+                  sed 's/^---/\n/g' "$fragment_images" >> "$interactive_vars"
+                fi  # if fragment_images exists
+
+                # Remove base files
+                new_file="${file%_base.yml}.yml"
+                mv "$file" "$new_file"
+              fi  # if file exists
+
+            done  # file loop
+          done  # dir loop
+
+          # Remove fragments after copying them
+          git rm -rf ./common_fragments
+
+      - name: Synchronize main with transformed stage
+        run: |
+          rsync --archive --delete --exclude '.git' repo_playbooks_stage/ repo_playbooks_main/
+
+
+      - name: Check for changes
+        working-directory: repo_playbooks_main
+        id: check_changes
+        run: |
+          git add .
+          if [[ -n "$(git status --porcelain)" ]]; then
+            echo "::set-output name=has_changes::true"
+          else
+            echo "::set-output name=has_changes::false"
+          fi
+
+      - name: Commit changes
+        working-directory: repo_playbooks_main
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            PR_NUMBER=$(echo ${{ github.event.pull_request.number }})
+          else
+            PR_NUMBER="manual"
+          fi
+          git commit -m "Merge changes from stage to main branch (PR #$PR_NUMBER)."
+
+      - name: Push changes
+        working-directory: repo_playbooks_main
+        if: steps.check_changes.outputs.has_changes == 'true'
+        run: |
+          git push origin main --force
