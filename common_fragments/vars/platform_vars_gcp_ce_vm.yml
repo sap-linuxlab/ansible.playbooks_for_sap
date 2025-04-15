@@ -16,6 +16,9 @@ sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"
 sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"
+
+# Enter image name from dictionary sap_vm_provision_gcp_ce_vm_host_os_image_dictionary keys.
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-latest (Red Hat)
 sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
 
 # Variables required for sap_vm_provision_iac_type=ansible_to_terraform

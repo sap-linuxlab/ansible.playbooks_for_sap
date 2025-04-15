@@ -17,6 +17,9 @@ sap_vm_provision_aws_vpc_availability_zone: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_aws_vpc_subnet_create_boolean:
   "{{ true | default(false) if sap_vm_provision_aws_vpc_subnet_id == 'new' else false }}"
 sap_vm_provision_aws_vpc_subnet_id: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+
+# Enter image name from dictionary sap_vm_provision_aws_ec2_vs_host_os_image_dictionary keys.
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)
 sap_vm_provision_aws_ec2_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
 
 # Variables required for sap_vm_provision_iac_type=ansible

@@ -18,6 +18,9 @@ sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_msazure_location_availability_zone_no: 1  # ansible_to_terraform
 sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
 sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+
+# Enter image name from dictionary sap_vm_provision_msazure_vm_host_os_image_dictionary keys.
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)
 sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
 
 # Variables required for sap_vm_provision_iac_type=ansible

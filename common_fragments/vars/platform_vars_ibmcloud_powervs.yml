@@ -15,8 +15,11 @@ sap_vm_provision_ibmcloud_private_dns_instance_name: "ENTER_STRING_VALUE_HERE" #
 sap_vm_provision_ibmcloud_powervs_location: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_ibmcloud_powervs_workspace_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
 sap_vm_provision_ibmcloud_powervs_vlan_subnet_name: "ENTER_STRING_VALUE_HERE" # not required when ansible_to_terraform
-sap_vm_provision_ibmcloud_powervs_host_os_image: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE" # only for ansible_to_terraform, can be name or 'new'
+
+# Enter image name from dictionary sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary keys.
+# Example: sles-15-5-sap-ha (SUSE), rhel-9-2-sap-ha (Red Hat)
+sap_vm_provision_ibmcloud_powervs_host_os_image: "ENTER_STRING_VALUE_HERE"
 
 # Variables required for sap_vm_provision_iac_type=ansible
 sap_vm_provision_ibmcloud_powervs_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
