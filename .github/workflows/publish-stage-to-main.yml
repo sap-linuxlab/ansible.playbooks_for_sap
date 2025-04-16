@@ -69,7 +69,7 @@ jobs:
                 # Define files for appending
                 fragment_vars="common_fragments/vars/platform_vars_${platform}.yml"
                 fragment_images="common_fragments/vars/platform_images_${platform}.yml"
-                scenario_spec="$dir"/ansible_extravars_"$platform"_base_spec.yml
+                scenario_spec="$dir"/ansible_extravars_"$platform"_spec.yml
                 interactive_vars="$dir"/optional/ansible_extravars_interactive.yml
 
                 # Append shared platform vars fragment when it exists
