@@ -1,5 +1,5 @@
 ---
-#### Dictionary of operating system images ####
+#### Ansible dictionary for operating system images ####
 sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
   # rhel-8-2: "*RHEL-8.2*_HVM*x86_64*" # removed

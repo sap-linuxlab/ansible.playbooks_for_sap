@@ -1,5 +1,5 @@
 ---
-#### Dictionary of operating system images ####
+#### Ansible dictionary for operating system images ####
 sap_vm_provision_msazure_vm_host_os_image_dictionary:
   rhel-8-0:
     publisher: "RedHat"

@@ -1,5 +1,5 @@
 ---
-#### Dictionary of operating system images ####
+#### Ansible dictionary for operating system images ####
 sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:
   rhel-8-4: ".*redhat.*8-4.*minimal.*amd64.*"
   rhel-8-6: ".*redhat.*8-6.*minimal.*amd64.*"

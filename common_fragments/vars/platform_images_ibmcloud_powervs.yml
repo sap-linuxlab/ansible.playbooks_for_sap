@@ -1,5 +1,5 @@
 ---
-#### Dictionary of operating system images ####
+#### Ansible dictionary for operating system images ####
 sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
   rhel-8-8: ".*RHEL.*8.*8"
   rhel-9-2: ".*RHEL.*9.*2"

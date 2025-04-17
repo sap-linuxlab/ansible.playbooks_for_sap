@@ -1,5 +1,5 @@
 ---
-#### Dictionary of operating system images ####
+#### Ansible dictionary for operating system images ####
 sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
   rhel-8-latest:
     project: "rhel-cloud"
