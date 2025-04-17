@@ -24,10 +24,6 @@ sap_hana_preconfigure_saptune_solution: 'S4HANA-DBSERVER'  # SUSE saptune soluti
 sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
 sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APPSERVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
 
-#### SAP HANA Database Server installation ####
-# Dynamic assignment of SAP HANA variables
-sap_hana_sid: "{{ sap_system_hana_db_sid }}"
-sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 
 #### SAP SWPM Installation ####
 # Dynamic assignment of SAP SWPM variables
