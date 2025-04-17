@@ -7,11 +7,11 @@
 # This variable controls what Interactive prompts will be executed
 sap_playbook_interactive_input_type: bw4hana
 
+
 # SAP HANA Scale-Out variables for role sap_vm_provision
 sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator: 1  # Number of active coordinators (Integer).
 sap_vm_provision_calculate_sap_hana_scaleout_active_worker: 2  # Number of active workers (Integer).
 sap_vm_provision_calculate_sap_hana_scaleout_standby: 1  # Number of standby nodes. Options: 0, 1 (Integer).
-
 
 #### Preconfigure OS for SAP Software ####
 sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
@@ -24,7 +24,6 @@ sap_hana_preconfigure_saptune_solution: 'S4HANA-DBSERVER'  # SUSE saptune soluti
 sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
 sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APPSERVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
 
-
 #### SAP HANA Database Server installation ####
 # Dynamic assignment of SAP HANA variables
 sap_hana_sid: "{{ sap_system_hana_db_sid }}"
@@ -33,8 +32,7 @@ sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 #### SAP SWPM Installation ####
 # Dynamic assignment of SAP SWPM variables
 sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}" # Must be SAP HANA primary node
-sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary[sap_software_product] }}"
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####

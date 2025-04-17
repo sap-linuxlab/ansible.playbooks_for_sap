@@ -1,4 +1,6 @@
 ---
+# EXPERIMENTAL
+
 #### Scenario specific infrastructure platform variables ####
 
 # Define the NFS mount points for HANA data, log, and shared directories (String).

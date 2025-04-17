@@ -2,7 +2,7 @@
 # Ansible Playbook for SAP BW/4HANA Standard Scale-Out installation
 
 # Use include_role / include_tasks inside Ansible Task block, instead of using roles declaration or Task block with import_roles.
-# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation.
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
 
 
 #### Interactive Mode ####
@@ -213,7 +213,7 @@
       loop: "{{ hostvars[software_source_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
-        software_source_ip: "{{ hostvars[sap_vm_provision_dynamic_inventory_nw_pas_hostname].ansible_host | default(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
 
 
 - name: Ansible Play to remove temporary files from SAP NetWeaver PAS
@@ -230,7 +230,6 @@
 
 
 #### Begin SAP software hosts preparation ####
-
 - name: Ansible Play for preparing all SAP software hosts
   hosts: hana_primary, nwas_pas
   become: true
@@ -309,8 +308,8 @@
       ansible.builtin.shell: ssh-keyscan {{ hostvars[item].ansible_host }} >> ~/.ssh/known_hosts
       loop: "{{ groups['hana_primary'] }}"
 
-#### Begin SAP software installations ####
 
+#### Begin SAP software installations ####
 - name: Ansible Play for SAP HANA Database Server installation
   hosts: hana_primary
   become: true

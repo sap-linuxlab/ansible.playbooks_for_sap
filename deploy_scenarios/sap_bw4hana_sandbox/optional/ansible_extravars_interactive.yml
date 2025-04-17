@@ -7,6 +7,7 @@
 # This variable controls what Interactive prompts will be executed
 sap_playbook_interactive_input_type: bw4hana
 
+
 #### Preconfigure OS for SAP Software ####
 sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
 sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
@@ -18,7 +19,6 @@ sap_hana_preconfigure_saptune_solution: 'S4HANA-APP+DB'  # SUSE saptune solution
 sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
 # sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APP+DB'  # SUSE saptune solution to apply for SAP NetWeaver (String).
 
-
 #### SAP HANA Database Server installation ####
 # Dynamic assignment of SAP HANA variables
 sap_hana_sid: "{{ sap_system_hana_db_sid }}"
@@ -27,8 +27,7 @@ sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 #### SAP SWPM Installation ####
 # Dynamic assignment of SAP SWPM variables
 sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}" # Must be SAP HANA primary node
-sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary[sap_software_product] }}"
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -99,7 +98,6 @@ sap_software_install_dictionary:
 
   sap_bw4hana_2021_sandbox:
 
-    # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BW4HANA2021.CORE.HDB.ABAP
 
     sap_swpm_inifile_sections_list:
