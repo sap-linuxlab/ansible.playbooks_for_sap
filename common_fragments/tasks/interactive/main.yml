@@ -62,7 +62,7 @@
             ibmpowervm_vm - IBM PowerVM Virtual Machines
             kubevirt_vm - EXPERIMENTAL - OVirt Virtual Machines
             ovirt_vm - EXPERIMENTAL - KubeVirt Virtual Machines
-            vmware_vm - VMware vSphere Virtual Machines
+            vmware_vm - EXPERIMENTAL - VMware vSphere Virtual Machines
             existing_hosts - Playbook is executed with provided inventory file without provisioning
       register: sap_vm_provision_iac_platform_register
       when: sap_vm_provision_iac_platform is not defined
@@ -89,8 +89,7 @@
 
 # Interactive input for SAP software selection from dictionary
 - name: Block for sap_software_product
-  when:
-    - sap_software_install_dictionary is defined and sap_software_install_dictionary | length > 0
+  when: sap_software_install_dictionary | d('') | length > 0
   block:
     - name: Interactive prompt - sap_software_product
       ansible.builtin.pause:
@@ -128,57 +127,12 @@
 - name: Set fact for High Available scenarios
   ansible.builtin.set_fact:
     sap_playbook_interactive_input_type_ha: true
-  when:
-    - sap_playbook_interactive_input_type in ['s4hana_ha', 'hana_ha']
+  when: sap_playbook_interactive_input_type | regex_search('_ha$')
 
-- name: Block for interactive tasks - SAP HANA
-  when: sap_playbook_interactive_input_type in __hana_types
-  vars:
-    __hana_types:
-      - hana
-      - hana_ha
-      - s4hana
-      - s4hana_ha
-  block:
-    - name: Check if interactive tasks are available - SAP HANA
-      ansible.builtin.stat:
-        path: "../../common_fragments/tasks/interactive/sap_hana.yml"
-      register: sap_playbook_interactive_tasks_hana_availability
-      ignore_errors: true
-
-    - name: Execute interactive type - SAP HANA
-      ansible.builtin.include_tasks:
-        file: "../../common_fragments/tasks/interactive/sap_hana.yml"
-      when: sap_playbook_interactive_tasks_hana_availability.stat.exists
-
-    - name: Execute interactive type - SAP HANA - File not found
-      ansible.builtin.debug:
-        msg: Interactive task file 'optional/interactive/sap_hana.yml' was not found. Skipping.
-      when: not sap_playbook_interactive_tasks_hana_availability.stat.exists
-
-
-- name: Block for interactive tasks - SWPM
-  when: sap_playbook_interactive_input_type in __swpm_types
-  vars:
-    __swpm_types:
-      - s4hana
-      - s4hana_ha
-  block:
-    - name: Check if interactive tasks are available - SWPM
-      ansible.builtin.stat:
-        file: "../../common_fragments/tasks/interactive/sap_swpm.yml"
-      register: sap_playbook_interactive_tasks_swpm_availability
-      ignore_errors: true
-
-    - name: Execute interactive type - SWPM
-      ansible.builtin.include_tasks:
-        file: "../../common_fragments/tasks/interactive/sap_swpm.yml"
-      when: sap_playbook_interactive_tasks_swpm_availability.stat.exists
-
-    - name: Execute interactive type - SWPM - File not found
-      ansible.builtin.debug:
-        msg: Interactive task file 'optional/interactive/sap_swpm.yml' was not found. Skipping.
-      when: not sap_playbook_interactive_tasks_swpm_availability.stat.exists
+- name: Set fact for Distributed scenarios
+  ansible.builtin.set_fact:
+    sap_playbook_interactive_input_type_dist: true
+  when: sap_playbook_interactive_input_type | regex_search('_dist$')
 
 
 # Interactive inputs for specific platform
@@ -261,6 +215,65 @@
           when:
             - sap_vm_provision_nfs_mount_point_register | length == 0
               or sap_vm_provision_nfs_mount_point_register == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for interactive tasks - Process host_specifications_dictionary
+  block:
+    - name: Check if interactive tasks are available - Process host_specifications_dictionary
+      ansible.builtin.stat:
+        file: "../../common_fragments/tasks/interactive/process_host_spec_dictionary.yml"
+      register: sap_playbook_interactive_tasks_process_host_spec_dict
+      ignore_errors: true
+
+    - name: Execute interactive type - Process host_specifications_dictionary
+      ansible.builtin.include_tasks:
+        file: "../../common_fragments/tasks/interactive/process_host_spec_dictionary.yml"
+      when: sap_playbook_interactive_tasks_process_host_spec_dict.stat.exists
+
+    - name: Execute interactive type - Process host_specifications_dictionary - File not found
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/process_host_spec_dictionary.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_process_host_spec_dict.stat.exists
+
+
+- name: Block for interactive tasks - SAP HANA
+  when: sap_playbook_interactive_input_type | regex_search('hana')
+  block:
+    - name: Check if interactive tasks are available - SAP HANA
+      ansible.builtin.stat:
+        path: "../../common_fragments/tasks/interactive/sap_hana.yml"
+      register: sap_playbook_interactive_tasks_hana_availability
+      ignore_errors: true
+
+    - name: Execute interactive type - SAP HANA
+      ansible.builtin.include_tasks:
+        file: "../../common_fragments/tasks/interactive/sap_hana.yml"
+      when: sap_playbook_interactive_tasks_hana_availability.stat.exists
+
+    - name: Execute interactive type - SAP HANA - File not found
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/sap_hana.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_hana_availability.stat.exists
+
+
+- name: Block for interactive tasks - SWPM
+  when: sap_playbook_interactive_input_type | regex_search('bw4hana|nwas|ecc|s4hana|solman')
+  block:
+    - name: Check if interactive tasks are available - SWPM
+      ansible.builtin.stat:
+        file: "../../common_fragments/tasks/interactive/sap_swpm.yml"
+      register: sap_playbook_interactive_tasks_swpm_availability
+      ignore_errors: true
+
+    - name: Execute interactive type - SWPM
+      ansible.builtin.include_tasks:
+        file: "../../common_fragments/tasks/interactive/sap_swpm.yml"
+      when: sap_playbook_interactive_tasks_swpm_availability.stat.exists
+
+    - name: Execute interactive type - SWPM - File not found
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/sap_swpm.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_swpm_availability.stat.exists
 
 
 - name: Block for sap_install_media_detect_source_directory

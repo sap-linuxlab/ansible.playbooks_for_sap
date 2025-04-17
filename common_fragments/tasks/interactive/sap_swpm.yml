@@ -3,8 +3,8 @@
 
 # Following variables are defined and validated:
 # - sap_system_sid, sap_swpm_sid
-# - sap_system_nwas_abap_ascs_instance_nr, sap_swpm_ascs_instance_nr
-# - sap_system_nwas_abap_ers_instance_nr, sap_swpm_ers_instance_nr
+# - sap_system_nwas_abap_ascs_instance_nr, sap_swpm_ascs_instance_nr, sap_ha_pacemaker_cluster_nwas_ascs_instance_nr
+# - sap_system_nwas_abap_ers_instance_nr, sap_swpm_ers_instance_nr, sap_ha_pacemaker_cluster_nwas_ers_instance_nr
 # - sap_system_nwas_abap_pas_instance_nr, sap_swpm_pas_instance_nr
 # - sap_system_nwas_abap_aas_instance_nr, sap_swpm_aas_instance_nr
 # - sap_swpm_master_password
@@ -18,6 +18,10 @@
 # - sap_vm_provision_ha_vip_nwas_abap_ers
 # - sap_system_ascs_ers_cluster_name
 # - sap_system_ascs_ers_hacluster_user_password
+# - sap_swpm_ascs_instance_hostname
+# - sap_swpm_scs_instance_hostname
+# - sap_swpm_ers_instance_hostname
+# - sap_swpm_install_saphostagent
 # - sap_swpm_sapadm_uid
 # - sap_swpm_sidadm_uid
 # - sap_swpm_sapsys_gid
@@ -55,6 +59,7 @@
 
 
 - name: Block for sap_system_nwas_abap_ascs_instance_nr
+  when: sap_playbook_host_nwas_ascs | d(false)
   block:
     - name: Interactive prompt - sap_system_nwas_abap_ascs_instance_nr
       ansible.builtin.pause:
@@ -68,6 +73,7 @@
       ansible.builtin.set_fact:
         sap_system_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
         sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
+        sap_ha_pacemaker_cluster_nwas_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
       when: sap_system_nwas_abap_ascs_instance_nr is not defined or sap_swpm_ascs_instance_nr is not defined
 
     - name: Interactive prompt - sap_system_nwas_abap_ascs_instance_nr - Invalid input
@@ -88,6 +94,7 @@
 - name: Block for sap_system_nwas_abap_ers_instance_nr
   when:
     - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_ers | d(false)
   block:
     - name: Interactive prompt - sap_system_nwas_abap_ers_instance_nr
       ansible.builtin.pause:
@@ -101,6 +108,7 @@
       ansible.builtin.set_fact:
         sap_system_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
         sap_swpm_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
+        sap_ha_pacemaker_cluster_nwas_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
       when: sap_system_nwas_abap_ers_instance_nr is not defined or sap_swpm_ers_instance_nr is not defined
 
     - name: Interactive prompt - sap_system_nwas_abap_ers_instance_nr - Invalid input
@@ -119,9 +127,7 @@
 
 
 - name: Block for sap_system_nwas_abap_pas_instance_nr
-  when:
-    - sap_playbook_interactive_input_type_ha | d(false)
-    - sap_playbook_interactive_input_type in ['s4hana_ha']
+  when: sap_playbook_host_nwas_pas | d(false)
   block:
     - name: Interactive prompt - sap_system_nwas_abap_pas_instance_nr
       ansible.builtin.pause:
@@ -153,9 +159,7 @@
 
 
 - name: Block for sap_system_nwas_abap_aas_instance_nr
-  when:
-    - sap_playbook_interactive_input_type_ha | d(false)
-    - sap_playbook_interactive_input_type in ['s4hana_ha']
+  when: sap_playbook_host_nwas_aas | d(false)
   block:
     - name: Interactive prompt - sap_system_nwas_abap_aas_instance_nr
       ansible.builtin.pause:
@@ -384,7 +388,9 @@
 
 # Mandatory inputs for SAP High Availability
 - name: Block for sap_vm_provision_ha_vip_nwas_abap_ascs
-  when: sap_playbook_interactive_input_type_ha | d(false)
+  when:
+    - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_ascs | d(false)
   block:
     - name: Interactive prompt - sap_vm_provision_ha_vip_nwas_abap_ascs
       ansible.builtin.pause:
@@ -421,7 +427,9 @@
 
 
 - name: Block for sap_vm_provision_ha_vip_nwas_abap_ers
-  when: sap_playbook_interactive_input_type_ha | d(false)
+  when:
+    - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_ers | d(false)
   block:
     - name: Interactive prompt - sap_vm_provision_ha_vip_nwas_abap_ers
       ansible.builtin.pause:
@@ -458,7 +466,9 @@
 
 
 - name: Block for sap_system_ascs_ers_cluster_name
-  when: sap_playbook_interactive_input_type_ha | d(false)
+  when:
+    - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_ascs | d(false) and sap_playbook_host_nwas_ers | d(false)
   block:
     - name: Interactive prompt - sap_system_ascs_ers_cluster_name
       ansible.builtin.pause:
@@ -470,9 +480,10 @@
 
     - name: Set fact for sap_system_ascs_ers_cluster_name
       ansible.builtin.set_fact:
-        sap_system_ascs_ers_cluster_name: "{{ sap_system_ascs_ers_cluster_name_register.user_input
-          if sap_system_ascs_ers_cluster_name_register.user_input | length > 0
-          else 'clusterascs' }}"
+        sap_system_ascs_ers_cluster_name:
+          "{{ sap_system_ascs_ers_cluster_name_register.user_input
+            if sap_system_ascs_ers_cluster_name_register.user_input | length > 0
+            else 'clusterascs' }}"
       when: sap_system_ascs_ers_cluster_name is not defined
 
     - name: Interactive prompt - sap_system_ascs_ers_cluster_name - Invalid input
@@ -488,7 +499,9 @@
 
 
 - name: Block for sap_system_ascs_ers_hacluster_user_password
-  when: sap_playbook_interactive_input_type_ha | d(false)
+  when:
+    - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_ascs | d(false) and sap_playbook_host_nwas_ers | d(false)
   no_log: true
   block:
     - name: Interactive prompt - sap_system_ascs_ers_hacluster_user_password
@@ -517,6 +530,181 @@
             Re-run the playbook and provide a valid input.
           {% endif %}
       when: sap_system_ascs_ers_hacluster_user_password | length == 0
+
+
+- name: Block for sap_swpm_ascs_instance_hostname
+  when:
+    - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_ascs | d(false)
+  block:
+    - name: Interactive prompt - sap_swpm_ascs_instance_hostname
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Virtual host name for SAP ASCS.
+          See virtual hostname information in SAP Note 2279110 and 962955.
+          Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
+          {% if sap_playbook_host_nwas_ascs_list | d([]) | length > 0 -%}
+            Press enter to skip and use the default value ({{ sap_playbook_host_nwas_ascs_list[0] }}-ha).
+          {% endif %}
+      register: sap_swpm_ascs_instance_hostname_register
+      when: sap_swpm_ascs_instance_hostname is not defined
+
+    - name: Set fact for sap_swpm_ascs_instance_hostname
+      ansible.builtin.set_fact:
+        sap_swpm_ascs_instance_hostname: "{{ sap_swpm_ascs_instance_hostname_register.user_input
+          if sap_swpm_ascs_instance_hostname_register.user_input | length > 0
+          else (sap_playbook_host_nwas_ascs_list[0] ~ '-ha'
+            if sap_playbook_host_nwas_ascs_list[0] | d([]) | length > 0 else '')}}"
+      when: sap_swpm_ascs_instance_hostname is not defined
+
+    - name: Interactive prompt - sap_swpm_ascs_instance_hostname - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_swpm_ascs_instance_hostname' value '{{ sap_swpm_ascs_instance_hostname }}' is invalid.
+          {% if sap_swpm_ascs_instance_hostname_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_ascs_instance_hostname | length == 0
+
+
+- name: Block for sap_swpm_scs_instance_hostname
+  when:
+    - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_scs | d(false)
+  block:
+    - name: Interactive prompt - sap_swpm_scs_instance_hostname
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Virtual host name for SAP SCS.
+          See virtual hostname information in SAP Note 2279110 and 962955.
+          Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
+          {% if sap_playbook_host_nwas_scs_list | d([]) | length > 0 -%}
+            Press enter to skip and use the default value ({{ sap_playbook_host_nwas_scs_list[0] }}-ha).
+          {% endif %}
+      register: sap_swpm_scs_instance_hostname_register
+      when: sap_swpm_scs_instance_hostname is not defined
+
+    - name: Set fact for sap_swpm_scs_instance_hostname
+      ansible.builtin.set_fact:
+        sap_swpm_scs_instance_hostname: "{{ sap_swpm_scs_instance_hostname_register.user_input
+          if sap_swpm_scs_instance_hostname_register.user_input | length > 0
+          else (sap_playbook_host_nwas_scs_list[0] ~ '-ha'
+            if sap_playbook_host_nwas_scs_list[0] | d([]) | length > 0 else '')}}"
+      when: sap_swpm_scs_instance_hostname is not defined
+
+    - name: Interactive prompt - sap_swpm_scs_instance_hostname - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_swpm_scs_instance_hostname' value '{{ sap_swpm_scs_instance_hostname }}' is invalid.
+          {% if sap_swpm_scs_instance_hostname_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_scs_instance_hostname | length == 0
+
+
+- name: Block for sap_swpm_ers_instance_hostname
+  when:
+    - sap_playbook_interactive_input_type_ha | d(false)
+    - sap_playbook_host_nwas_ers | d(false)
+  block:
+    - name: Interactive prompt - sap_swpm_ers_instance_hostname
+      ansible.builtin.pause:
+        prompt: |
+          Please enter Virtual host name for SAP ERS.
+          See virtual hostname information in SAP Note 2279110 and 962955.
+          Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
+          {% if sap_playbook_host_nwas_ers_list | d([]) | length > 0 -%}
+            Press enter to skip and use the default value ({{ sap_playbook_host_nwas_ers_list[0] }}-ha).
+          {% endif %}
+      register: sap_swpm_ers_instance_hostname_register
+      when: sap_swpm_ers_instance_hostname is not defined
+
+    - name: Set fact for sap_swpm_ers_instance_hostname
+      ansible.builtin.set_fact:
+        sap_swpm_ers_instance_hostname: "{{ sap_swpm_ers_instance_hostname_register.user_input
+          if sap_swpm_ers_instance_hostname_register.user_input | length > 0
+          else (sap_playbook_host_nwas_ers_list[0] ~ '-ha'
+            if sap_playbook_host_nwas_ers_list[0] | d([]) | length > 0 else '')}}"
+      when: sap_swpm_ers_instance_hostname is not defined
+
+    - name: Interactive prompt - sap_swpm_ers_instance_hostname - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_swpm_ers_instance_hostname' value '{{ sap_swpm_ers_instance_hostname }}' is invalid.
+          {% if sap_swpm_ers_instance_hostname_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_ers_instance_hostname | length == 0
+
+
+- name: Block for sap_swpm_install_saphostagent
+  no_log: true
+  block:
+    - name: Interactive prompt - sap_swpm_install_saphostagent
+      ansible.builtin.pause:
+        prompt: |
+          Please enter true to install SAP Hostagent during SWPM execution.
+          SAPHOSTAGENT files are required for installation.
+          Press enter to skip and use the default value ('true').
+      register: sap_swpm_install_saphostagent_register
+      when: sap_swpm_install_saphostagent is not defined
+
+    - name: Set fact for sap_swpm_install_saphostagent
+      ansible.builtin.set_fact:
+        sap_swpm_install_saphostagent:
+          "{{ false
+            if sap_swpm_install_saphostagent_register.user_input == 'false'
+            else (sap_swpm_install_saphostagent_register.user_input
+              if sap_swpm_install_saphostagent_register.user_input | length > 0 else true) }}"
+      when: sap_swpm_install_saphostagent is not defined
+
+    - name: Interactive prompt - sap_swpm_install_saphostagent - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_swpm_install_saphostagent' value '{{ sap_swpm_install_saphostagent }}' is invalid.
+          Available options: true, false
+          {% if sap_swpm_install_saphostagent_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_install_saphostagent is not boolean
+
+
+- name: Block for sap_swpm_fqdn
+  block:
+    - name: Interactive prompt - sap_swpm_fqdn
+      ansible.builtin.pause:
+        prompt: |
+          Please enter domain (FQDN) for SWPM installation.
+          Press enter to skip and use the default value ('{{ ansible_domain }}').
+      register: sap_swpm_fqdn_register
+      when: sap_swpm_fqdn is not defined
+
+    - name: Set fact for sap_swpm_fqdn
+      ansible.builtin.set_fact:
+        sap_swpm_fqdn:
+          "{{ sap_swpm_fqdn_register.user_input
+            if sap_swpm_fqdn_register.user_input | length > 0
+            else ansible_domain }}"
+      when: sap_swpm_fqdn is not defined
+
+    - name: Interactive prompt - sap_swpm_fqdn - Invalid input
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_swpm_fqdn' value '{{ sap_swpm_fqdn }}' is invalid.
+          {% if sap_swpm_fqdn_register.user_input is not defined -%}
+            Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_fqdn | length == 0
 
 
 # Optional inputs
@@ -633,7 +821,8 @@
     - name: Set fact for sap_swpm_update_etchosts
       ansible.builtin.set_fact:
         sap_swpm_update_etchosts:
-          "{{ true if sap_swpm_update_etchosts_register.user_input == 'true'
+          "{{ true
+            if sap_swpm_update_etchosts_register.user_input == 'true'
             else (sap_swpm_update_etchosts_register.user_input
               if sap_swpm_update_etchosts_register.user_input | length > 0 else false) }}"
       when: sap_swpm_update_etchosts is not defined

@@ -318,7 +318,8 @@
       ansible.builtin.fail:
         msg: |
           Variable 'sap_vm_provision_host_specification_plan' value '{{ sap_vm_provision_host_specification_plan }}' is invalid.
-          Available options: {{ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary.keys() }}
+          Available options: {{ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary.keys()
+           }} are defined in 'sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary'.
           {% if sap_vm_provision_host_specification_plan_register.user_input is not defined -%}
             Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
@@ -438,8 +439,7 @@
             Re-run the playbook and provide a valid input.
           {% endif %}
       when:
-        - sap_vm_provision_ssh_host_public_key_file_path is defined
-        - sap_vm_provision_ssh_host_public_key_file_path | length == 0
+        - sap_vm_provision_ssh_host_public_key_file_path | d('') | length == 0
           or sap_vm_provision_ssh_host_public_key_file_path == 'ENTER_STRING_VALUE_HERE'
 
 

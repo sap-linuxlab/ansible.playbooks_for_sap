@@ -1,0 +1,77 @@
+---
+# This task file will read defined 'sap_vm_provision_<sap_vm_provision_iac_platform>_host_specifications_dictionary'
+# and assign relevant variables that are used in dedicated scenario task files.
+# 'host_specifications_dictionary' and 'sap_vm_provision_host_specification_plan' are defined in their platform files.
+
+# Each dictionary[plan] key is checked for 'sap_host_type' value.
+
+- name: Set temporary fact for host specification dictionary
+  ansible.builtin.set_fact:
+    __sap_playbook_host_spec_dict:
+      "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+        + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+
+
+# SAP HANA Primary and Secondary
+- name: Set fact if SAP HANA Primary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_hana_primary: true
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_hana_primary | d('hana_primary'))
+
+- name: Set fact if SAP HANA Secondary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_hana_secondary: true
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_hana_secondary | d('hana_secondary'))
+
+
+# SAP ASCS, SCS, ERS
+- name: Set fact if SAP ASCS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_ascs: true
+    sap_playbook_host_nwas_ascs_list: "{{ sap_playbook_host_nwas_ascs_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_ascs | d('nwas_ascs'))
+
+- name: Set fact if SAP SCS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_scs: true
+    sap_playbook_host_nwas_scs_list: "{{ sap_playbook_host_nwas_scs_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_scs | d('nwas_scs'))
+
+- name: Set fact if SAP ERS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_ers: true
+    sap_playbook_host_nwas_ers_list: "{{ sap_playbook_host_nwas_ers_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_ers | d('nwas_ers'))
+
+
+# SAP PAS and AAS
+- name: Set fact if SAP PAS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_pas: true
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_pas | d('nwas_pas'))
+
+- name: Set fact if SAP AAS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_aas: true
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_aas | d('nwas_aas'))
+
+
+# AnyDB Primary and Secondary
+- name: Set fact if AnyDB Primary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_anydb_primary: true
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_anydb_primary | d('anydb_primary'))
+
+- name: Set fact if AnyDB Secondary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_anydb_secondary: true
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_anydb_secondary | d('anydb_secondary'))

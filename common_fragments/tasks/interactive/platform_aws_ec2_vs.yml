@@ -240,6 +240,7 @@
 
 
 - name: Block for sap_ha_pacemaker_cluster_aws_vip_update_rt
+  when: sap_playbook_interactive_input_type_ha | d(false)
   no_log: true
   block:
     - name: Interactive prompt - sap_ha_pacemaker_cluster_aws_vip_update_rt
@@ -302,7 +303,8 @@
       ansible.builtin.fail:
         msg: |
           Variable 'sap_vm_provision_host_specification_plan' value '{{ sap_vm_provision_host_specification_plan }}' is invalid.
-          Available options: {{ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys() }}
+          Available options: {{ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary.keys()
+            }} are defined in 'sap_vm_provision_aws_ec2_vs_host_specifications_dictionary'.
           {% if sap_vm_provision_host_specification_plan_register.user_input is not defined -%}
             Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
@@ -339,7 +341,8 @@
       ansible.builtin.fail:
         msg: |
           Variable 'sap_vm_provision_aws_ec2_vs_host_os_image' value '{{ sap_vm_provision_aws_ec2_vs_host_os_image }}' is invalid.
-          Available options: {{ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys() }}
+          Available options: {{ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary.keys()
+           }} are defined in 'sap_vm_provision_aws_ec2_vs_host_os_image_dictionary'.
           {% if sap_vm_provision_aws_ec2_vs_host_os_image_register.user_input is not defined -%}
             Please correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
