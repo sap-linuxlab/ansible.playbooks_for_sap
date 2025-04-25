@@ -12,19 +12,22 @@
   gather_facts: false
   pre_tasks:
 
-    - name: Check if interactive tasks are available
-      ansible.builtin.stat:
-        path: ../../common_fragments/tasks/interactive/main.yml
-      register: sap_playbook_interactive_tasks_availability
-      ignore_errors: true
-      when: sap_playbook_interactive_input_type is defined and sap_playbook_interactive_input_type | length > 0
-
-    - name: Execute collection of interactive inputs
-      ansible.builtin.include_tasks:
-        file: ../../common_fragments/tasks/interactive/main.yml
+    - name: Block for collection for interactive prompts
       when:
-        - sap_playbook_interactive_input_type is defined and sap_playbook_interactive_input_type
-        - sap_playbook_interactive_tasks_availability.stat.exists
+        - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
+        - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
+        - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
+      block:
+        - name: Check if interactive tasks are available
+          ansible.builtin.stat:
+            path: ../../common_fragments/tasks/interactive/main.yml
+          register: sap_playbook_interactive_tasks_availability
+          ignore_errors: true
+
+        - name: Execute collection of interactive inputs
+          ansible.builtin.include_tasks:
+            file: ../../common_fragments/tasks/interactive/main.yml
+          when: sap_playbook_interactive_tasks_availability.stat.exists
 
 
 #### Begin Infrastructure-as-Code provisioning ####
@@ -117,6 +120,7 @@
     # Playbook will continue without the collection, assuming SAP software is already available.
     - name: Check availability of sap_launchpad collection on execution node
       delegate_to: localhost
+      become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
       register: sap_playbook_collection_list_output

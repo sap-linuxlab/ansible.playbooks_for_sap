@@ -1,0 +1,7 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ sap_vm_provision_msazure_subscription_id }}"
+sap_ha_pacemaker_cluster_msazure_resource_group: "{{ sap_vm_provision_msazure_resource_group_name }}"

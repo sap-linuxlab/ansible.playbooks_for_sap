@@ -103,7 +103,7 @@ sap_swpm_db_systemdb_password: "NewPass$321"  # Password for the SYSTEM user in 
 sap_swpm_sid: "{{ sap_system_sid }}"
 sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
 sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
-sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}" # Must be SAP HANA primary node
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}"
 sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
 sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
@@ -264,7 +264,7 @@ sap_software_install_dictionary:
       - 'SAPHOSTAGENT*'
 
 
-#### Ansible facts shared among all roles in sap_install collection
+#### Shared Ansible Facts ####
 sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"

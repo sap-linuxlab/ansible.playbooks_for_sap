@@ -1,11 +1,8 @@
 ---
 #### Instructions for Interactive Prompts ####
-# Variables are omitted from this file, so that an end-user execution will prompt
-# for input and the input will not be overwritten by Ansible's precedence for variables.
-# Adding variables into this file will result in skipped interactive prompt.
-
-# This variable controls what Interactive prompts will be executed
-sap_playbook_interactive_input_type: bw4hana
+# This file defines the essential set of variables required for initial interactive execution.
+# All other required variables will be dynamically gathered through interactive prompts.
+# Pre-defining a variable in this file will skip the associated interactive prompt.
 
 
 # SAP HANA Scale-Out variables for role sap_vm_provision
@@ -173,7 +170,13 @@ sap_software_install_dictionary:
       - 'SAPHOSTAGENT*'
 
 
-#### Ansible facts shared among all roles in sap_install collection
+#### Shared Ansible Facts ####
 sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
+
+#### Interactive Prompt Control Variables ####
+# Do not change these variables unless you intend to modify the interactive prompt behavior!
+sap_playbook_interactive_product: bw4hana
+sap_playbook_interactive_database: hana
+sap_playbook_interactive_layout: standard_scaleout

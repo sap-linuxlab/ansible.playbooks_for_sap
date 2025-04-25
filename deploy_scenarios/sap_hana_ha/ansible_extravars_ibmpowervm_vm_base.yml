@@ -1,0 +1,11 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+# IBM Power Hardware Management Console (HMC), not to be confused with IBM PowerVC host and credentials
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host: "ENTER_STRING_VALUE_HERE"
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_port: "ENTER_STRING_VALUE_HERE" # Default, 22 for SSH
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_login: "ENTER_STRING_VALUE_HERE"
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_login_password: "ENTER_STRING_VALUE_HERE"
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_version: "4"

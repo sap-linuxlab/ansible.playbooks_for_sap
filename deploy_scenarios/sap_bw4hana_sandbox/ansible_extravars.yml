@@ -92,7 +92,7 @@ sap_swpm_db_systemdb_password: "NewPass$321"  # Password for the SYSTEM user in 
 sap_swpm_sid: "{{ sap_system_sid }}"
 sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
 sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
-sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}" # Must be SAP HANA primary node
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}"
 sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
 sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
@@ -137,8 +137,8 @@ sap_software_install_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
-      - 'IMDB_AFL20_067P_400-80001894.SAR'
+      - 'IMDB_LCAPPS_2077_3-20010426.SAR'
+      - 'IMDB_AFL20_077_0-80001894.SAR'
       - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP20_1-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
@@ -152,15 +152,16 @@ sap_software_install_dictionary:
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
       - 'BW4HANA400_INST_EXPORT_6.zip'
-      - '19118000000000009032'
+      - 'BW4HANA400_INST_EXPORT_7.zip'
       - 'BW4HANA400_INST_EXPORT_8.zip'
+      - 'BW4HANA400_INST_EXPORT_9.zip'
     #  - 'BW4HANA400_NW_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
+      - 'IMDB_AFL20_077_0-80002045.SAR'
       - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP20_1-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
@@ -174,8 +175,9 @@ sap_software_install_dictionary:
       - 'BW4HANA400_INST_EXPORT_4.zip'
       - 'BW4HANA400_INST_EXPORT_5.zip'
       - 'BW4HANA400_INST_EXPORT_6.zip'
-      - '19118000000000009032'
+      - 'BW4HANA400_INST_EXPORT_7.zip'
       - 'BW4HANA400_INST_EXPORT_8.zip'
+      - 'BW4HANA400_INST_EXPORT_9.zip'
     #  - 'BW4HANA400_NW_LANG_EN.SAR'
 
   sap_bw4hana_2021_sandbox:
@@ -240,7 +242,7 @@ sap_software_install_dictionary:
     #  - 'BW4HANA300_NW_LANG_EN.SAR'
 
 
-#### Ansible facts shared among all roles in sap_install collection
+#### Shared Ansible Facts ####
 sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
