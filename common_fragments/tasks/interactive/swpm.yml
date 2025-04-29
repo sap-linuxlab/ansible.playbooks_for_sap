@@ -345,7 +345,7 @@
           {% if sap_vm_provision_dns_root_domain is defined and sap_vm_provision_dns_root_domain | length > 0 -%}
             Press enter to skip and use the default value ('{{ sap_vm_provision_dns_root_domain }}').
           {% elif ansible_domain is defined and ansible_domain | length > 0 -%}
-            Press enter to skip and use the default value ('{{ ansible_domain }}').          
+            Press enter to skip and use the default value ('{{ ansible_domain }}').
           {% endif %}
       register: sap_swpm_fqdn_register
       when: sap_swpm_fqdn is not defined

@@ -350,7 +350,7 @@
       ansible.builtin.pause:
         prompt: |
           Enter your SAP S-User password.
-          This password is required to download SAP installation media from the SAP Support Portal using the `community.sap_launchpad` collection. 
+          This password is required to download SAP installation media from the SAP Support Portal using the `community.sap_launchpad` collection.
       register: sap_id_user_password_register
       when: sap_id_user_password is not defined
 

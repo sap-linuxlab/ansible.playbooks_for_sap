@@ -7,7 +7,7 @@
 
 
 # sap_vm_provision variables
-# sap_swpm_db_host is used by sap_vm_provision role for AnyDB HA 
+# sap_swpm_db_host is used by sap_vm_provision role for AnyDB HA
 - name: Block for sap_swpm_db_host
   block:
     - name: Prompt for Virtual AnyDB hostname

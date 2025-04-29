@@ -331,7 +331,7 @@
 
 - name: Block for sap_vm_provision_aws_ec2_vs_host_os_image
   block:
-    - name: Prompt for OS image selection 
+    - name: Prompt for OS image selection
       ansible.builtin.pause:
         prompt: |
           Select an OS image from the 'sap_vm_provision_aws_ec2_vs_host_os_image_dictionary'.
