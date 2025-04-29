@@ -16,27 +16,18 @@ sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solutio
 # Dynamic assignment of SAP SWPM variables
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary[sap_software_product] }}"  # Distributed
 
-# TODO
-sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.anydb_primary[0] }}-ha" # Must be SAP AnyDB Virtual Hostname
-
+#### High Availability variables ####
+## Virtual host names
 # However we are not using the PAS or AAS in a High Availability setup, only the Database and ASCS/ERS are.
 # Therefore, override the virtual hostname with the local hostname.
 sap_swpm_pas_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}"
 sap_swpm_aas_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_aas[0] }}"
 
-## Infrastructure Platform - High Availability Virtual IPs (VIPs)
-# AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
-# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
-# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
-# IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
-# MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
-# IBM PowerVM:          the VIP must be within the VLAN Subnet range
-# OVirt KVM:            the VIP must be within the VLAN Subnet range
-# KubeVirt:             the VIP must be within the VLAN Subnet range
-sap_vm_provision_ha_vip_anydb_primary: "ENTER_STRING_VALUE_HERE"
-# sap_vm_temp_vip_anydb_primary: "{{ sap_vm_provision_ha_vip_anydb_primary }}"
 
-
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -259,11 +250,6 @@ sap_software_install_dictionary:
         - '51057*' # IBM DB2 FOR LUW files
         - '51058*' # IBM DB2 FOR LUW files
 
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
 
 #### Interactive Prompt Control Variables ####
 # Do not change these variables unless you intend to modify the interactive prompt behavior!

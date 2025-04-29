@@ -69,6 +69,12 @@ sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 # sap_hana_install_hdblcm_extraargs:   # Extra arguments for hdblcm (String).
 
 
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
 #### SAP Product selection ####
 # Name of the SAP product to install (String).
 # Options: Defined in sap_software_install_dictionary (e.g. sap_hana_2_sps07_install).
@@ -100,9 +106,3 @@ sap_software_install_dictionary:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"

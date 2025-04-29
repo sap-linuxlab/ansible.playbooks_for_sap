@@ -118,6 +118,12 @@ sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
 sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
 
 
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
 #### SAP Product selection ####
 # Name of the SAP product to install (String).
 # Options: Defined in sap_software_install_dictionary (e.g. sap_bw4hana_2023_standard).
@@ -149,8 +155,8 @@ sap_software_install_dictionary:
     softwarecenter_search_list_x86_64:
       - 'SAPCAR_1115-70006178.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
-      - 'IMDB_AFL20_067P_400-80001894.SAR'
+      - 'IMDB_LCAPPS_2077_3-20010426.SAR'
+      - 'IMDB_AFL20_077_0-80001894.SAR'
       - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
       - 'SWPM20SP20_1-80003424.SAR'
       - 'igsexe_4-70005417.sar' # IGS 7.81
@@ -171,8 +177,8 @@ sap_software_install_dictionary:
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
+      - 'IMDB_AFL20_077_0-80002045.SAR'
       - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
       - 'SWPM20SP20_1-80003426.SAR'
       - 'igsexe_4-70005446.sar' # IGS 7.81
@@ -262,9 +268,3 @@ sap_software_install_dictionary:
       - 'SAPCAR*'
       - 'IMDB_*'
       - 'SAPHOSTAGENT*'
-
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"

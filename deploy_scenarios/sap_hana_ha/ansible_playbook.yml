@@ -193,7 +193,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       loop: "{{ hostvars[software_source_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.hana_primary[0] | default(none) }}"
@@ -261,7 +261,6 @@
         sap_install_media_detect_webdisp: false
         sap_install_media_detect_db: "saphana"
 
-    # Install SAP HANA
     - name: Execute Ansible Role sap_hana_install
       ansible.builtin.include_role:
         name: community.sap_install.sap_hana_install
@@ -291,12 +290,6 @@
         sap_ha_install_hana_hsr_cluster_nodes: "{{ sap_hana_cluster_nodes }}"
 
     # Execute setup of SAP HANA scale-up HA cluster
-    # -- Linux Pacemaker cluster preparation
-    # -- Linux Pacemaker basic cluster configuration, 2 nodes
-    # -- SAP HANA scale-up HA Cluster configuration, with a Virtual IP (VIP)
-    # -- Fencing Agent/s setup for Infrastructure: fence_aws
-    # -- Resource Agent/s setup for Infrastructure: aws-vpc-move-ip
-    # -- Resource Agent/s setup for SAP: SAPHanaSR/SAPHana, SAPHanaSR/SAPHanaTopology
     - name: Execute Ansible Role sap_ha_pacemaker_cluster
       ansible.builtin.include_role:
         name: community.sap_install.sap_ha_pacemaker_cluster

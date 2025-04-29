@@ -53,7 +53,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
         - name: swap # hdb
-          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          # swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 4                 # size in GB, integer
           disk_type: P1
           filesystem_type: swap          # must be swap filesystem
@@ -100,7 +100,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
 
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
         - name: swap # hdb
-          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          # swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 4                 # size in GB, integer
           disk_type: P1
           filesystem_type: swap          # must be swap filesystem

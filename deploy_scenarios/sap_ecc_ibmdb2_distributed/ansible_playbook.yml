@@ -195,7 +195,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
@@ -219,7 +219,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       loop: "{{ hostvars[software_source_hostname].sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
@@ -244,7 +244,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       loop: "{{ hostvars[software_source_hostname].sap_nwas_aas_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
@@ -286,7 +286,6 @@
     - name: Execute Ansible Role sap_netweaver_preconfigure
       ansible.builtin.include_role:
         name: community.sap_install.sap_netweaver_preconfigure
-
 
 
 #### Begin SAP software installations ####

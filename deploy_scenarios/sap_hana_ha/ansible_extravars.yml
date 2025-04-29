@@ -94,8 +94,14 @@ sap_vm_provision_ha_vip_hana_primary: "ENTER_STRING_VALUE_HERE"
 
 # Variables for Ansible Role sap_ha_pacemaker_cluster
 # HANA HA Pacemaker Cluster
-sap_system_hana_cluster_name: 'clusterascs'  # Pacemaker cluster name (String).
+sap_system_hana_cluster_name: 'clusterhdb'  # Pacemaker cluster name (String).
 sap_system_hana_hacluster_user_password: 'clusterpass'  # Pacemaker cluster 'hacluster' user password (String).
+
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
 #### SAP Product selection ####
@@ -140,9 +146,3 @@ sap_software_install_dictionary:
       - 'SAPCAR*'
       - 'IMDB_*'
       - 'SAPHOSTAGENT*'
-
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"

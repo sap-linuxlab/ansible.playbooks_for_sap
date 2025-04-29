@@ -8,4 +8,3 @@ sap_vm_provision_nfs_mount_point_type: nfs4  # NFS version (String).
 # defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
 sap_vm_provision_nfs_mount_point_opts:
   nfsvers=4.1,timeo=600,retrans=2,hard   # NFS Mount options (String).
-

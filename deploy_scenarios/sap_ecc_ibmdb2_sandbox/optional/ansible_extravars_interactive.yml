@@ -19,6 +19,12 @@ sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}" # Must
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
 
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
 
@@ -125,11 +131,6 @@ sap_software_install_dictionary:
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
 
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
 
 #### Interactive Prompt Control Variables ####
 # Do not change these variables unless you intend to modify the interactive prompt behavior!

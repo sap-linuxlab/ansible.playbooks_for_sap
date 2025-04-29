@@ -85,7 +85,6 @@
 
 
 #### VM storage filesystem setup ####
-
 - name: Ansible Play for hosts storage setup
   hosts: nwas_pas
   become: true

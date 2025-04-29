@@ -114,6 +114,13 @@ sap_system_ascs_ers_hacluster_user_password: 'clusterpass'  # Pacemaker cluster 
 # sap_ha_install_anydb_ibmdb2_software_directory: "ENTER_STRING_VALUE_HERE"  # DB2 Software path (String).
 # sap_ha_install_anydb_ibmdb2_vip_primary_ip_address: "ENTER_STRING_VALUE_HERE"
 
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
 #### SAP Product selection ####
 # Name of the SAP product to install (String).
 # Options: Defined in sap_software_install_dictionary (e.g. sap_ecc6_ehp8_ibmdb2_distributed).
@@ -338,9 +345,3 @@ sap_software_install_dictionary:
         - '51056*' # IBM DB2 FOR LUW files
         - '51057*' # IBM DB2 FOR LUW files
         - '51058*' # IBM DB2 FOR LUW files
-
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"

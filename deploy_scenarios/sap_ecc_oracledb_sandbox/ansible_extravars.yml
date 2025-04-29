@@ -51,7 +51,7 @@ sap_anydb_install_oracle_base: /oracle  # Oracle Base path (String).
 sap_anydb_install_oracle_filesystem_storage: /oradata  # Oracle Data path (String).
 sap_anydb_install_oracle_inventory_central: /oraInventory  # Oracle Inventory path (String).
 sap_anydb_install_oracle_system_password: "NewPass$321"  # System password (String).
-#sap_anydb_install_oracle_extract_path: # Use auto-detect from sap_install_media_detect
+# sap_anydb_install_oracle_extract_path: # Use auto-detect from sap_install_media_detect
 
 
 #### SAP SWPM Installation ####
@@ -82,6 +82,12 @@ sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
 sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
 
 sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
 #### SAP Product selection ####
@@ -151,9 +157,3 @@ sap_software_install_dictionary:
     # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
-
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"

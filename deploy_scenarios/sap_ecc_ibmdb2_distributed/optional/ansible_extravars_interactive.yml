@@ -22,6 +22,12 @@ sap_swpm_ascs_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_as
 sap_swpm_pas_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}"
 
 
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
 
@@ -159,11 +165,6 @@ sap_software_install_dictionary:
         - 'SAPHOSTAGENT*'
         - '51056774*' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 Client, ZIP
 
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
 
 #### Interactive Prompt Control Variables ####
 # Do not change these variables unless you intend to modify the interactive prompt behavior!

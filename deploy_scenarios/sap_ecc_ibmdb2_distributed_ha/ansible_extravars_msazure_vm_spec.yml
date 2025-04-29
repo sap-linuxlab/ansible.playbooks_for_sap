@@ -56,7 +56,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
         # See SAP Note 1597355 - Swap-space recommendation for Linux
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
         - name: swap # anydb_db2
-          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          # swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 128                 # size in GB, integer
           disk_type: P10
           filesystem_type: swap          # must be swap filesystem
@@ -78,7 +78,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
       # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
       sap_storage_setup_host_type:
         - all # workaround for generic AnyDB instance setup via SAP SWPM which require /sapmnt and /usr/sap access
-        #- anydb_primary
+        # - anydb_primary
 
       storage_definition:
 
@@ -120,7 +120,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
         # See SAP Note 1597355 - Swap-space recommendation for Linux
         # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
         - name: swap # anydb_db2
-          #swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          # swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
           disk_size: 128                 # size in GB, integer
           disk_type: P10
           filesystem_type: swap          # must be swap filesystem

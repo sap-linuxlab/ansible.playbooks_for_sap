@@ -204,7 +204,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
@@ -228,7 +228,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       loop: "{{ hostvars[software_source_hostname].sap_anydb_secondary_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
@@ -253,7 +253,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       loop: "{{ hostvars[software_source_hostname].sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
@@ -278,7 +278,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       loop: "{{ hostvars[software_source_hostname].sap_nwas_aas_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
@@ -547,7 +547,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.anydb_primary[0] | default(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
@@ -668,7 +668,7 @@
       #  db2 activate database "$ibmdb2_sid"
 
     # Use the IBM Db2 Command Line Processor
-    - name: Check IBM Db2 backup restore of Database Schema for SAP System
+    - name: Check IBM Db2 backup restore of Database Schema for SAP System  # noqa risky-shell-pipe
       register: backup_restore_success_config_check
       become: true
       become_user: db2{{ sap_system_anydb_sid | lower }}
@@ -709,9 +709,7 @@
         sap_ha_install_anydb_ibmdb2_vip_primary_ip_address: "{{ sap_vm_provision_ha_vip_anydb_primary }}"
 
 
-##################
-# ASCS/ERS cluster
-##################
+#### ASCS/ERS cluster ####
 - name: Ansible Play for SAP NetWeaver Application Server installation - High Availability using ABAP Central Services (ASCS) and Enqueue Replication Service (ERS) with Standalone Enqueue Server 2 (ENSA2)
   hosts: nwas_ascs, nwas_ers
   become: true
@@ -719,6 +717,7 @@
   max_fail_percentage: 0
   tasks:
 
+    # Execute setup of SAP NetWeaver ASCS/ERS HA Simple Mount cluster
     - name: Execute Ansible Role sap_ha_pacemaker_cluster
       ansible.builtin.include_role:
         name: community.sap_install.sap_ha_pacemaker_cluster

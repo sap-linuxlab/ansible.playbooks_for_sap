@@ -185,7 +185,6 @@
         sap_install_media_detect_webdisp: false
         sap_install_media_detect_db: "saphana"
 
-    # Install SAP HANA
     - name: Execute Ansible Role sap_hana_install
       ansible.builtin.include_role:
         name: community.sap_install.sap_hana_install

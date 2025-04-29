@@ -213,7 +213,7 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
+        # set_remote_user: false
       loop: "{{ hostvars[software_source_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"

@@ -5,6 +5,11 @@
 # Pre-defining a variable in this file will skip the associated interactive prompt.
 
 
+# SAP HANA Scale-Out variables for role sap_vm_provision
+sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator: 1  # Number of active coordinators (Integer).
+sap_vm_provision_calculate_sap_hana_scaleout_active_worker: 2  # Number of active workers (Integer).
+sap_vm_provision_calculate_sap_hana_scaleout_standby: 1  # Number of standby nodes. Options: 0, 1 (Integer).
+
 #### Preconfigure OS for SAP Software ####
 sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
 sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
@@ -36,6 +41,12 @@ sap_software_install_dictionary:
       - 'IMDB_SERVER20_077_0-80002046.SAR'
       - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent 7.22
 
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
   sap_hana_2_sps06_install:
 
     softwarecenter_search_list_x86_64:
@@ -48,9 +59,14 @@ sap_software_install_dictionary:
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
 
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
 
 #### Interactive Prompt Control Variables ####
 # Do not change these variables unless you intend to modify the interactive prompt behavior!
 sap_playbook_interactive_product: hana
 sap_playbook_interactive_database: hana
-sap_playbook_interactive_layout: sandbox
+sap_playbook_interactive_layout: hana_scaleout

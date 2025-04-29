@@ -23,6 +23,12 @@ sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}" # 
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
 
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
 
@@ -184,11 +190,6 @@ sap_software_install_dictionary:
       - '51050036_17'
       - '51050036_18'
 
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
 
 #### Interactive Prompt Control Variables ####
 # Do not change these variables unless you intend to modify the interactive prompt behavior!

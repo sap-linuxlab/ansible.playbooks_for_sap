@@ -108,7 +108,7 @@ sap_vm_provision_existing_hosts_host_specifications_dictionary:
       # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
       sap_storage_setup_host_type:
         - all # workaround for generic AnyDB instance setup via SAP SWPM which require /sapmnt and /usr/sap access
-        #- anydb_secondary
+        # - anydb_secondary
 
       storage_definition:
 

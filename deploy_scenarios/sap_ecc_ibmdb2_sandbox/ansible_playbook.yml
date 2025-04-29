@@ -138,7 +138,6 @@
       when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
 
-
 #### Begin SAP software hosts preparation ####
 - name: Ansible Play for preparing all SAP software hosts
   hosts: nwas_pas

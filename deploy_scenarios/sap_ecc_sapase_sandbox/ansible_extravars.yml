@@ -70,6 +70,12 @@ sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
 sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
 
 
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
 #### SAP Product selection ####
 # Name of the SAP product to install (String).
 # Options: Defined in sap_software_install_dictionary (e.g. sap_ecc6_ehp8_sapase_sandbox).
@@ -129,9 +135,3 @@ sap_software_install_dictionary:
     # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Terraform Modules for SAP that wrap Ansible Playbooks
     softwarecenter_search_list_ppc64le:
       - 'SAPCAR_1115-70006238.EXE'
-
-
-#### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"

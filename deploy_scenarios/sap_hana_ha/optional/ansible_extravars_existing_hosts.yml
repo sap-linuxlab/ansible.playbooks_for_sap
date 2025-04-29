@@ -33,7 +33,7 @@ sap_storage_setup_definition:
 
 
 #### Ansible Dictionary for host specifications ####
-sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
+sap_vm_provision_existing_hosts_host_specifications_dictionary:
 
   xsmall_256gb:
 
