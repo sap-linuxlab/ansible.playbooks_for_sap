@@ -1,0 +1,57 @@
+---
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
+
+  xsmall_anydb_32vcpu:
+
+    solman01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-standard-32" # 32 vCPU x 128GB DRAM
+      disable_ip_anti_spoofing: true
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: sybase
+          mountpoint: /sybase
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 640                 # size in GB, integer
+          disk_type: pd-balanced         # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                  # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
+          disk_type: pd-balanced
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
