@@ -8,6 +8,7 @@
 # - sap_system_hana_db_sid
 # - sap_system_anydb_sid
 # - sap_system_nwas_abap_ascs_instance_nr
+# - sap_system_nwas_java_scs_instance_nr
 # - sap_system_nwas_abap_ers_instance_nr
 # - sap_system_nwas_abap_pas_instance_nr
 # - sap_system_nwas_abap_aas_instance_nr
@@ -122,9 +123,9 @@
       when: sap_system_anydb_sid | length != 3
 
 
-# Used for all scenarios except dedicated HANA scenarios
+# Used for all scenarios except nwas_java and dedicated HANA scenarios
 - name: Block for sap_system_nwas_abap_ascs_instance_nr
-  when: sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout']
+  when: sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout', 'nwas_java']
   block:
     - name: Prompt for SAP ABAP System Central Service Instance Number
       ansible.builtin.pause:
@@ -154,6 +155,39 @@
       when:
         - sap_system_nwas_abap_ascs_instance_nr | string | length != 2
           or sap_system_nwas_abap_ascs_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+
+
+- name: Block for sap_system_nwas_java_scs_instance_nr
+  when: sap_playbook_interactive_layout == 'nwas_java'
+  block:
+    - name: Prompt for SAP JAVA System Central Service Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP JAVA System Central Service Instance Number (SCS).
+          Example: 00
+      register: sap_system_nwas_java_scs_instance_nr_register
+      when: sap_system_nwas_java_scs_instance_nr is not defined
+
+    - name: Set fact for sap_system_nwas_java_scs_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
+        sap_swpm_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
+        sap_ha_pacemaker_cluster_nwas_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
+      when: sap_system_nwas_java_scs_instance_nr is not defined or sap_swpm_ascs_instance_nr is not defined
+
+    - name: Fail if sap_system_nwas_java_scs_instance_nr is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_nwas_java_scs_instance_nr': '{{ sap_system_nwas_java_scs_instance_nr }}'
+          Required length of SAP JAVA System Central Service Instance Number is 2 letters.
+          {% if sap_system_nwas_java_scs_instance_nr_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_system_nwas_java_scs_instance_nr | string | length != 2
+          or sap_system_nwas_java_scs_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
 
 
 # Used for all distributed_ha scenarios
