@@ -1,11 +1,17 @@
-# Ansible Playbook - SAP BW/4HANA Standard (Scale-Out) installation
+# Ansible Playbook for SAP BW/4HANA (Scale-Out) - Standard Installation
 
-This Ansible Playbook can be executed with:
-- Ansible to provision hosts
-- Ansible + Terraform to provision hosts
-- Existing hosts
+## Overview
 
-This Ansible Playbook can be targeted at the following Infrastructure Platforms:
+This Ansible Playbook automates the deployment of an SAP BW/4HANA Standard (Scale-Out) system in a distributed environment.  
+
+An SAP BW/4HANA Standard (Scale-Out) system, as defined by SAP, consists of an SAP ABAP Platform instances running on a dedicated host, and an SAP HANA database server running as a scale-out cluster across multiple hosts.  
+
+This configuration, often referred to as a Three-Tier Architecture or DualHost, is ideal for production environments, or for scenarios requiring high availability and scalability.
+
+
+## Supported Infrastructure Platforms
+This Ansible Playbook supports the deployment on the following infrastructure platforms:
+
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
 - IBM Cloud
@@ -15,35 +21,106 @@ This Ansible Playbook can be targeted at the following Infrastructure Platforms:
 - OVirt
 - VMware
 
-SAP BW/4HANA installation:
-- Standard System definition by SAP: all main SAP NetWeaver instances (except the SAP HANA database instance) run on a single host.
-- System Topology/Architecture: a Standard System is commonly referred as Three-Tier Architecture, may also be known as DualHost.
-- SAP HANA installed as Scale-Out cluster
 
-SAP BW/4HANA software versions:
-2023, 2021
+## Supported SAP Software
+This playbook includes support for the following software versions:
+- SAP BW/4HANA 2023
+- SAP BW/4HANA 2021
 
----
+Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
 
-## Execution of Ansible Playbook
 
-Prior to execution, please read the [full documentation of the Ansible Playbooks for SAP](../../docs/README.md) for the capabilities and different execution methods.
+## System Architecture
+Upon successful execution, this Ansible Playbook will provision the following host(s) (unless an Ansible Inventory is provided for existing host(s)):
+| Count | Component(s) |
+| --- | --- |
+| 1 | SAP HANA Database Server - Coordinator node |
+| 2 | SAP HANA Database Server - Worker node |
+| 1 | SAP HANA Database Server - Standby node |
+| 1 | SAP ABAP Platform - Central Services (ASCS)<br> SAP ABAP Platform - Primary Application Server (PAS) | 
 
-## Execution outcome
 
-When executing this Ansible Playbook for SAP, the following hosts are provisioned (unless an Ansible Inventory is provided for existing hosts):
-1. Host for SAP HANA Database Server, Coordinator node
-2. Host for SAP HANA Database Server, Worker node
-3. Host for SAP HANA Database Server, Worker node
-4. Host for SAP HANA Database Server, Standby node
-5. Host for SAP NetWeaver Application Server (ABAP) - Central Services (ASCS) and Primary Application Server (PAS)
+## Playbook Execution
+Before running the playbook, please read the main [README](https://github.com/sap-linuxlab/ansible.playbooks_for_sap/blob/main/README.md) for detailed instructions, prerequisites, and best practices.
 
-The sequence of a Standard System installation is:
-- `hdblcm`: Install SAP HANA database server
-- `SWPM`: Install SAP NetWeaver Application Server (ABAP) and Installation Export to Database (i.e. Database Load)
+### Provisioning and Installation
+This method provisions a new host(s) and installs the SAP system.
 
-This therefore matches to the SAP SWPM Product ID prefixes that are executed in sequence:
-- `NW_ABAP_OneHost`, Central Services, Database Instance Installation, Primary Application Server
+1.  **Prepare the `ansible_extravars.yml` file:** This file contains the configuration for the SAP system.
+2.  **Prepare the infrastructure-specific `ansible_extravars_*.yml` file:** This file contains the configuration for the target infrastructure.
+3.  **Execute the playbook:** Run the following command.
+
+```bash
+ansible-playbook ansible_playbook.yml \
+ --extra-vars "@./ansible_extravars.yml" \
+ --extra-vars "@./ansible_extravars_aws_ec2_vs.yml"
+```
+
+### Installation on Existing Hosts
+This method is used to install the SAP system on an existing host(s).
+
+1.  **Prepare the `ansible_extravars.yml` file:** This file contains the configuration for the SAP system.
+2.  **Prepare the `optional/ansible_extravars_existing_hosts.yml` file:** This file contains the configuration for the existing host(s).
+3.  **Prepare the `optional/ansible_inventory_noninteractive.yml` file:** Ensure that your inventory file is properly configured to target the existing host.
+4.  **Execute the playbook:** Run the following command.
+
+```bash
+ansible-playbook ansible_playbook.yml \
+ --extra-vars "@./ansible_extravars.yml" \
+ --extra-vars "@./optional/ansible_extravars_existing_hosts.yml" \
+ --inventory "./optional/ansible_inventory_noninteractive.yml"
+```
+
+### Interactive Execution
+This method allows you to provide input during the execution of the playbook.
+
+1.  **Prepare the `optional/ansible_extravars_interactive.yml` file:** This file contains the essential set of variables for initiating Interactive Prompts.
+2.  **Execute the playbook:** Run the following command.
+
+```bash
+ansible-playbook ansible_playbook.yml \
+ --extra-vars "@./optional/ansible_extravars_interactive.yml"
+```
+
+
+## Deployment Process
+The playbook executes the following sequence of tasks:
+
+### Pre-Installation Tasks
+
+1. **Collect User Inputs (Conditional):** If the `ansible_extravars_interactive.yml` file is used, the playbook will prompt for user input to gather necessary configuration details.
+
+2. **Prepare Scale-Out Host Names:** The following scale-out variables are used to generate host names for the scale-out nodes:
+   - `sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator`
+   - `sap_vm_provision_calculate_sap_hana_scaleout_active_worker`
+   - `sap_vm_provision_calculate_sap_hana_scaleout_standby`
+
+3. **Provision Infrastructure (Conditional):** If the `sap_vm_provision_iac_type` variable is not set to `existing_hosts`, the playbook will provision the necessary infrastructure.
+
+4. **Configure Storage:** The `sap_install.sap_storage_setup` Ansible Role is used to configure the required storage.
+
+5. **Download SAP Installation Media (Conditional):** If the `community.sap_launchpad` Ansible Collection is present on execution node, the playbook will download the necessary SAP installation media.
+
+6. **Transfer SAP Installation Media:** Transfer the SAP installation media across hosts.
+
+7. **Configure Operating System:** The following Ansible Roles are used to configure the operating system and update `/etc/hosts`, followed by a system reboot:
+   - `sap_install.sap_general_preconfigure`
+   - `sap_install.sap_hana_preconfigure`
+   - `sap_install.sap_netweaver_preconfigure`
+
+### SAP Database Installation
+
+8. **Install SAP HANA Database:** The `hdblcm` tool is used to install the SAP HANA Database.
+   - **Detect Installation Media:** The `sap_install.sap_install_media_detect` Ansible Role is used to detect the provided SAP installation media.
+   - **Install Database:** The `sap_install.sap_hana_install` Ansible Role is used to install the database.
+
+### SAP BW/4HANA Installation 
+
+9. **Install SAP BW/4HANA:** The `SWPM` tool is used to install the SAP application.
+   - **Detect Installation Media:** The `sap_install.sap_install_media_detect` Ansible Role is used to detect the provided SAP installation media.
+   - **Install Application:** The `sap_install.sap_swpm` Ansible Role is used to install the application.
+   - **SAP SWPM Product ID Prefix:** `NW_ABAP_OneHost`
+   - Includes Database Load using Installation Export files.
 
 
 ## Known errors
