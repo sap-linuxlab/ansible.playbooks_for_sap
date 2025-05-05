@@ -70,17 +70,6 @@ ansible-playbook ansible_playbook.yml \
  --inventory "./optional/ansible_inventory_noninteractive.yml"
 ```
 
-### Interactive Execution
-This method allows you to provide input during the execution of the playbook.
-
-1.  **Prepare the `optional/ansible_extravars_interactive.yml` file:** This file contains the essential set of variables for initiating Interactive Prompts.
-2.  **Execute the playbook:** Run the following command.
-
-```bash
-ansible-playbook ansible_playbook.yml \
- --extra-vars "@./optional/ansible_extravars_interactive.yml"
-```
-
 
 ## Deployment Process
 The playbook executes the following sequence of tasks:

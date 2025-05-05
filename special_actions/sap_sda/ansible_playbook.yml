@@ -29,7 +29,7 @@
           Please enter which SAP Software installation media to download, select from options:
           sap_diag_agent_753_for_solman72_sp12 (for SAP SolMan 7.2 SP12)
           sap_diag_agent_753_for_solman72_sp0_sp11 (for SAP SolMan >= 7.2 SP0 and <= 7.2 SP11)
-          
+
           Products are defined in the 'sap_software_install_dictionary' variable.
       register: sap_software_product_register
       when: sap_software_product is not defined

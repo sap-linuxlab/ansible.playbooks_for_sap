@@ -87,7 +87,7 @@
         sap_software_download_deduplicate: first
         sap_software_download_files: "{{ sap_software_install_dictionary[item]
           ['softwarecenter_search_list_' ~ sap_software_cpu_architecture] }}"
-      loop: "{{ sap_software_product.split(',') }}" 
+      loop: "{{ sap_software_product.split(',') }}"
       when:
         - sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
         - item in sap_software_install_dictionary.keys()

@@ -7,7 +7,7 @@
 # Enter SAP S-User Password (String).
 # sap_id_user_password:
 
-# Enter key(s) from sap_software_install_dictionary as either String or List 
+# Enter key(s) from sap_software_install_dictionary as either String or List
 # sap_software_product:
 #   - sap_s4hana_2022
 #   - sap_s4hana_2021
