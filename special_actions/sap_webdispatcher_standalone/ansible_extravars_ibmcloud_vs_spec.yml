@@ -1,0 +1,36 @@
+---
+#### Mandatory parameters : Ansible Dictionary for host specifications ####
+sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "bx2-32x128" # 32 vCPU x 128GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: general-purpose
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                  # size in GB, integer
+          disk_type: general-purpose
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: 5iops-tier
+          filesystem_type: xfs           # default: xfs
