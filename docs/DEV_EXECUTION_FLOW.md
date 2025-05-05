@@ -30,10 +30,10 @@ Within each Ansible Playbook, there are various Ansible Tasks for handling the i
         - If Ansible to Terraform, execute Terraform Modules for SAP to bootstrap minimal landing zone  (e.g. Networking, DNS, SSH Key), then loop for VM and storage provisioning per definition in the `*_host_specifications_dictionary` for the chosen Infrastructure Platform
     - Critical OS tasks for VM, such as enable Root OS Login
 - Execute various Ansible Roles from the Ansible Collection `sap_install`
-    - Within each Ansible Role, execute Ansible Tasks for RHEL/SLES OS preconfiguration for SAP, SAP HANA install, SAP SWPM installs etc.
+    - Within each Ansible Role, execute Ansible Tasks for RHEL/SLES OS pre-configuration for SAP, SAP HANA install, SAP SWPM installs etc.
         - Ansible Tasks using built-in Ansible Modules, e.g. built-in for POSIX Shell:
             - OS CLI/binaries
             - Vendor CLI/binaries (i.e. SAP Software CLI/binaries)
-        - Ansible Tasks using customised Ansible Modules:
+        - Ansible Tasks using customized Ansible Modules:
             - Shell scripts --> OS and Vendor CLI/binaries
             - Python scripts
