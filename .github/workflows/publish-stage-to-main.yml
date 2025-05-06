@@ -57,8 +57,8 @@ jobs:
       - name: Append shared fragments to deploy_scenarios files
         working-directory: repo_playbooks_stage
         run: |
-          # Loop through all deploy_scenarios
-          for dir in ./deploy_scenarios/*; do
+          # Loop through all deploy_scenarios and supported special_actions
+          for dir in ./deploy_scenarios/* ./special_actions/*; do
 
             # Loop through all valid extravars files
             for file in "$dir"/ansible_extravars_*_base.yml; do
@@ -81,7 +81,9 @@ jobs:
                 # Spec is also appended to interactive vars
                 if [ -f "$scenario_spec" ]; then
                   sed 's/^---/\n/g' "$scenario_spec" >> "$file"
-                  sed 's/^---/\n/g' "$scenario_spec" >> "$interactive_vars"
+                  if [ -f "$interactive_vars" ]; then
+                    sed 's/^---/\n/g' "$scenario_spec" >> "$interactive_vars"
+                  fi  # interactive_vars exists
                   rm -f "$scenario_spec"
                 fi  # if scenario_spec exists
 
@@ -89,7 +91,9 @@ jobs:
                 # Images are also appended to interactive vars
                 if [ -f "$fragment_images" ]; then
                   sed 's/^---/\n/g' "$fragment_images" >> "$file"
-                  sed 's/^---/\n/g' "$fragment_images" >> "$interactive_vars"
+                  if [ -f "$interactive_vars" ]; then
+                    sed 's/^---/\n/g' "$fragment_images" >> "$interactive_vars"
+                  fi  # interactive_vars exists
                 fi  # if fragment_images exists
 
                 # Remove base files
