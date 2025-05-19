@@ -333,14 +333,34 @@
         sap_install_media_detect_db_client: "ibmdb2"
         sap_install_media_detect_export: "sapecc"
 
+    - name: Register legacy module for DB2 (SLES 15)
+      ansible.builtin.command:
+        cmd: "{{ 'SUSEConnect -p sle-module-legacy/' ~ ansible_distribution_version ~ '/x86_64' }}"
+      when: ansible_os_family == 'Suse' and ansible_distribution_major_version == "15"
+
+    # Package 'net-tools-deprecated' requires module 'sle-module-legacy' on SLES 15
     - name: Install Korn Shell (KSH) and other dependencies for IBM DB2 LUW
       ansible.builtin.package:
         name:
+          "{{ base_packages + (redhat_packages if ansible_os_family == 'RedHat'
+            else (suse_packages if ansible_os_family == 'Suse' else [])) }}"
+        state: present
+      vars:
+        base_packages:
           - ksh
           - mksh
           - pam-devel
-          - "{{ ('libstdc++' if ansible_os_family == 'RedHat' else 'libstdc++6' if ansible_os_family == 'Suse') }}"
-        state: present
+        redhat_packages:
+          - libstdc++
+          - libaio
+        suse_packages:
+          - libstdc++6
+          - libaio1
+          - pam-devel-32bit
+          - libstdc++6-32bit
+          - system-user-bin
+          - net-tools-deprecated
+          - binutils
 
     - name: Ensure rwx permissions for IBM DB2 unpack directory
       ansible.builtin.file:

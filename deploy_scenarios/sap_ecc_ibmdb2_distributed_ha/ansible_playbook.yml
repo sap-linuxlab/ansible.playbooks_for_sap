@@ -405,28 +405,34 @@
         sap_install_media_detect_db_client: "ibmdb2"
         sap_install_media_detect_export: "sapecc"
 
-    # DBT3507E The db2prereqcheck utility failed to find the following package or file: "net-tools-deprecated"
-    # zypper search-packages net-tools-deprecated
-    - name: Prepare Package Repositories when SLES
-      ansible.builtin.shell: |
-        SUSEConnect --product sle-module-legacy/{{ ansible_distribution_version }}/x86_64 && sleep 5
-        SUSEConnect --product sle-module-development-tools/{{ ansible_distribution_version }}/x86_64 && sleep 5
-      when: ansible_os_family == 'Suse'
+    - name: Register legacy module for DB2 (SLES 15)
+      ansible.builtin.command:
+        cmd: "{{ 'SUSEConnect -p sle-module-legacy/' ~ ansible_distribution_version ~ '/x86_64' }}"
+      when: ansible_os_family == 'Suse' and ansible_distribution_major_version == "15"
 
+    # Package 'net-tools-deprecated' requires module 'sle-module-legacy' on SLES 15
     - name: Install Korn Shell (KSH) and other dependencies for IBM DB2 LUW
       ansible.builtin.package:
         name:
-          - mksh # Korn Shell (KSH)
-          - tcsh # C Shell
-          - pam-devel
-          - "{{ ('libstdc++' if ansible_os_family == 'RedHat' else 'libstdc++6' if ansible_os_family == 'Suse') }}"
-          - "{{ ('libaio' if ansible_os_family == 'RedHat' else 'libaio1' if ansible_os_family == 'Suse') }}"
-          - "{{ 'pam-devel-32bit' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'libstdc++6-32bit' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'system-user-bin' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'net-tools-deprecated' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'binutils' if ansible_os_family == 'Suse' else omit }}"
+          "{{ base_packages + (redhat_packages if ansible_os_family == 'RedHat'
+            else (suse_packages if ansible_os_family == 'Suse' else [])) }}"
         state: present
+      vars:
+        base_packages:
+          - ksh
+          - mksh
+          - pam-devel
+        redhat_packages:
+          - libstdc++
+          - libaio
+        suse_packages:
+          - libstdc++6
+          - libaio1
+          - pam-devel-32bit
+          - libstdc++6-32bit
+          - system-user-bin
+          - net-tools-deprecated
+          - binutils
 
     - name: Ensure rwx permissions for IBM DB2 unpack directory
       ansible.builtin.file:

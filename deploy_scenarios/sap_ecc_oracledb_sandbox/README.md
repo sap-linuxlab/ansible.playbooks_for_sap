@@ -106,3 +106,7 @@ The playbook executes the following sequence of tasks:
    - **SAP SWPM Product ID Prefix:** `NW_ABAP_OneHost`
    - AnyDB Database is installed together with SAP NetWeaver.
    - Includes Database Load using Installation Export files.
+
+
+## Limitations
+Single-host SAP Systems with Oracle Databases are not supported on SUSE.

@@ -245,7 +245,7 @@
         verify_host: false
         private_key: "/tmp/hosts_rsa"
         # set_remote_user: false
-      loop: "{{ hostvars[sap_inventory_project_dev_nwas_pas_hostname].sap_hana_install_media_files_list.files | map(attribute='path') | list }}"
+      loop: "{{ hostvars[sap_inventory_project_dev_nwas_pas_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
 
 
 - name: Ansible Play for copying SAP NetWeaver installation media to host
@@ -267,7 +267,7 @@
         verify_host: false
         private_key: "/tmp/hosts_rsa"
         # set_remote_user: false
-      loop: "{{ hostvars[sap_inventory_project_dev_nwas_pas_hostname].sap_nwas_install_media_files_list.files | map(attribute='path') | list }}"
+      loop: "{{ hostvars[sap_inventory_project_dev_nwas_pas_hostname].sap_nwas_install_media_files.files | map(attribute='path') | list }}"
 
 
 - name: Ansible Play to remove temporary files from SAP NetWeaver PAS

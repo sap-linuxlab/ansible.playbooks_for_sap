@@ -181,6 +181,12 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_anydb_install_oracle
 
+    # Reapply Kernel Memory parameters that were reset by pattern oracle_server.
+    - name: Execute Ansible Role sap_netweaver_preconfigure after Oracle Installation
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_netweaver_preconfigure
+      when: ansible_os_family == 'Suse'
+
     # Install Oracle DB and SAP NetWeaver via Ansible Role sap_swpm
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
