@@ -42,10 +42,10 @@ sap_software_install_dictionary:
 
     # SAP SWPM may not be included in the Maintenance Planner stack generated, please check and if not included then append to list
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
 
     software_files_hana_wildcard_list:
       - 'SAPCAR*'
@@ -88,10 +88,10 @@ sap_software_install_dictionary:
 
     # SAP SWPM may not be included in the Maintenance Planner stack generated, please check and if not included then append to list
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
 
     software_files_hana_wildcard_list:
       - 'SAPCAR*'
@@ -133,10 +133,10 @@ sap_software_install_dictionary:
 
     # SAP SWPM may not be included in the Maintenance Planner stack generated, please check and if not included then append to list
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
 
     software_files_hana_wildcard_list:
       - 'SAPCAR*'

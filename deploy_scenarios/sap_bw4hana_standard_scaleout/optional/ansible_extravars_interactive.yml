@@ -58,7 +58,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
       - 'IMDB_LCAPPS_2077_3-20010426.SAR'
       - 'IMDB_AFL20_077_0-80001894.SAR'
@@ -68,7 +68,7 @@ sap_software_install_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70007807.SAR' # Kernel Part I (785)
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (785), SAP HANA 2.0
-      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
       - 'BW4HANA400_INST_EXPORT_2.zip'
       - 'BW4HANA400_INST_EXPORT_3.zip'
@@ -80,7 +80,7 @@ sap_software_install_dictionary:
     #  - 'BW4HANA400_NW_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
       - 'IMDB_LCAPPS_2077_3-80002183.SAR'
       - 'IMDB_AFL20_077_0-80002045.SAR'
@@ -90,7 +90,7 @@ sap_software_install_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70007832.SAR' # Kernel Part I (785)
       - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (785), SAP HANA 2.0
-      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent 7.22
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
       - 'BW4HANA400_INST_EXPORT_1.zip'
       - 'BW4HANA400_INST_EXPORT_2.zip'
       - 'BW4HANA400_INST_EXPORT_3.zip'
@@ -127,7 +127,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
@@ -149,7 +149,7 @@ sap_software_install_dictionary:
     #  - 'BW4HANA400_NW_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'

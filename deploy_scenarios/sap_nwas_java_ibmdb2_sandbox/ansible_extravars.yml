@@ -123,7 +123,7 @@ sap_software_install_dictionary:
       - java_adobe_document_services
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'SWPM10SP43_2-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -137,4 +137,4 @@ sap_software_install_dictionary:
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'

@@ -173,8 +173,8 @@
         sap_install_media_detect_igs: true
         sap_install_media_detect_kernel: true
         sap_install_media_detect_webdisp: false
-        sap_install_media_detect_db: "sapmaxdb"
-        sap_install_media_detect_db_client: "sapmaxdb"
+        # sap_install_media_detect_db: "sapmaxdb"  # Required when using CD Media, not SAR file.
+        # sap_install_media_detect_db_client: "sapmaxdb"  # Required when using CD Media, not SAR file.
         sap_install_media_detect_export: "sapnwas_abap"
 
     # Install SAP MaxDB and SAP NetWeaver via Ansible Role sap_swpm

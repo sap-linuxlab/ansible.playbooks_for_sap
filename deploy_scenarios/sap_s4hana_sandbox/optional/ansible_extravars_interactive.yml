@@ -53,7 +53,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
       - 'IMDB_LCAPPS_2077_3-20010426.SAR'
       - 'IMDB_AFL20_077_0-80001894.SAR'
@@ -63,7 +63,7 @@ sap_software_install_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (793)
-      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent
       - 'S4CORE108_INST_EXPORT_1.zip'
       - 'S4CORE108_INST_EXPORT_2.zip'
       - 'S4CORE108_INST_EXPORT_3.zip'
@@ -86,7 +86,7 @@ sap_software_install_dictionary:
       - 'S4CORE108_INST_EXPORT_20.zip'
       - 'S4CORE108_INST_EXPORT_21.zip'
       - 'S4CORE108_INST_EXPORT_22.zip'
-      - '19118000000000008988'
+      - 'S4CORE108_INST_EXPORT_23.zip'
       - 'S4CORE108_INST_EXPORT_24.zip'
       - 'S4CORE108_INST_EXPORT_25.zip'
       - 'S4CORE108_INST_EXPORT_26.zip'
@@ -99,7 +99,7 @@ sap_software_install_dictionary:
       # - 'SUM20SP22_3-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
       - 'IMDB_LCAPPS_2077_3-80002183.SAR'
       - 'IMDB_AFL20_077_0-80002045.SAR'
@@ -109,7 +109,7 @@ sap_software_install_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
       - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (793)
-      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent
       - 'S4CORE108_INST_EXPORT_1.zip'
       - 'S4CORE108_INST_EXPORT_2.zip'
       - 'S4CORE108_INST_EXPORT_3.zip'
@@ -132,7 +132,7 @@ sap_software_install_dictionary:
       - 'S4CORE108_INST_EXPORT_20.zip'
       - 'S4CORE108_INST_EXPORT_21.zip'
       - 'S4CORE108_INST_EXPORT_22.zip'
-      - '19118000000000008988'
+      - 'S4CORE108_INST_EXPORT_23.zip'
       - 'S4CORE108_INST_EXPORT_24.zip'
       - 'S4CORE108_INST_EXPORT_25.zip'
       - 'S4CORE108_INST_EXPORT_26.zip'
@@ -165,7 +165,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
@@ -188,7 +188,7 @@ sap_software_install_dictionary:
       - 'S4CORE107_INST_EXPORT_10.zip'
       - 'S4CORE107_INST_EXPORT_11.zip'
       - 'S4CORE107_INST_EXPORT_12.zip'
-      - '19118000000000007795'
+      - 'S4CORE107_INST_EXPORT_13.zip'
       - 'S4CORE107_INST_EXPORT_14.zip'
       - 'S4CORE107_INST_EXPORT_15.zip'
       - 'S4CORE107_INST_EXPORT_16.zip'
@@ -213,7 +213,7 @@ sap_software_install_dictionary:
       # - 'SUM20SP22_3-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
@@ -236,7 +236,7 @@ sap_software_install_dictionary:
       - 'S4CORE107_INST_EXPORT_10.zip'
       - 'S4CORE107_INST_EXPORT_11.zip'
       - 'S4CORE107_INST_EXPORT_12.zip'
-      - '19118000000000007795'
+      - 'S4CORE107_INST_EXPORT_13.zip'
       - 'S4CORE107_INST_EXPORT_14.zip'
       - 'S4CORE107_INST_EXPORT_15.zip'
       - 'S4CORE107_INST_EXPORT_16.zip'
@@ -281,7 +281,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
@@ -303,9 +303,9 @@ sap_software_install_dictionary:
       - 'S4CORE106_INST_EXPORT_9.zip'
       - 'S4CORE106_INST_EXPORT_10.zip'
       - 'S4CORE106_INST_EXPORT_11.zip'
-      - '19118000000000006085'
+      - 'S4CORE106_INST_EXPORT_12.zip'
       - 'S4CORE106_INST_EXPORT_13.zip'
-      - '19118000000000006087'
+      - 'S4CORE106_INST_EXPORT_14.zip'
       - 'S4CORE106_INST_EXPORT_15.zip'
       - 'S4CORE106_INST_EXPORT_16.zip'
       - 'S4CORE106_INST_EXPORT_17.zip'
@@ -323,7 +323,7 @@ sap_software_install_dictionary:
       - 'S4HANAOP106_ERP_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
@@ -345,9 +345,9 @@ sap_software_install_dictionary:
       - 'S4CORE106_INST_EXPORT_9.zip'
       - 'S4CORE106_INST_EXPORT_10.zip'
       - 'S4CORE106_INST_EXPORT_11.zip'
-      - '19118000000000006085'
+      - 'S4CORE106_INST_EXPORT_12.zip'
       - 'S4CORE106_INST_EXPORT_13.zip'
-      - '19118000000000006087'
+      - 'S4CORE106_INST_EXPORT_14.zip'
       - 'S4CORE106_INST_EXPORT_15.zip'
       - 'S4CORE106_INST_EXPORT_16.zip'
       - 'S4CORE106_INST_EXPORT_17.zip'
@@ -385,7 +385,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
@@ -423,7 +423,7 @@ sap_software_install_dictionary:
       - 'S4HANAOP105_ERP_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'

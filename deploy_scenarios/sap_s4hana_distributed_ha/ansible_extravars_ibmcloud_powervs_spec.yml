@@ -120,9 +120,10 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_storage_setup_sid: "{{ sap_system_sid }}"
       sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
 
-      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      # Both ASCS and ERS NFS have to be present if Simple Mount is used
       sap_storage_setup_host_type:
         - nwas_abap_ascs
+        - nwas_abap_ers
 
       storage_definition:
 
@@ -168,8 +169,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
       sap_storage_setup_sid: "{{ sap_system_sid }}"
       sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
 
-      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      # Both ASCS and ERS NFS have to be present if Simple Mount is used
       sap_storage_setup_host_type:
+        - nwas_abap_ascs
         - nwas_abap_ers
 
       storage_definition:

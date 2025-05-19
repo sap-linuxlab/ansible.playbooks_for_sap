@@ -92,7 +92,7 @@ sap_software_install_dictionary:
   sap_solman_72_sr2_sapase_sandbox:
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'SWPM10SP43_2-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -112,7 +112,7 @@ sap_software_install_dictionary:
       - '51054655_4' # SAP Solution Manager 7.2 SR2 - Java, ZIP. Uses SAP Netweaver 7.5 SP19 JAVA. Contains SOLMAN72_JAVA_UT (SAP:UT_SOLMAN:SR2SOLMAN72:SP00:*:*), JAVA_EXPORT (SAP:JEXPORT:SR2_72SOLMAN_2020S4:*:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:SR2_72SOLMAN_2020S4:*:*:*), JAVA_J2EE_OSINDEP (SAP:J2EE-CD:SR2_72SOLMAN_2020S4:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:SR2_72SOLMAN_2020S4:*:*:*), JAVA_J2EE_OSINDEP_UT (SAP:UT:SR2_72SOLMAN_2020S4:*:*:*)
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
 
     # SAP Solution Manager 7.2 Support Release 2 > SAP Solution Manager 7.2 ABAP Support Release 2 > SAP ASE > Installation > Application Server ABAP > Standard System > Standard System
     abap:

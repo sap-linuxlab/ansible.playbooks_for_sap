@@ -24,27 +24,41 @@ sap_ip: "{{ ansible_default_ipv4.address }}"
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
 
+  sap_hana_2_sps08_install:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_085_0-80002031.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002082.SAR' # SAP HANA CLIENT Version 2.24
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_085_0-80002046.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002095.SAR'  # SAP HANA CLIENT Version 2.24
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
+
   sap_hana_2_sps07_install:
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent 7.22
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
 
   sap_hana_2_sps06_install:
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
 

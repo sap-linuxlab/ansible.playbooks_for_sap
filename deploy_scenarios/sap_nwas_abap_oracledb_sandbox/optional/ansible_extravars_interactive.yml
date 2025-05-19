@@ -60,7 +60,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
@@ -81,7 +81,7 @@ sap_software_install_dictionary:
 
     # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
 
 
   # SAP NetWeaver 7.5 > Oracle > Installation > Application Server ABAP > Standard System
@@ -108,7 +108,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002605.SAR' # Kernel Part II (753), Oracle DB
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
@@ -134,7 +134,7 @@ sap_software_install_dictionary:
 
     # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
 
 
 #### Interactive Prompt Control Variables ####
