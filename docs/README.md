@@ -576,6 +576,29 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 ```
 
+### Using NFS with Prepared Software
+The playbooks validate if the Ansible Collection `community.sap_launchpad` is present before attempting to download SAP installation media.  
+However, you can execute all playbooks without downloading software by leveraging an NFS mount.  
+This approach is beneficial when you already have the necessary SAP software available on a network share, allowing for faster and more efficient deployments.
+
+To use this method, modify the `storage_definition` section within the `host_specifications_dictionary` variable to include the NFS mount details.
+
+**Example for AWS:**
+```yaml
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
+  xsmall_256gb:
+    h01hana:
+      storage_definition:
+
+        - name: software
+          mountpoint: /software
+          nfs_path: ''
+          nfs_server: "fs-example.efs.eu-central-1.amazonaws.com:/sap_hana_2_sps07"
+          nfs_filesystem_type: nfs4
+          nfs_mount_options: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl"
+```
+
 
 ## Playbook Execution
 

@@ -144,6 +144,18 @@ For comprehensive lifecycle management of SAP systems, consider [SAP Landscape M
 
 For evaluating SAP software business functionality, [SAP Cloud Appliance Library](https://www.sap.com/products/cloud-appliance-library.html) offers a convenient platform.
 
+### Pseudo-Idempotency
+Idempotency ensures that applying the playbook multiple times results in the same system state as applying it once.  
+While these playbooks strive for idempotency, certain limitations exist.
+
+Potential issues:
+1. **NFS Mounts:**
+   - The playbooks mount NFS shares but do not currently validate or purge existing mounts.
+   - Re-running the playbook without cleaning up previous NFS mounts may lead to SAP Software Provisioning Manager (SWPM) failures or unexpected behavior due to the presence of existing SAP directories.
+2. **SAP System Detection:**
+   - The `community.sap_swpm` Ansible role, used for SAP software installation, may fail or produce inconsistent results if it detects an existing SAP system on the target host.
+   - To avoid issues, use the playbooks on fresh systems or ensure thorough cleanup of any previous SAP installations.
+
 
 ## License
 [Apache 2.0](./LICENSE)
