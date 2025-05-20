@@ -70,6 +70,9 @@ ansible-playbook ansible_playbook.yml \
  --inventory "./optional/ansible_inventory_noninteractive.yml"
 ```
 
+### Interactive Execution
+This method is not supported due to complexity of this scenario.
+
 
 ## Deployment Process
 The playbook executes the following sequence of tasks:

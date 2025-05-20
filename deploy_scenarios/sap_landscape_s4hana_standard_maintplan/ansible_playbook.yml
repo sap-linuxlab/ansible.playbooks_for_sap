@@ -5,31 +5,6 @@
 # This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
 
 
-#### Interactive Mode ####
-# Interactive mode section can be safely removed without impact if all mandatory variables are provided.
-- name: Ansible Play to Interactively gather all mandatory variables
-  hosts: localhost
-  gather_facts: false
-  pre_tasks:
-
-    - name: Block for collection for interactive prompts
-      when:
-        - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
-        - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
-        - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
-      block:
-        - name: Check if interactive tasks are available
-          ansible.builtin.stat:
-            path: ../../common_fragments/tasks/interactive/main.yml
-          register: sap_playbook_interactive_tasks_availability
-          ignore_errors: true
-
-        - name: Execute collection of interactive inputs
-          ansible.builtin.include_tasks:
-            file: ../../common_fragments/tasks/interactive/main.yml
-          when: sap_playbook_interactive_tasks_availability.stat.exists
-
-
 #### Begin Infrastructure-as-Code provisioning ####
 - name: Ansible Play to create dynamic inventory group for provisioning
   hosts: localhost
