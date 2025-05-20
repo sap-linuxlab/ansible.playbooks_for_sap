@@ -111,6 +111,12 @@
           "{{ sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input }}"
       when: sap_vm_provision_ssh_bastion_private_key_file_path is not defined
 
+    - name: Check if {{ sap_vm_provision_ssh_bastion_private_key_file_path }} is available
+      ansible.builtin.stat:
+        path: "{{ sap_vm_provision_ssh_bastion_private_key_file_path }}"
+      register: sap_vm_provision_ssh_bastion_private_key_file_path_availability
+      ignore_errors: true
+
     - name: Fail if sap_vm_provision_ssh_bastion_private_key_file_path is invalid
       ansible.builtin.fail:
         msg: |
@@ -124,3 +130,4 @@
       when:
         - sap_vm_provision_ssh_bastion_private_key_file_path | length == 0
           or sap_vm_provision_ssh_bastion_private_key_file_path == 'ENTER_STRING_VALUE_HERE'
+          or not sap_vm_provision_ssh_bastion_private_key_file_path_availability.stat.exists

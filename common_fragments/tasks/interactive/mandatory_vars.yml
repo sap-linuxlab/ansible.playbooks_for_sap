@@ -4,14 +4,14 @@
 # This could be prevented by using default(None), but it could cause issues.
 
 # Following variables are defined and validated:
-# - sap_system_sid
-# - sap_system_hana_db_sid
-# - sap_system_anydb_sid
-# - sap_system_nwas_abap_ascs_instance_nr
-# - sap_system_nwas_java_scs_instance_nr
-# - sap_system_nwas_abap_ers_instance_nr
-# - sap_system_nwas_abap_pas_instance_nr
-# - sap_system_nwas_abap_aas_instance_nr
+# - sap_system_sid, sap_swpm_sid
+# - sap_system_hana_db_sid, sap_swpm_db_sid, sap_hana_sid, sap_ha_install_hana_hsr_sid
+# - sap_system_anydb_sid, sap_swpm_db_sid, sap_anydb_install_oracle_sid
+# - sap_system_nwas_abap_ascs_instance_nr, sap_swpm_ascs_instance_nr, sap_ha_pacemaker_cluster_nwas_ascs_instance_nr
+# - sap_system_nwas_java_scs_instance_nr, sap_swpm_java_scs_instance_nr, sap_ha_pacemaker_cluster_nwas_scs_instance_nr
+# - sap_system_nwas_abap_ers_instance_nr, sap_swpm_ers_instance_nr, sap_ha_pacemaker_cluster_nwas_ers_instance_nr
+# - sap_system_nwas_abap_pas_instance_nr, sap_swpm_pas_instance_nr
+# - sap_system_nwas_abap_aas_instance_nr, sap_swpm_aas_instance_nr
 
 # Following variables are not included, because they use default('').
 # - sap_vm_provision_nfs_mount_point
@@ -22,7 +22,7 @@
 
 # Used for all scenarios except dedicated HANA scenarios
 - name: Block for sap_system_sid
-  when: sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout']
+  when: sap_playbook_interactive_product not in ['hana']
   block:
     - name: Prompt for SAP System ID
       ansible.builtin.pause:
@@ -72,8 +72,6 @@
         sap_hana_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
         sap_ha_install_hana_hsr_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
       when: sap_system_hana_db_sid is not defined
-        or sap_swpm_db_sid is not defined
-        or sap_hana_sid is not defined
 
     - name: Fail if sap_system_hana_db_sid is invalid
       ansible.builtin.fail:
@@ -108,7 +106,6 @@
         sap_swpm_db_sid: "{{ sap_system_anydb_sid_register.user_input }}"
         sap_anydb_install_oracle_sid: "{{ sap_system_anydb_sid_register.user_input }}"
       when: sap_system_anydb_sid is not defined
-        or sap_swpm_db_sid is not defined
 
     - name: Fail if sap_system_anydb_sid is invalid
       ansible.builtin.fail:
@@ -125,7 +122,7 @@
 
 # Used for all scenarios except nwas_java and dedicated HANA scenarios
 - name: Block for sap_system_nwas_abap_ascs_instance_nr
-  when: sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout', 'nwas_java']
+  when: sap_playbook_interactive_product not in ['hana', 'nwas_java']
   block:
     - name: Prompt for SAP ABAP System Central Service Instance Number
       ansible.builtin.pause:
@@ -158,7 +155,7 @@
 
 
 - name: Block for sap_system_nwas_java_scs_instance_nr
-  when: sap_playbook_interactive_layout == 'nwas_java'
+  when: sap_playbook_interactive_product == 'nwas_java'
   block:
     - name: Prompt for SAP JAVA System Central Service Instance Number
       ansible.builtin.pause:
@@ -226,7 +223,7 @@
 
 # Used for all scenarios except dedicated HANA scenarios
 - name: Block for sap_system_nwas_abap_pas_instance_nr
-  when: sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout']
+  when: sap_playbook_interactive_product not in ['hana']
   block:
     - name: Prompt for SAP Primary Application Server Instance Number
       ansible.builtin.pause:

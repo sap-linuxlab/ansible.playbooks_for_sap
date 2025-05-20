@@ -9,7 +9,6 @@
 # - sap_vm_provision_ibmcloud_private_dns_instance_name
 # - sap_vm_provision_ibmcloud_vpc_name
 # - sap_vm_provision_ibmcloud_vpc_subnet_name
-# - sap_vm_provision_host_specification_plan
 # - sap_vm_provision_ibmcloud_vs_host_os_image
 # - sap_vm_provision_ssh_host_private_key_file_path
 # - sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key
@@ -257,51 +256,6 @@
           or sap_vm_provision_ibmcloud_vpc_subnet_name == 'ENTER_STRING_VALUE_HERE'
 
 
-# Host specification and Image selection section
-- name: Ensure that sap_vm_provision_ibmcloud_vs_host_specifications_dictionary is defined
-  ansible.builtin.fail:
-    msg: |
-      Mandatory variable 'sap_vm_provision_ibmcloud_vs_host_specifications_dictionary' is not defined.
-      Ensure this dictionary variable is present in extra vars and re-run the playbook.
-  when:
-    - sap_vm_provision_ibmcloud_vs_host_specifications_dictionary is not defined
-      or sap_vm_provision_ibmcloud_vs_host_specifications_dictionary | length == 0
-
-- name: Block for sap_vm_provision_host_specification_plan
-  block:
-    - name: Prompt for deployment plan selection
-      ansible.builtin.pause:
-        prompt: |
-          Select a deployment plan from the sap_vm_provision_ibmcloud_vs_host_specifications_dictionary.
-          Available values: {{ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary.keys() | list }}
-          Press enter to skip and use the default value ('{{ __default_plan }}').
-      register: sap_vm_provision_host_specification_plan_register
-      vars:
-        __default_plan: "{{ (sap_vm_provision_ibmcloud_vs_host_specifications_dictionary | dict2items | first).key }}"
-      when: sap_vm_provision_host_specification_plan is not defined
-
-    - name: Set fact for sap_vm_provision_host_specification_plan
-      ansible.builtin.set_fact:
-        sap_vm_provision_host_specification_plan:
-          "{{ sap_vm_provision_host_specification_plan_register.user_input
-            if sap_vm_provision_host_specification_plan_register.user_input | length > 0
-            else (sap_vm_provision_ibmcloud_vs_host_specifications_dictionary | dict2items | first).key }}"
-      when: sap_vm_provision_host_specification_plan is not defined
-
-    - name: Fail if sap_vm_provision_host_specification_plan is invalid
-      ansible.builtin.fail:
-        msg: |
-          Invalid value for variable 'sap_vm_provision_host_specification_plan': '{{ sap_vm_provision_host_specification_plan }}'
-          Available options: {{ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary.keys()
-           }} are defined in 'sap_vm_provision_ibmcloud_vs_host_specifications_dictionary'.
-          {% if sap_vm_provision_host_specification_plan_register.user_input is not defined -%}
-            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
-          {% else -%}
-            Re-run the playbook and provide a valid input.
-          {% endif %}.
-      when: sap_vm_provision_host_specification_plan not in sap_vm_provision_ibmcloud_vs_host_specifications_dictionary.keys()
-
-
 - name: Ensure that sap_vm_provision_ibmcloud_vs_host_os_image_dictionary is defined
   ansible.builtin.fail:
     msg: |
@@ -378,6 +332,12 @@
           "{{ sap_vm_provision_ssh_host_private_key_file_path_register.user_input }}"
       when: sap_vm_provision_ssh_host_private_key_file_path is not defined
 
+    - name: Check if {{ sap_vm_provision_ssh_host_private_key_file_path }} is available
+      ansible.builtin.stat:
+        path: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
+      register: sap_vm_provision_ssh_host_private_key_file_path_availability
+      ignore_errors: true
+
     - name: Fail if sap_vm_provision_ssh_host_private_key_file_path is invalid
       ansible.builtin.fail:
         msg: |
@@ -391,6 +351,7 @@
       when:
         - sap_vm_provision_ssh_host_private_key_file_path | length == 0
           or sap_vm_provision_ssh_host_private_key_file_path == 'ENTER_STRING_VALUE_HERE'
+          or not sap_vm_provision_ssh_host_private_key_file_path_availability.stat.exists
 
 
 - name: Block for sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key

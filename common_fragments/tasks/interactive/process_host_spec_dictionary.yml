@@ -10,7 +10,47 @@
     msg: |
       Variable 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined.
       Correct this variable in extra vars and re-run the playbook.
-  when: "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars"
+  when:
+    - "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars"
+    - lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') | length == 0
+
+- name: Block for sap_vm_provision_host_specification_plan
+  vars:
+    __host_specifications_dictionary:
+      "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') }}"
+  block:
+    - name: Prompt for deployment plan selection
+      ansible.builtin.pause:
+        prompt: |
+          Select a deployment plan from the 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary'.
+          Available values: {{ __host_specifications_dictionary.keys() | list }}
+          Press enter to skip and use the default value ('{{ __default_plan }}').
+      register: sap_vm_provision_host_specification_plan_register
+      vars:
+        __default_plan: "{{ (__host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Set fact for sap_vm_provision_host_specification_plan
+      ansible.builtin.set_fact:
+        sap_vm_provision_host_specification_plan:
+          "{{ sap_vm_provision_host_specification_plan_register.user_input
+            if sap_vm_provision_host_specification_plan_register.user_input | length > 0
+            else (__host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Fail if sap_vm_provision_host_specification_plan is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_host_specification_plan': '{{ sap_vm_provision_host_specification_plan }}'
+          Available options: {{ __host_specifications_dictionary.keys()
+            }} are defined in 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary'.
+          {% if sap_vm_provision_host_specification_plan_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_host_specification_plan not in __host_specifications_dictionary.keys()
+
 
 - name: Set temporary fact for host specification dictionary
   ansible.builtin.set_fact:
@@ -93,8 +133,7 @@
       'sap_host_type': {{ sap_vm_provision_group_nwas_ascs | d('nwas_ascs') }}
       Correct this variable in extra vars re-run the playbook.
   when:
-    - sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout']
-    - sap_playbook_interactive_product != 'nwas_java'
+    - sap_playbook_interactive_product not in ['hana', 'nwas_java']
     - sap_playbook_host_nwas_ascs_list | d([]) | length == 0
 
 
@@ -119,8 +158,7 @@
       'sap_host_type': {{ sap_vm_provision_group_nwas_scs | d('nwas_scs') }}
       Correct this variable in extra vars re-run the playbook.
   when:
-    - sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout']
-    - sap_playbook_interactive_product == 'nwas_java'
+    - sap_playbook_interactive_product not in ['hana', 'nwas_java']
     - sap_playbook_host_nwas_scs_list | d([]) | length == 0
 
 
@@ -187,7 +225,7 @@
       'sap_host_type': {{ sap_vm_provision_group_nwas_pas | d('nwas_pas') }}
       Correct this variable in extra vars re-run the playbook.
   when:
-    - sap_playbook_interactive_layout not in ['hana', 'hana_ha', 'hana_scaleout']
+    - sap_playbook_interactive_product not in ['hana']
     - sap_playbook_host_nwas_pas_list | d([]) | length == 0
 
 
