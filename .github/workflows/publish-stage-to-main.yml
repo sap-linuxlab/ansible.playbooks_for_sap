@@ -34,24 +34,29 @@ jobs:
         working-directory: repo_playbooks_stage
         run: |
           shopt -s nullglob  # Ensures that empty results are empty
-          
-          # Loop through all deploy_scenarios
-          for dir in ./deploy_scenarios/*; do
-            # check if there are base files present, identifying reworked scenario
-            files=("$dir"/ansible_extravars_*_base*.yml)
 
-            if [[ ${#files[@]} -gt 0 ]]; then
+          # Update path in interactive tasks
+          sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' ./common_fragments/tasks/interactive/*.yml ./common_fragments/tasks/interactive/*/*.yml
+
+          # Loop through all deploy_scenarios and supported special_actions
+          for dir in ./deploy_scenarios/* ./special_actions/*; do
+            # Copy interactive tasks only if optional/ansible_extravars_interactive.yml is present.
+            interactive_vars="$dir"/optional/ansible_extravars_interactive.yml
+            if [ -f "$interactive_vars" ]; then
               # Copy tasks
               cp -r ./common_fragments/tasks/* $dir/optional/
 
-              # Update path to copied tasks
-              sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' $dir/ansible_playbook.yml $dir/optional/interactive/*.yml
+              # Update path to interactive tasks in playbooks
+              sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' $dir/ansible_playbook.yml
+            fi  # interactive_vars exists
 
-              # Copy ansible_requirements
+            # Copy ansible_requirements if it does not exist
+            ansible_requirements="$dir"/ansible_requirements.yml
+            if [ ! -f "$ansible_requirements" ]; then
               cp ./common_fragments/ansible_requirements.yml $dir/
-            fi  # if base files were found
+            fi  # ansible_requirements not exists
           done
-          
+
           shopt -u nullglob
 
       - name: Append shared fragments to deploy_scenarios files
