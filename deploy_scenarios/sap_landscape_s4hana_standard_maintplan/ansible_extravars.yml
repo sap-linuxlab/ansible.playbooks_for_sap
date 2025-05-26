@@ -40,9 +40,12 @@ sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a 
 sap_hana_preconfigure_reboot_ok: true  # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
 sap_hana_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
 sap_hana_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
-sap_hana_preconfigure_saptune_solution: 'S4HANA-APP+DB'  # SUSE saptune solution to apply for SAP HANA (String).
+sap_hana_preconfigure_saptune_solution: 'S4HANA-DBSERVER'  # SUSE saptune solution to apply for SAP HANA (String).
 sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
-# sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APP+DB'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+sap_netweaver_preconfigure_reboot_ok: true  # SAP Netweaver hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_netweaver_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APPSERVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
 
 
 #### SAP HANA Database Server installation ####

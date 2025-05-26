@@ -40,6 +40,9 @@ sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts
 sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
 sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
 sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_reboot_ok: true  # SAP Netweaver hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_netweaver_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
 sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
 
 
