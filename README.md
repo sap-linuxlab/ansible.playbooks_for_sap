@@ -67,6 +67,7 @@ The explanation of SAP System Layouts:
 - Download SAP Software installation media
 - System Copy Export, IBM Db2 `[Experimental]`
 - System Copy Restore (SAP ECC on HANA or SAP S/4HANA), Sandbox  `[Experimental]`
+- SAP ASCS/ERS Cluster Installation
 
 
 ## How to get started

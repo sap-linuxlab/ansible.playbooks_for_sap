@@ -82,6 +82,7 @@ Requirements for using Existing Hosts:
 | sap_s4hana_standard | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | sap_s4hana_standard_maintplan | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | <br/>***Special Actions*** |
+| sap_ascs_ers_cluster | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :warning: | :white_check_mark: | :white_check_mark: |
 | sap_download_install_media | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | sap_sda | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | sap_system_copy_export | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
