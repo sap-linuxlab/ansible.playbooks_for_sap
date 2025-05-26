@@ -1,0 +1,15 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount point (String).
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_type: nfs4  # NFS version (String).
+# defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
+sap_vm_provision_nfs_mount_point_opts:
+  nfsvers=4.1,timeo=600,retrans=2,hard   # NFS Mount options (String).
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_msazure_subscription_id: "{{ sap_vm_provision_msazure_subscription_id }}"
+sap_ha_pacemaker_cluster_msazure_resource_group: "{{ sap_vm_provision_msazure_resource_group_name }}"
