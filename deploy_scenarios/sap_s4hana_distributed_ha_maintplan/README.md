@@ -205,3 +205,68 @@ To address these challenges and maintain a consistent installation sequence, thi
 5.  **Load Balancer Update:** The load balancer is updated to use the correct health check probe port configured by Linux Pacemaker.
 
 **Note:** The additional handling for Load Balancer VIPs is irrelevant for SAP HANA (hdblcm) installation procedures.
+
+
+## Pacemaker Cluster Details
+### SAP HANA Scale-Up
+**Default:** SAP HANA System Replication Scale-Up - Performance Optimized Scenario with `SAPHanaSR-angi`.  
+
+Example of the cluster configuration for SUSE on AWS (`crm status`):
+```console
+Node List:
+  * Online: [ s02hana0 s02hana1 ]
+
+Full List of Resources:
+  * rsc_fence_aws       (stonith:external/ec2):  Started s02hana0
+  * rsc_vip_H02_HDB90_primary   (ocf::heartbeat:aws-vpc-move-ip):        Started s02hana0
+  * Clone Set: cln_SAPHanaTop_H02_HDB90 [rsc_SAPHanaTop_H02_HDB90]:
+    * Started: [ s02hana0 s02hana1 ]
+  * Clone Set: mst_SAPHanaCon_H02_HDB90 [rsc_SAPHanaCon_H02_HDB90] (promotable):
+    * Masters: [ s02hana0 ]
+    * Slaves: [ s02hana1 ]
+  * Clone Set: cln_SAPHanaFil_H02_HDB90 [rsc_SAPHanaFil_H02_HDB90]:
+    * Started: [ s02hana0 s02hana1 ]
+```
+
+Additional types:
+- **Classic Scale-Up without `SAPHanaSR-angi`:**  
+  To enable this:
+    - Set the variable `sap_ha_pacemaker_cluster_saphanasr_angi_detection: false`.
+
+### SAP ASCS/ERS
+**Default:** Enqueue Replication 2 High Availability Cluster With Simple Mount.  
+This is the recommended setup for modern SAP systems, where the ERS instance can utilize a shared `/sapmnt` and does not require its own dedicated clustered file system for `/usr/sap/<SAPSID>/ERS<instance>`.  
+
+Example of the cluster configuration for SUSE on AWS (`crm status`):
+```console
+Node List:
+  * Online: [ s02ascs s02ers ]
+
+Full List of Resources:
+  * rsc_fence_aws       (stonith:external/ec2):  Started s02ascs
+  * Resource Group: grp_S02_ASCS00:
+    * rsc_vip_S02_ASCS00        (ocf::heartbeat:aws-vpc-move-ip):        Started s02ascs
+    * rsc_SAPStartSrv_S02_ASCS00        (ocf::suse:SAPStartSrv):         Started s02ascs
+    * rsc_SAPInstance_S02_ASCS00        (ocf::heartbeat:SAPInstance):    Started s02ascs
+  * Resource Group: grp_S02_ERS10:
+    * rsc_vip_S02_ERS10 (ocf::heartbeat:aws-vpc-move-ip):        Started s02ers
+    * rsc_SAPStartSrv_S02_ERS10 (ocf::suse:SAPStartSrv):         Started s02ers
+    * rsc_SAPInstance_S02_ERS10 (ocf::heartbeat:SAPInstance):    Started s02ers
+```
+
+**Additional Cluster Types / Configurations:**
+The default ASCS/ERS cluster can be customized using variables in your `ansible_extravars.yml` file:
+- **Classic ENSA2 (without Simple Mount):**  
+  This configuration uses ENSA2 but manages the ASCS and ERS file systems (`/usr/sap/<SAPSID>/ASCS<instance>` and `/usr/sap/<SAPSID>/ERS<instance>`) as separate clustered resources.  
+  To enable this:
+    - Set the variable `sap_ha_pacemaker_cluster_nwas_cs_ers_simple_mount: false`.
+    - Ensure the `sap_storage_setup_host_type` variable is configured to define separate storage for the ASCS and ERS hosts respectively.
+        - For the ASCS host (often grouped as `nwas_ascs`): `sap_storage_setup_host_type: ['nwas_abap_ascs']`
+        - For the ERS host (often grouped as `nwas_ers`): `sap_storage_setup_host_type: ['nwas_abap_ers']`
+- **Classic ENSA1:**  
+  This configuration uses the older Enqueue Replication Server 1 (ENSA1) architecture.  
+  To enable this:
+    - Set the variable `sap_ha_pacemaker_cluster_nwas_abap_ascs_ers_ensa1: true`.
+    - Ensure the `sap_storage_setup_host_type` variable is configured to define separate storage for the ASCS and ERS hosts respectively.
+        - For the ASCS host (often grouped as `nwas_ascs`): `sap_storage_setup_host_type: ['nwas_abap_ascs']`
+        - For the ERS host (often grouped as `nwas_ers`): `sap_storage_setup_host_type: ['nwas_abap_ers']`

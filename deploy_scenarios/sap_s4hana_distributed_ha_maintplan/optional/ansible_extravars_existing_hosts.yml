@@ -36,6 +36,16 @@ sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"  # NFS version (String).
 sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"  # NFS Mount options (String).
 
+#### High Availability variables ####
+sap_vm_temp_vip_nwas_abap_ascs: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs }}"
+sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs }}"
+
+sap_vm_temp_vip_nwas_abap_ers: "{{ sap_vm_provision_ha_vip_nwas_abap_ers }}"
+sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "{{ sap_vm_provision_ha_vip_nwas_abap_ers }}"
+
+sap_vm_temp_vip_hana_primary: "{{ sap_vm_provision_ha_vip_hana_primary }}"
+sap_ha_pacemaker_cluster_vip_hana_primary_ip_address: "{{ sap_vm_provision_ha_vip_hana_primary }}"
+
 
 #### Ansible Dictionary for host specifications ####
 sap_vm_provision_existing_hosts_host_specifications_dictionary:
@@ -139,9 +149,11 @@ sap_vm_provision_existing_hosts_host_specifications_dictionary:
       sap_host_type: nwas_ascs # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
-      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
 
-      # Both ASCS and ERS NFS have to be present if Simple Mount is used
+      # ASCS and ERS have to be present for Simple Mount cluster.
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
       sap_storage_setup_host_type:
         - nwas_abap_ascs
         - nwas_abap_ers
@@ -184,9 +196,11 @@ sap_vm_provision_existing_hosts_host_specifications_dictionary:
       sap_host_type: nwas_ers # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
+
+      # ASCS and ERS have to be present for Simple Mount cluster.
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
       sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
 
-      # Both ASCS and ERS NFS have to be present if Simple Mount is used
       sap_storage_setup_host_type:
         - nwas_abap_ascs
         - nwas_abap_ers

@@ -153,7 +153,7 @@ The playbook executes the following sequence of tasks:
 15. **Configure High Availability Pacemaker Cluster for ASCS/ERS:** The `sap_install.sap_ha_pacemaker_cluster` Ansible Role is used for cluster configuration.
     - **Default configuration:** ENSA2 with Simple Mount
     - (Optional) Classic cluster without Simple Mount can be enabled by setting variable `sap_ha_pacemaker_cluster_nwas_cs_ers_simple_mount: false`
-    - (Optional) ENSA1 can be enables by setting variable `sap_ha_pacemaker_cluster_nwas_abap_ascs_ers_ensa1: true`
+    - (Optional) ENSA1 can be enables by setting variable `sap_ha_pacemaker_cluster_nwas_cs_ensa1: true`
 
 ### SAP NetWeaver Installation - PAS / AAS
 
@@ -202,3 +202,40 @@ To address these challenges and maintain a consistent installation sequence, thi
 5.  **Load Balancer Update:** The load balancer is updated to use the correct health check probe port configured by Linux Pacemaker.
 
 **Note:** This load balancer handling is specific to SAP NetWeaver and is not required for SAP AnyDB using IBM Db2.
+
+
+## Pacemaker Cluster Details
+### IBM Db2 HADR
+The `sap_install.sap_ha_install_anydb_ibmdb2` Ansible Role (currently in an `experimental` state, as noted in the Disclaimer) is used to configure a Pacemaker cluster for managing the IBM Db2 High Availability Disaster Recovery (HADR) environment.
+This cluster typically provides:
+- Automated failover of the Db2 database from the primary to the standby host.
+- Management of a virtual IP address that always points to the active primary database server.
+- STONITH/Fencing mechanisms to ensure data integrity during failover scenarios.
+
+The specific Pacemaker resources, their names, and configuration details are determined by the `sap_install.sap_ha_install_anydb_ibmdb2` role. For precise information on the cluster configuration implemented by this role, please refer to its documentation or examine the cluster status after deployment (e.g., using `crm_mon -1r` on a cluster node).
+
+
+### SAP ASCS/ERS
+**Default:** Enqueue Replication 2 High Availability Cluster With Simple Mount.  
+This is the recommended setup for modern SAP systems, where the ERS instance can utilize a shared `/sapmnt` and does not require its own dedicated clustered file system for `/usr/sap/<SAPSID>/ERS<instance>`.  
+
+Example of the cluster configuration for SUSE on AWS (`crm status`):
+```console
+```
+
+**Additional Cluster Types / Configurations:**
+The default ASCS/ERS cluster can be customized using variables in your `ansible_extravars.yml` file:
+- **Classic ENSA2 (without Simple Mount):**  
+  This configuration uses ENSA2 but manages the ASCS and ERS file systems (`/usr/sap/<SAPSID>/ASCS<instance>` and `/usr/sap/<SAPSID>/ERS<instance>`) as separate clustered resources.  
+  To enable this:
+    - Set the variable `sap_ha_pacemaker_cluster_nwas_cs_ers_simple_mount: false`.
+    - Ensure the `sap_storage_setup_host_type` variable is configured to define separate storage for the ASCS and ERS hosts respectively.
+        - For the ASCS host (often grouped as `nwas_ascs`): `sap_storage_setup_host_type: ['nwas_abap_ascs']`
+        - For the ERS host (often grouped as `nwas_ers`): `sap_storage_setup_host_type: ['nwas_abap_ers']`
+- **Classic ENSA1:**  
+  This configuration uses the older Enqueue Replication Server 1 (ENSA1) architecture.  
+  To enable this:
+    - Set the variable `sap_ha_pacemaker_cluster_nwas_abap_ascs_ers_ensa1: true`.
+    - Ensure the `sap_storage_setup_host_type` variable is configured to define separate storage for the ASCS and ERS hosts respectively.
+        - For the ASCS host (often grouped as `nwas_ascs`): `sap_storage_setup_host_type: ['nwas_abap_ascs']`
+        - For the ERS host (often grouped as `nwas_ers`): `sap_storage_setup_host_type: ['nwas_abap_ers']`

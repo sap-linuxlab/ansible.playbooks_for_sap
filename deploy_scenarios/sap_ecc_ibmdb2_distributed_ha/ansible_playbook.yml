@@ -741,12 +741,12 @@
         sap_ha_pacemaker_cluster_nwas_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
 
         sap_ha_pacemaker_cluster_nwas_ascs_sapinstance_instance_name:
-          "{{ sap_system_sid }}_ASCS{{ sap_system_nwas_abap_ascs_instance_nr }}"
+          "{{ sap_system_sid }}_ASCS{{ sap_system_nwas_abap_ascs_instance_nr }}_{{ sap_swpm_ascs_instance_hostname }}"
         sap_ha_pacemaker_cluster_nwas_ascs_sapinstance_start_profile_string:
           "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ASCS{{ sap_system_nwas_abap_ascs_instance_nr }}_{{ sap_swpm_ascs_instance_hostname }}"
 
         sap_ha_pacemaker_cluster_nwas_ers_sapinstance_instance_name:
-          "{{ sap_system_sid }}_ERS{{ sap_system_nwas_abap_ers_instance_nr }}"
+          "{{ sap_system_sid }}_ERS{{ sap_system_nwas_abap_ers_instance_nr }}_{{ sap_swpm_ers_instance_hostname }}"
         sap_ha_pacemaker_cluster_nwas_ers_sapinstance_start_profile_string:
           "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ERS{{ sap_system_nwas_abap_ers_instance_nr }}_{{ sap_swpm_ers_instance_hostname }}"
 

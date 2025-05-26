@@ -78,28 +78,26 @@ The playbook executes the following sequence of tasks:
 
 ### Pre-Installation Tasks
 
-1. **Collect User Inputs (Conditional):** If the `ansible_extravars_interactive.yml` file is used, the playbook will prompt for user input to gather necessary configuration details.
+1. **Provision Infrastructure (Conditional):** If the `sap_vm_provision_iac_type` variable is not set to `existing_hosts`, the playbook will provision the necessary infrastructure.
 
-2. **Provision Infrastructure (Conditional):** If the `sap_vm_provision_iac_type` variable is not set to `existing_hosts`, the playbook will provision the necessary infrastructure.
+2. **Configure Storage:** The `sap_install.sap_storage_setup` Ansible Role is used to configure the required storage.
 
-3. **Configure Storage:** The `sap_install.sap_storage_setup` Ansible Role is used to configure the required storage.
+3. **Download SAP Installation Media (Conditional):** If the `community.sap_launchpad` Ansible Collection is present on execution node, the playbook will download the necessary SAP installation media.
 
-4. **Download SAP Installation Media (Conditional):** If the `community.sap_launchpad` Ansible Collection is present on execution node, the playbook will download the necessary SAP installation media.
-
-5. **Configure Operating System:** The following Ansible Roles are used to configure the operating system and update `/etc/hosts`, followed by a system reboot:
+4. **Configure Operating System:** The following Ansible Roles are used to configure the operating system and update `/etc/hosts`, followed by a system reboot:
    - `sap_install.sap_general_preconfigure`
    - `sap_install.sap_netweaver_preconfigure`
 
 ### SAP NetWeaver with SAP ASE Installation
 
-6. **Install SAP NetWeaver ABAP:** The `SWPM` tool is used to install the SAP application.
+5. **Install SAP NetWeaver ABAP:** The `SWPM` tool is used to install the SAP application.
    - **Detect Installation Media:** The `sap_install.sap_install_media_detect` Ansible Role is used to detect the provided SAP installation media.
    - **Install Application:** The `sap_install.sap_swpm` Ansible Role is used to install the application.
    - **SAP SWPM Product ID Prefix:** `NW_ABAP_OneHost`
    - AnyDB Database is installed together with SAP NetWeaver.
    - Includes Database Load using Installation Export files.
 
-7. **Install SAP NetWeaver JAVA:** The `SWPM` tool is used to install the SAP application.
+6. **Install SAP NetWeaver JAVA:** The `SWPM` tool is used to install the SAP application.
    - **Detect Installation Media:** The `sap_install.sap_install_media_detect` Ansible Role is used to detect the provided SAP installation media.
    - **Install Application:** The `sap_install.sap_swpm` Ansible Role is used to install the application.
    - **SAP SWPM Product ID Prefix:** `NW_Java_OneHost`

@@ -113,3 +113,30 @@ The playbook executes the following sequence of tasks:
 ### Post-Installation Tasks
 
 9. **Post-Installation:** Perform post-installation steps, such as updating Load Balancer configuration after removal of temporary Virtual IP(s).
+
+
+## Pacemaker Cluster Details
+### SAP HANA Scale-Up
+**Default:** SAP HANA System Replication Scale-Up - Performance Optimized Scenario with `SAPHanaSR-angi`.  
+
+Example of the cluster configuration for SUSE on AWS (`crm status`):
+```console
+Node List:
+  * Online: [ h02hana0 h02hana1 ]
+
+Full List of Resources:
+  * rsc_fence_aws       (stonith:external/ec2):  Started h02hana0
+  * rsc_vip_H02_HDB90_primary   (ocf::heartbeat:aws-vpc-move-ip):        Started h02hana0
+  * Clone Set: cln_SAPHanaTop_H02_HDB90 [rsc_SAPHanaTop_H02_HDB90]:
+    * Started: [ h02hana0 h02hana1 ]
+  * Clone Set: mst_SAPHanaCon_H02_HDB90 [rsc_SAPHanaCon_H02_HDB90] (promotable):
+    * Masters: [ h02hana0 ]
+    * Slaves: [ h02hana1 ]
+  * Clone Set: cln_SAPHanaFil_H02_HDB90 [rsc_SAPHanaFil_H02_HDB90]:
+    * Started: [ h02hana0 h02hana1 ]
+```
+
+Additional types:
+- **Classic Scale-Up without `SAPHanaSR-angi`:**  
+  To enable this:
+    - Set the variable `sap_ha_pacemaker_cluster_saphanasr_angi_detection: false`.
