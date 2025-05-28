@@ -6,6 +6,12 @@ This document outlines the contribution guidelines for the Ansible Playbooks for
 All scenarios in `main` branch are self-contained and they should work when copied outside of Ansible Playbooks for SAP.
 Example: The playbook `sap_hana_ha` should still work when `sap_hana_ha` folder is copied elsewhere.
 
+## Terminology
+- **Scenario**, means the SAP Software Solution/Product which runs upon a target Infrastructure Platform using a Deployment Topology (inc. Installation Type).  
+- **Deployment Topology**, means either a Sandbox, Standard, Distributed or High Availability SAP System design has been implemented using different installation types to one or more hosts.  
+- **Installation Type**, means a different component of SAP Software has been installed by hdblcm or SAP SWPM with a specific runtime design and layout (e.g. SAP HANA Scale-Up using MDC and TDI-sized storage for OLTP workloads, with High Availability using SAP HANA System Replication in Asynchronous mode).  
+- **Layout**, refers to the virtual/physical hardware components such as LVM Virtual Groups with striping/mirroring using Block Storage attached to Virtual Machine/s.
+
 ## Branch Protection
 The following branches are present in repository:
 - `dev` - Development branch, where we merge from forks. No direct commits, only pull requests from forks.

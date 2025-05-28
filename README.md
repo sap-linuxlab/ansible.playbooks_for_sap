@@ -33,7 +33,7 @@ The Ansible Playbooks for SAP offer several key benefits:
 - Existing hosts without provisioning
 
 ### Supported Deployment Scenarios
-| SAP Product | Versions | Layout | Database |
+| SAP Product | Versions | Deployment Topology | Database |
 | --- | --- | --- | --- |
 | SAP HANA | 2.0 SPS 07<br> 2.0 SPS 06 | Sandbox<br> Scale-Out <br> Scale-Up High Availability | SAP HANA |
 | SAP BW/4HANA | 2023<br> 2021 | Sandbox<br> Scale-Out | SAP HANA |
@@ -51,8 +51,8 @@ The Ansible Playbooks for SAP offer several key benefits:
 
 > <sub>Note: Additional SAP Product versions can be added by customizing extra vars file.</sub>  
 
-The explanation of SAP System Layouts:
-| Layout | Definition |
+The explanation of Deployment Topologies:
+| Deployment Topology | Definition |
 | --- | --- |
 | Sandbox | A single-host system, that consolidates all SAP Database and SAP ABAP Platform instances onto a single host |
 | Standard | A standard system, that consists of the SAP Application running on a dedicated host, and an SAP Database server running on another dedicated host |

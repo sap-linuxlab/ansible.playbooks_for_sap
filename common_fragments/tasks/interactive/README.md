@@ -26,7 +26,7 @@ Changing these variables can result in execution without all required variables.
 
 ### sap_playbook_interactive_layout
 - **Type:** `string`<br>
-- **Description:** Specifies the layout of the SAP System<br>
+- **Description:** Specifies the deployment topology (layout) of the SAP System<br>
 - **Available options:** `sandbox, standard_scaleout, standard, distributed, distributed_ha, hana_ha, hana_scaleout`<br>
 - **Example:** `distributed_ha`
 
