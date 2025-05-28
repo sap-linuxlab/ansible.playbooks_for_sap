@@ -1,0 +1,20 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount point (String).
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+sap_vm_provision_nfs_mount_point_type: nfs4  # NFS version (String).
+# Use sec=sys to prevent file ownership issues e.g. 'Permission denied' error
+sap_vm_provision_nfs_mount_point_opts:
+  nfsvers=4.1,sec=sys,_netdev,hard,timeo=600,retrans=2,noresvport,acl  # NFS Mount options (String).
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+sap_ha_pacemaker_cluster_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_region }}"
+
+# Variables for Ansible Role sap_ha_install_anydb_ibmdb2
+sap_ha_install_anydb_ibmdb2_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+sap_ha_install_anydb_ibmdb2_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_region }}"
+sap_ha_install_anydb_ibmdb2_ibmcloud_health_check_port: 62700  # Load Balancer Check port (String).

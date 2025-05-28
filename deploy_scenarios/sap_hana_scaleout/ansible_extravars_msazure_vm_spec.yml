@@ -1,0 +1,52 @@
+---
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_msazure_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hdb-scaleout: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+        - name: hana_data
+          mountpoint: /hana/data
+          nfs_path: /hana/data                                          # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_hana_data | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          nfs_path: /hana/log                                          # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_hana_log | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          nfs_path: /hana/shared                                          # subdirectory path on the NFS server
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_hana_shared | default('') }}"               # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        - name: swap # hdb
+          # swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 4                 # size in GB, integer
+          disk_type: P1
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs

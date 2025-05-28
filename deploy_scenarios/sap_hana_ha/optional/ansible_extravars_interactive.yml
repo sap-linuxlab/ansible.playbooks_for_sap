@@ -1,0 +1,87 @@
+---
+#### Instructions for Interactive Prompts ####
+# This file defines the essential set of variables required for initial interactive execution.
+# All other required variables will be dynamically gathered through interactive prompts.
+# Pre-defining a variable in this file will skip the associated interactive prompt.
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_reboot_ok: true  # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_hana_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_hana_preconfigure_saptune_solution: 'HANA'  # SUSE saptune solution to apply for SAP HANA (String).
+
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
+
+  sap_hana_2_sps08_install:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_085_0-80002031.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002082.SAR' # SAP HANA CLIENT Version 2.24
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_085_0-80002046.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002095.SAR'  # SAP HANA CLIENT Version 2.24
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_hana_2_sps07_install:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_077_0-80002031.SAR'
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_077_0-80002046.SAR'
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_hana_2_sps06_install:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_067_4-80002046.SAR'
+      - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
+#### Interactive Prompt Control Variables ####
+# Do not change these variables unless you intend to modify the interactive prompt behavior!
+sap_playbook_interactive_product: hana
+sap_playbook_interactive_database: hana
+sap_playbook_interactive_layout: hana_ha

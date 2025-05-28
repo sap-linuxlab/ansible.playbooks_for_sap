@@ -1,0 +1,160 @@
+---
+# This playbook is designed for testing Pacemaker Cluster automation after main scenario is completed.
+# This is destructive playbook that will delete existing ASCS/ERS cluster and recreate it.
+
+
+- name: Ansible Play to show Important Playbook Information
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Block for warning message
+      when: sap_playbook_ignore_warning is not defined or not sap_playbook_ignore_warning
+      block:
+        - name: Display important information regarding playbook execution
+          ansible.builtin.debug:
+            msg: |
+              ========================================================================================================
+              This playbook is designed to make specific changes to your environment.
+              Continuing means you understand the potential impacts and have reviewed the playbook's intended actions.
+              It's recommended to back up critical data before proceeding.
+              ========================================================================================================
+
+        - name: Pause for user understanding and confirmation
+          ansible.builtin.pause:
+            prompt: "To continue, type 'yes' to confirm your understanding of the risks, or Ctrl+C to abort."
+          register: sap_playbook_confirm_warning
+
+        - name: Abort playbook if user does not confirm
+          ansible.builtin.fail:
+            msg: "Playbook aborted. User did not confirm understanding of risks."
+          when: sap_playbook_confirm_warning.user_input is not defined or sap_playbook_confirm_warning.user_input | lower != 'yes'
+
+
+#### Create dynamic inventory ####
+- name: Ansible Play to create dynamic inventory group for provisioning
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Set fact with selected host dictionary
+      ansible.builtin.set_fact:
+        sap_playbook_host_dictionary:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+            + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+
+    # Create inventory groups without role sap_vm_provision
+    - name: Create dynamic inventory groups per sap_host_type  # noqa: jinja[spacing]
+      ansible.builtin.add_host:
+        name: "{{ item }}"
+        group: "{{ sap_playbook_host_dictionary[item].sap_host_type }}"
+        ansible_host: "{{ item }}.{{ sap_vm_provision_dns_root_domain }}"
+        # ansible_user: "{{ 'azureadmin' if sap_vm_provision_iac_platform == 'msazure_vm' else 'root' }}"
+        ansible_user: "root"
+        ansible_ssh_private_key_file: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
+        ansible_ssh_common_args: " -o ConnectTimeout=180 -o ControlMaster=auto
+          -o ControlPersist=3600s -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ForwardX11=no
+          -o ProxyCommand='ssh -W %h:%p {{ sap_vm_provision_bastion_user }}@{{ sap_vm_provision_bastion_public_ip }}
+          -p {{ sap_vm_provision_bastion_ssh_port }} -i {{ sap_vm_provision_ssh_bastion_private_key_file_path }}
+          -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
+      loop: "{{ sap_playbook_host_dictionary.keys() }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+
+
+- name: Ansible Play to remove cluster configuration
+  hosts: nwas_ascs, nwas_ers
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  gather_facts: true
+  tasks:
+
+    - name: Get stat of cluster configuration files
+      ansible.builtin.stat:
+        path: "{{ item }}"
+      loop:
+        - /etc/corosync/corosync.conf
+        - /var/lib/pacemaker/cib/cib.xml
+      register: sap_playbook_config_files_stat
+
+    - name: Stop cluster
+      ansible.builtin.command:
+        cmd: "{{ 'crm' if ansible_os_family == 'Suse' else 'pcs' }} cluster stop"
+      when: not sap_playbook_config_files_stat.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
+      changed_when: true
+
+    - name: Populate service facts
+      ansible.builtin.service_facts:
+
+    - name: Stop cluster daemons
+      ansible.builtin.service:
+        name: "{{ item }}"
+        state: stopped  # noqa no-handler
+      loop:
+        - pacemaker.service
+        - corosync.service
+        - corosync-qdevice.service
+      when: item in ansible_facts.services
+
+    - name: Remove cluster configuration files
+      ansible.builtin.file:
+        path: "{{ config_file.item }}"
+        state: absent
+      loop: "{{ sap_playbook_config_files_stat.results }}"
+      loop_control:
+        loop_var: config_file
+      when: config_file.stat.exists
+
+    - name: Remove all files in /var/lib/pacemaker/cib/
+      ansible.builtin.shell:
+        cmd: 'rm -f /var/lib/pacemaker/cib/{cib*,shadow*}'
+      changed_when: true
+
+    - name: Remove HAlib configuration
+      ansible.builtin.lineinfile:
+        path: "{{ item }}"
+        state: absent
+        regexp: '^service/halib'
+      loop:
+        - "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ASCS{{ sap_system_nwas_abap_ascs_instance_nr }}_{{ sap_swpm_ascs_instance_hostname }}"
+        - "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ERS{{ sap_system_nwas_abap_ers_instance_nr }}_{{ sap_swpm_ers_instance_hostname }}"
+
+
+- name: Ansible Play for SAP NetWeaver Application Server installation - High Availability using ABAP Central Services (ASCS) and Enqueue Replication Service (ERS) with Standalone Enqueue Server 2 (ENSA2)
+  hosts: nwas_ascs, nwas_ers
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    # Execute setup of SAP NetWeaver ASCS/ERS HA Simple Mount cluster
+    - name: Execute Ansible Role sap_ha_pacemaker_cluster
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_ha_pacemaker_cluster
+      vars:
+        ha_cluster_use_latest_packages: true
+
+        sap_ha_pacemaker_cluster_cluster_name: "{{ sap_system_ascs_ers_cluster_name }}"
+        sap_ha_pacemaker_cluster_hacluster_user_password: "{{ sap_system_ascs_ers_hacluster_user_password }}"
+
+        sap_ha_pacemaker_cluster_host_type:
+          - nwas_abap_ascs_ers
+
+        sap_ha_pacemaker_cluster_vip_resource_group_name: vipnwasascs
+
+        sap_ha_pacemaker_cluster_nwas_sid: "{{ sap_system_sid | default('') }}"
+        sap_ha_pacemaker_cluster_nwas_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+        sap_ha_pacemaker_cluster_nwas_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
+        sap_ha_pacemaker_cluster_nwas_ascs_sapinstance_instance_name:
+          "{{ sap_system_sid }}_ASCS{{ sap_system_nwas_abap_ascs_instance_nr }}_{{ sap_swpm_ascs_instance_hostname }}"
+        sap_ha_pacemaker_cluster_nwas_ascs_sapinstance_start_profile_string:
+          "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ASCS{{ sap_system_nwas_abap_ascs_instance_nr }}_{{ sap_swpm_ascs_instance_hostname }}"
+
+        sap_ha_pacemaker_cluster_nwas_ers_sapinstance_instance_name:
+          "{{ sap_system_sid }}_ERS{{ sap_system_nwas_abap_ers_instance_nr }}_{{ sap_swpm_ers_instance_hostname }}"
+        sap_ha_pacemaker_cluster_nwas_ers_sapinstance_start_profile_string:
+          "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ERS{{ sap_system_nwas_abap_ers_instance_nr }}_{{ sap_swpm_ers_instance_hostname }}"
+
+        sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs }}"
+        sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "{{ sap_vm_provision_ha_vip_nwas_abap_ers }}"

@@ -1,72 +1,89 @@
 ---
+#### Infrastructure Provisioning selection ####
+# Type of infrastructure provisioning method to use (String).
+# Options: ansible, ansible_to_terraform, existing_hosts
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"
 
-####
-# Key SAP System variables
-####
+# Infrastructure platform for provisioning (String).
+# Options: aws_ec2_vs, gcp_ce_vm, ibmcloud_vs, ibmcloud_powervs, msazure_vm, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
 
-sap_system_sid: "S01"
-
-sap_system_nwas_abap_ascs_hostname: "ENTER_STRING_VALUE_HERE"
-sap_system_nwas_abap_ascs_instance_nr: "00"
-
-sap_system_nwas_abap_pas_hostname: "ENTER_STRING_VALUE_HERE"
-sap_system_nwas_abap_pas_instance_nr: "01"
-
-sap_system_wd_instance_nr: "60"
-
-
-####
-# SAP Web Dispatcher version selection
-####
-
-# SAP Web Dispatcher version to download
-sap_playbook_webdispatcher_version: "ENTER_STRING_VALUE_HERE" # sap_webdispatcher_7_93
-
-
-####
-# Infrastructure Provisioning selection
-####
-
-sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"  # ansible , ansible_to_terraform , existing_hosts
-sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"  # aws_ec2_vs , gcp_ce_vm , ibmcloud_vs , ibmcloud_powervs , msazure_vm , ibmpowervm_vm , kubevirt_vm , ovirt_vm , vmware_vm
-
+# Name of the host specification plan to use (String).
+# Options: Defined in host_specifications_dictionary.
 sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+
+# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
 sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
 
 
-####
-# Mandatory parameters : Ansible Defaults
-####
+#### Key SAP System variables ####
+sap_system_sid: "S01"  # SAP System ID (SID) (String)
+sap_system_nwas_abap_ascs_instance_nr: "00"  # SAP NetWeaver ABAP ASCS instance number (String).
+sap_system_nwas_abap_pas_instance_nr: "01"  # SAP NetWeaver ABAP PAS instance number (String).
+sap_system_wd_instance_nr: "60"  # SAP Web Dispatcher instance number (String).
+sap_system_nwas_abap_ascs_hostname: "ENTER_STRING_VALUE_HERE"
+sap_system_nwas_abap_pas_hostname: "ENTER_STRING_VALUE_HERE"
 
-# Default Ansible Facts populate into default variables for all Ansible Roles
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
-
-
-
-####
-# Mandatory parameters : Preconfigure OS for SAP Software
-####
-
-# Configuration of Ansible Roles for preconfigure SAP (general, hana, netweaver)
-sap_general_preconfigure_modify_etc_hosts: false
-sap_general_preconfigure_reboot_ok: true
-sap_general_preconfigure_fail_if_reboot_required: false
-sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
-
-
-
-####
-# Mandatory parameters : SAP Software installation media downloads
-####
-
+#### SAP Software installation media downloads ####
+## Required for download using community.sap_launchpad
 # SAP ONE Support Launchpad credentials
-sap_id_user: "ENTER_STRING_VALUE_HERE"
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
+sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
 
-# Directory for SAP installation media
-sap_software_download_directory: "ENTER_STRING_VALUE_HERE"
+# Directory with SAP installation media (e.g. /software) (String)
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP SWPM Installation ####
+sap_swpm_master_password: "NewPass$321"  # Master password for the SAP system (String).
+sap_swpm_ddic_000_password: "NewPass$321"  # Password for the DDIC user in client 000 (String).
+
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_sid: "{{ sap_system_sid }}"
+sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+sap_swpm_ascs_instance_hostname: "{{ sap_system_nwas_abap_ascs_hostname }}"
+sap_swpm_pas_instance_hostname: "{{ sap_system_nwas_abap_pas_hostname }}"
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
+sap_swpm_fqdn: "{{ ansible_domain }}"
+
+# WebDisp Configuration
+sap_swpm_wd_virtual_host: "{{ ansible_hostname }}"
+sap_swpm_wd_instance_nr: "{{ sap_system_wd_instance_nr }}"
+
+sap_swpm_wd_system_connectivity: 'true'
+sap_swpm_wd_backend_sid: "{{ sap_system_sid }}"
+sap_swpm_wd_backend_ms_host: "{{ sap_swpm_ascs_instance_hostname }}"
+sap_swpm_wd_backend_ms_http_port: '80{{ sap_swpm_ascs_instance_nr }}'
+sap_swpm_wd_backend_scenario_size: '500'
+
+sap_swpm_wd_activate_icf: 'true'
+sap_swpm_wd_backend_rfc_host: "{{ sap_swpm_pas_instance_hostname }}"
+sap_swpm_wd_backend_rfc_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
+sap_swpm_wd_backend_rfc_client_nr: "000" # 000 default
+sap_swpm_wd_backend_rfc_user: "DDIC" # DDIC default
+sap_swpm_wd_backend_rfc_user_password: "NewPass$321"
+sap_swpm_ume_j2ee_admin_password: "NewPass$321" # use ICM Auth Web Admin password
+
+#### SAP SWPM Installation - Optional variables ####
+## Unix User ID
+sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
+sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
+sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
+
+sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+
+
+# SAP Web Dispatcher version to download
+sap_playbook_webdispatcher_version: "ENTER_STRING_VALUE_HERE" # sap_webdispatcher_7_93
 
 # Configuration for SAP installation media detection
 # sap_install_media_detect_** variables are set for each Ansible Task to the respective host
@@ -153,72 +170,26 @@ softwarecenter_search_list_x86_64:
     - 'SAPWEBDISP_SP_68-80008274.SAR'  # SAP Web Dispatcher 7.93 Linux, original release 06-2023. Released for SAP S/4HANA 2023
 
 
-
-####
-# Mandatory parameters : SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-sap_swpm_ansible_role_mode: default_templates
-sap_swpm_templates_product_input: "ENTER_STRING_VALUE_HERE" # sap_webdispatcher_standalone
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# NW Instance Parameters
-sap_swpm_sid: "{{ sap_system_sid }}"
-sap_swpm_ascs_instance_hostname: "{{ sap_system_nwas_abap_ascs_hostname }}"
-sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
-sap_swpm_pas_instance_hostname: "{{ sap_system_nwas_abap_pas_hostname }}"
-sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# NW Passwords
-sap_swpm_master_password: "NewPass$321"
-sap_swpm_ddic_000_password: "NewPass$321"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Unix User ID
-sap_swpm_sapadm_uid: '3000'
-sap_swpm_sapsys_gid: '3001'
-sap_swpm_sidadm_uid: '3001'
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Other
-sap_swpm_fqdn: "{{ ansible_domain }}"
-sap_swpm_update_etchosts: 'false'
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# WebDisp Configuration
-sap_swpm_wd_virtual_host: "{{ ansible_hostname }}"
-sap_swpm_wd_instance_nr: "{{ sap_system_wd_instance_nr }}"
-
-sap_swpm_wd_system_connectivity: 'true'
-sap_swpm_wd_backend_sid: "{{ sap_system_sid }}"
-sap_swpm_wd_backend_ms_host: "{{ sap_swpm_ascs_instance_hostname }}"
-sap_swpm_wd_backend_ms_http_port: '80{{ sap_swpm_ascs_instance_nr }}'
-sap_swpm_wd_backend_scenario_size: '500'
-
-sap_swpm_wd_activate_icf: 'true'
-sap_swpm_wd_backend_rfc_host: "{{ sap_swpm_pas_instance_hostname }}"
-sap_swpm_wd_backend_rfc_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
-sap_swpm_wd_backend_rfc_client_nr: "000" # 000 default
-sap_swpm_wd_backend_rfc_user: "DDIC" # DDIC default
-sap_swpm_wd_backend_rfc_user_password: "NewPass$321"
-sap_swpm_ume_j2ee_admin_password: "NewPass$321" # use ICM Auth Web Admin password
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
+#### SAP Product selection ####
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_2023_sandbox).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
 
-####
-# Mandatory parameters : Ansible Dictionary for SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-# Templates and default values
-sap_swpm_templates_install_dictionary:
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
 
   sap_webdispatcher_standalone:
 
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_Webdispatcher:NW750.IND.PD
 
-    sap_swpm_inifile_list:
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - credentials
       - nw_config_other
@@ -229,16 +200,6 @@ sap_swpm_templates_install_dictionary:
 
     sap_swpm_inifile_dictionary:
 
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
       # SAP Host Agent
       sap_swpm_install_saphostagent: 'false'
 
@@ -248,7 +209,7 @@ sap_swpm_templates_install_dictionary:
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_Webdispatcher:GENERIC.IND.PD
 
-    sap_swpm_inifile_list:
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm1
       - credentials
@@ -260,16 +221,5 @@ sap_swpm_templates_install_dictionary:
 
     sap_swpm_inifile_dictionary:
 
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
       # SAP Host Agent
       sap_swpm_install_saphostagent: 'false'
-

@@ -1,0 +1,122 @@
+---
+#### Instructions for Interactive Prompts ####
+# This file defines the essential set of variables required for initial interactive execution.
+# All other required variables will be dynamically gathered through interactive prompts.
+# Pre-defining a variable in this file will skip the associated interactive prompt.
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP SWPM Installation ####
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}"
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
+
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
+
+  # SAP NetWeaver AS for ABAP 7.52 > SAP ASE > Installation > Application Server ABAP > Standard System
+  sap_nwas_752_sp00_abap_sapase_sandbox:
+
+    # SWPM product catalog ID for the installation (String).
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:NW752.SYB.PD
+
+    # List of INI file sections to generate using sap_install.sap_swpm role (List).
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm1_exportfiles
+      - swpm_installation_media_swpm1_sapase
+      - credentials
+      - credentials_anydb_sapase
+      - db_config_anydb_all
+      - db_config_anydb_sapase
+      - nw_config_anydb
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
+      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'SWPM10SP43_2-20009701.SAR'
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'igshelper_17-10010245.sar'
+      - 'SYBCTRL_1440-80002616.SAR'
+      - '51057961_1' # SAP ASE 16.0.04.06 HF1 RDBMS Linux on x86_64 64bit
+      - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
+      - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
+      - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
+
+    # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+
+
+  # SAP NetWeaver 7.5 > SAP ASE > Installation > Application Server ABAP > Standard System
+  sap_nwas_750_sp00_abap_sapase_sandbox:
+
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:NW750.SYB.ABAP
+
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm1_exportfiles
+      - swpm_installation_media_swpm1_sapase
+      - credentials
+      - credentials_anydb_sapase
+      - db_config_anydb_all
+      - db_config_anydb_sapase
+      - nw_config_anydb
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
+      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'SWPM10SP43_2-20009701.SAR'
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'igshelper_17-10010245.sar'
+      - 'SYBCTRL_1440-80002616.SAR'
+      - '51057961_1' # SAP ASE 16.0.04.06 HF1 RDBMS Linux on x86_64 64bit
+      - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
+      - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
+    #  - '51050829_4' # NW 7.5 Language 1/2
+    #  - '51050829_5' # NW 7.5 Language 2/2
+    #  - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
+    #  - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
+    #  - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
+    #  - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2
+
+    # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+
+
+#### Interactive Prompt Control Variables ####
+# Do not change these variables unless you intend to modify the interactive prompt behavior!
+sap_playbook_interactive_product: nwas_abap
+sap_playbook_interactive_database: sapase
+sap_playbook_interactive_layout: sandbox

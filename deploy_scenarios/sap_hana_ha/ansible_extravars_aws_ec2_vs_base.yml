@@ -1,0 +1,13 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
+sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
+sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
+sap_ha_pacemaker_cluster_aws_vip_update_rt: "ENTER_STRING_VALUE_HERE"  # AWS Routing Table ID (String).
+
+# Override of AWS IAM HA roles is required if 'HA-Role-Pacemaker' already exists
+# sap_vm_provision_aws_ha_iam_role: "HA-Role-Pacemaker-{{ sap_system_sid }}"
+# sap_vm_provision_aws_ha_iam_instance_profile: "HA-Role-Pacemaker-{{ sap_system_sid }}-profile"

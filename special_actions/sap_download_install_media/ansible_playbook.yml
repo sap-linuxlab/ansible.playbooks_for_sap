@@ -2,142 +2,92 @@
 
 - name: Ansible Play for SAP Software installation media downloads
   hosts: all
-  gather_facts: false
   become: false
 
-  vars_prompt:
-    - name: ansible_prompt_sap_id_user
-      prompt: Please enter your SAP ID user (e.g. S-User)
-      private: false
-    - name: ansible_prompt_sap_id_user_password
-      prompt: Please enter your SAP ID password
-      private: true
-      unsafe: true
-    - name: ansible_prompt_sap_downloads_cpu_architecture
-      prompt: Please enter the CPU Architecture of the SAP Software installation media to download (options are either x86_64 or ppc64le)
-      private: false
-    - name: ansible_prompt_sap_downloads_selected
-      private: false
-      prompt: |
-        Please enter which SAP Software installation media to download, select from options (separate with comma - for example sap_s4hana_2022,sap_ecc6_ehp6_hana)...
+  pre_tasks:
+    - name: Prompt for SAP S-User ID
+      ansible.builtin.pause:
+        prompt: |
+          Enter your SAP S-User ID.
+          Example: S0001234567
+      register: sap_id_user_register
+      when: sap_id_user is not defined
 
-        sap_s4hana_2023
-        sap_s4hana_2022
-        sap_s4hana_2021
-        sap_s4hana_2020
-        sap_s4hana_1909
-        sap_bw4hana_2023
-        sap_bw4hana_2021
-        sap_ecc6_ehp8_hana
-        sap_ecc6_ehp8_ibmdb2
-        sap_ecc6_ehp8_oracledb
-        sap_ecc6_ehp8_sapase
-        sap_ecc6_ehp8_sapmaxdb
-        sap_ecc6_ehp7_hana
-        sap_ecc6_ehp7_ibmdb2
-        sap_ides_ecc6_ehp8_hana
-        sap_ides_ecc6_ehp8_ibmdb2
-        sap_ides_ecc6_ehp8_oracledb
-        sap_ides_ecc6_ehp8_sapase
-        sap_ides_ecc6_ehp8_sapmaxdb
-        sap_nwas_750_sp22_java_ibmdb2_ads
-        sap_nwas_750_sp22_java_sapase_ads
-        sap_nwas_750_sp00_abap_hana
-        sap_nwas_750_sp00_abap_ibmdb2
-        sap_nwas_750_sp00_abap_oracledb
-        sap_nwas_750_sp00_abap_sapase
-        sap_nwas_750_sp00_abap_sapmaxdb
-        sap_nwas_752_sp00_abap_hana
-        sap_nwas_752_sp00_abap_ibmdb2
-        sap_nwas_752_sp00_abap_oracledb
-        sap_nwas_752_sp00_abap_sapase
-        sap_nwas_752_sp00_abap_sapmaxdb
+    - name: Prompt for SAP S-User Password
+      ansible.builtin.pause:
+        prompt: |
+          Enter your SAP S-User password.
+      register: sap_id_user_password_register
+      when: sap_id_user_password is not defined
+      no_log: true
 
-    - name: ansible_prompt_target_software_directory
-      prompt: Please enter the software directory on the target host (e.g. /software , /sapcd etc.)
-      private: false
+    - name: Prompt for CPU Architecture
+      ansible.builtin.pause:
+        prompt: |
+          Please enter the CPU Architecture of the SAP Software installation media to download.
+          Available options: x86_64, ppc64le
+          Press enter to skip and use the default value ('x86_64').
+      register: sap_software_cpu_architecture_register
+      when: sap_software_cpu_architecture is not defined
+
+    - name: Prompt for SAP software product
+      ansible.builtin.pause:
+        prompt: |
+          Please enter which SAP Software installation media to download, select from options:
+          {% for key in sap_software_install_dictionary.keys() %}
+          {{ key }}
+          {% endfor %}
+          Products are defined in the 'sap_software_install_dictionary' variable.
+      register: sap_software_product_register
+      when: sap_software_product is not defined
+
+    - name: Prompt for SAP Software Download path
+      ansible.builtin.pause:
+        prompt: |
+          Please enter the software directory on the target host.
+          Press enter to skip and use the default value ('/software').
+      register: sap_software_target_directory_register
+      when: sap_software_target_directory is not defined
 
 
 # Use include_role inside Task block, instead of using roles declaration or Task block with import_roles.
-# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization
   tasks:
 
     - name: Set facts for all hosts
       ansible.builtin.set_fact:
-        sap_id_user: "{{ ansible_prompt_sap_id_user }}"
-        sap_id_user_password: "{{ ansible_prompt_sap_id_user_password }}"
-        sap_downloads_cpu_architecture: "{{ ansible_prompt_sap_downloads_cpu_architecture }}"
-        sap_downloads_selected: "{{ ansible_prompt_sap_downloads_selected.split(',') }}"
-        target_software_directory: "{{ ansible_prompt_target_software_directory }}"
+        sap_id_user: "{{ sap_id_user | d(sap_id_user_register.user_input) }}"
+        sap_id_user_password: "{{ sap_id_user_password | d(sap_id_user_password_register.user_input) }}"
+        sap_software_cpu_architecture: "{{ sap_software_cpu_architecture |
+          d(sap_software_cpu_architecture_register.user_input
+          if sap_software_cpu_architecture_register.user_input | length > 0
+          else 'x86_64') }}"
+        sap_software_product: "{{ sap_software_product | d(sap_software_product_register.user_input) }}"
+        sap_software_target_directory: "{{ sap_software_target_directory |
+          d(sap_software_target_directory_register.user_input
+          if sap_software_target_directory_register.user_input | length > 0
+          else '/software') }}"
 
-    - name: Set fact x86_64 softwarecenter_search_list
-      ansible.builtin.set_fact:
-        softwarecenter_search_list: "{{ softwarecenter_search_list | default([]) + [item.value.softwarecenter_search_list_x86_64] | flatten }}"
-      loop: "{{ query('dict', sap_software_templates_dictionary) }}"
-      loop_control:
-        label: "{{ item.key }}"
+    # SAP software download will only occur if the 'community.sap_launchpad' collection is installed.
+    # Playbook will continue without the collection, assuming SAP software is already available.
+    - name: Check availability of sap_launchpad collection on execution node
+      delegate_to: localhost
+      become: false  # Enables usage of Python VENV
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection list
+      register: sap_playbook_collection_list_output
+
+    - name: Execute Ansible Role sap_software_download
+      ansible.builtin.include_role:
+        name: community.sap_launchpad.sap_software_download
+      vars:
+        sap_software_download_suser_id: "{{ sap_id_user }}"
+        sap_software_download_suser_password: "{{ sap_id_user_password }}"
+        sap_software_download_directory: "{{ sap_software_target_directory }}"
+        sap_software_download_deduplicate: first
+        sap_software_download_files: "{{ sap_software_install_dictionary[item]
+          ['softwarecenter_search_list_' ~ sap_software_cpu_architecture] }}"
+      loop: "{{ sap_software_product.split(',') }}"
       when:
-        - sap_downloads_cpu_architecture == "x86_64"
-        - item.key in sap_downloads_selected
-
-    - name: Set fact ppc64le softwarecenter_search_list
-      ansible.builtin.set_fact:
-        softwarecenter_search_list: "{{ softwarecenter_search_list | default([]) + [item.value.softwarecenter_search_list_ppc64le] | flatten }}"
-      loop: "{{ query('dict', sap_software_templates_dictionary) }}"
-      loop_control:
-        label: "{{ item.key }}"
-      when:
-        - sap_downloads_cpu_architecture == "ppc64le"
-        - item.key in sap_downloads_selected
-
-    - name: Install Python package manager pip3 to system Python
-      ansible.builtin.package:
-        name: python3-pip
-        state: present
-
-    - name: Install Python package manager lxml to system Python when ppc64le
-      ansible.builtin.package:
-        name:
-          - python3-lxml
-          - libxslt-devel
-          - libxml2-devel
-        state: present
-      when:
-        - ansible_architecture == "ppc64le"
-
-    - name: Install Python dependency wheel to system Python
-      ansible.builtin.pip:
-        name:
-          - wheel
-
-    - name: Install Python dependencies for Ansible Modules to system Python
-      ansible.builtin.pip:
-        name:
-          - urllib3
-          - requests
-          - beautifulsoup4
-          - lxml
-
-
-    - name: Create directories if does not exist
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-        mode: '0755'
-      with_items:
-        - "{{ target_software_directory }}"
-
-    # Use task block to call Ansible Module
-    - name: Execute Ansible Module to download SAP software
-      community.sap_launchpad.software_center_download:
-        suser_id: "{{ sap_id_user }}"
-        suser_password: "{{ sap_id_user_password }}"
-        softwarecenter_search_query: "{{ item }}"
-        dest: "{{ target_software_directory }}"
-      loop: "{{ softwarecenter_search_list | select() }}"
-      loop_control:
-        label: "{{ item }} : {{ download_task.msg }}"
-      register: download_task
-      retries: 1
-      until: download_task is not failed
-
+        - sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+        - item in sap_software_install_dictionary.keys()

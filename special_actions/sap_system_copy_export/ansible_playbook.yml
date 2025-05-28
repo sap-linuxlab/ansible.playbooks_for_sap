@@ -4,7 +4,7 @@
   hosts: all
   gather_facts: true
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
 
   vars_prompt:
@@ -59,7 +59,7 @@
 
 
 # Use include_role inside Task block, instead of using roles declaration or Task block with import_roles.
-# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization
   tasks:
 
     - name: Set facts for all hosts

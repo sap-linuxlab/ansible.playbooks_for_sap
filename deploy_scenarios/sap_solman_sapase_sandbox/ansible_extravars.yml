@@ -1,252 +1,186 @@
 ---
+#### Infrastructure Provisioning selection ####
+# Type of infrastructure provisioning method to use (String).
+# Options: ansible, ansible_to_terraform, existing_hosts
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"
 
-####
-# Key SAP System variables
-####
+# Infrastructure platform for provisioning (String).
+# Options: aws_ec2_vs, gcp_ce_vm, ibmcloud_vs, ibmcloud_powervs, msazure_vm, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
 
-sap_system_sid_abap: "SMA"
-sap_system_sid_java: "SMJ"
-sap_system_anydb_sid: "AS1"
-sap_system_nwas_abap_ascs_instance_nr: "00"
-sap_system_nwas_abap_pas_instance_nr: "01"
-sap_system_nwas_java_scs_instance_nr: "20"
-sap_system_nwas_java_ci_instance_nr: "21"
-
-
-####
-# Infrastructure Provisioning selection
-####
-
-sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"  # ansible , ansible_to_terraform , existing_hosts
-sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"  # aws_ec2_vs , gcp_ce_vm , ibmcloud_vs , ibmcloud_powervs , msazure_vm , ibmpowervm_vm , kubevirt_vm , ovirt_vm , vmware_vm
-
+# Name of the host specification plan to use (String).
+# Options: Defined in host_specifications_dictionary.
 sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+
+# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
 sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
 
 
-####
-# Mandatory parameters : Ansible Defaults
-####
+#### Key SAP System variables ####
+sap_system_sid_abap: "SMA"  # SAP ABAP System ID (SID) (String)
+sap_system_sid_java: "SMJ"  # SAP JAVA System ID (SID) (String)
+sap_system_anydb_sid: "AS1"  # SAP AnyDB (SID) (String).
+sap_system_nwas_abap_ascs_instance_nr: "00"  # SAP NetWeaver ABAP ASCS instance number (String).
+sap_system_nwas_abap_pas_instance_nr: "01"  # SAP NetWeaver ABAP PAS instance number (String).
+sap_system_nwas_java_scs_instance_nr: "20"  # SAP NetWeaver JAVA SCS instance number (String).
+sap_system_nwas_java_ci_instance_nr: "21"  # SAP NetWeaver JAVA PAS instance number (String).
 
-# Default Ansible Facts populate into default variables for all Ansible Roles
+
+#### SAP Software installation media downloads ####
+## Required for download using community.sap_launchpad
+# SAP ONE Support Launchpad credentials
+sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+
+# Directory with SAP installation media (e.g. /software) (String)
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP SWPM Installation ####
+sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+
+sap_swpm_db_schema_abap: "SAPABAP1"  # Name of the ABAP schema in the SAP AnyDB database (String).
+
+# NOTE: Do not use password with $ # > for password with SAP ASE or MaxDB
+sap_swpm_master_password: "NewPass@321"  # Master password for the SAP system (String).
+sap_swpm_ddic_000_password: "NewPass@321"  # Password for the DDIC user in client 000 (String).
+sap_swpm_sap_sidadm_password: "NewPass@321"  # Password for Database Administrator User sidadm (String).
+sap_swpm_db_system_password: "NewPass@321"  # Password for Database System User (String).
+sap_swpm_db_schema_abap_password: "NewPass@321"   # Password for the ABAP schema user (String).
+sap_swpm_db_sidadm_password: "NewPass@321"  # Password for the <sid>adm user in the database (String).
+
+
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+sap_swpm_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr }}"
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}"
+sap_swpm_db_sid: "{{ sap_system_anydb_sid }}"
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary[sap_software_product] }}"
+sap_swpm_fqdn: "{{ ansible_domain }}"
+
+#### SAP SWPM Installation - Optional variables ####
+## Unix User ID
+sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
+sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
+sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
+
+sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+
+
+#### Shared Ansible Facts ####
 sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
+#### SAP Product selection ####
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_solman_72_sr2_sapase_sandbox).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
 
-####
-# Mandatory parameters : Preconfigure OS for SAP Software
-####
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
 
-# Configuration of Ansible Roles for preconfigure SAP (general, hana, netweaver)
-sap_general_preconfigure_modify_etc_hosts: false
-sap_general_preconfigure_reboot_ok: true
-sap_general_preconfigure_fail_if_reboot_required: false
-sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
-
-
-
-####
-# Mandatory parameters : SAP Software installation media downloads
-####
-
-# SAP ONE Support Launchpad credentials
-sap_id_user: "ENTER_STRING_VALUE_HERE"
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
-
-# Directory for SAP installation media
-sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /software
-
-# Configuration for SAP installation media detection
-# sap_install_media_detect_** variables are set for each Ansible Task to the respective host
-
-
-
-####
-# Mandatory parameters : SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-sap_swpm_ansible_role_mode: default_templates
-sap_swpm_templates_product_input_prefix: "ENTER_STRING_VALUE_HERE" # sap_solman_72_sr2_sapase_sandbox
-#sap_swpm_templates_product_input: # Set for each Ansible Task to the respective host
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# NW Instance Parameters
-sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
-sap_swpm_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr }}"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# AnyDB Instance Parameters
-sap_swpm_db_sid: "{{ sap_system_anydb_sid }}"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# NW Passwords
-sap_swpm_master_password: "NewPass@321" # Do not use password with $ # > for password with SAP ASE or MaxDB
-sap_swpm_ddic_000_password: "NewPass@321" # Do not use password with $ # > for password with SAP ASE or MaxDB
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Database Configuration
-sap_swpm_db_schema_abap: SAPABAP1
-sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Database Passwords
-### Database System User
-sap_swpm_db_schema_abap_password: "NewPass@321" # Do not use password with $ # > for password with SAP ASE or MaxDB
-sap_swpm_db_sidadm_password: "NewPass@321" # Do not use password with $ # > for password with SAP ASE or MaxDB
-sap_swpm_db_system_password: "NewPass@321" # Do not use password with $ # > for password with SAP ASE or MaxDB
-### Database Administrator User
-sap_swpm_sap_sidadm_password: "NewPass@321" # Do not use password with $ # > for password with SAP ASE or MaxDB
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Unix User ID
-sap_swpm_sapadm_uid: '3000'
-sap_swpm_sapsys_gid: '3001'
-sap_swpm_sidadm_uid: '3001'
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Other
-sap_swpm_fqdn: "{{ ansible_domain }}"
-sap_swpm_update_etchosts: 'false'
-
-
-
-####
-# Mandatory parameters : Ansible Dictionary for SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-# Templates and default values
-sap_swpm_templates_install_dictionary:
-
-  # SAP Solution Manager 7.2 Support Release 2 > SAP Solution Manager 7.2 ABAP Support Release 2 > SAP ASE > Installation > Application Server ABAP > Standard System > Standard System
-  sap_solman_72_sr2_sapase_sandbox_abap:
-
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:SOLMAN72SR2.ABAP.SYB.PD
-
-    sap_swpm_inifile_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1_exportfiles
-      - swpm_installation_media_swpm1_sapase
-      - credentials
-      - credentials_anydb_sapase
-      - db_config_anydb_all
-      - db_config_anydb_sapase
-      - nw_config_anydb
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_java_ume
-      - nw_config_ports
-      - nw_config_java_ume
-      - nw_config_host_agent
-      - sap_os_linux_user
-      - nw_config_java_icm_credentials
-      - solman_abap_swpm1
-
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT" # SMA
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-      sap_swpm_ascs_instance_hostname: "{{ sap_hostname }}"
-      sap_swpm_pas_instance_hostname: "{{ sap_hostname }}" # NW JAVA reuses param NW_CI_Instance.ciVirtualHostname
-      sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
-
-      # AnyDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT" # AS1
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
+  sap_solman_72_sr2_sapase_sandbox:
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'SWPM10SP43_2-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
       - '51054655_1' # SAP Solution Manager 7.2 SR2 Installation Export I, ZIP. Contains EXP1, EXP2 (SAP:SOLMAN:SR27.2:DVD_EXPORT(1/2):SAP SOLUTION MANAGER 7.2 SR2 Installation Export DVD 1/2:Dxxxxxxxx_1)
       - '51054655_2' # SAP Solution Manager 7.2 SR2 Installation Export II, ZIP. Contains EXP3, EXP4 (SAP:SOLMAN:SR27.2:DVD_EXPORT(2/2):SAP SOLUTION MANAGER 7.2 SR2 Installation Export DVD 2/2:Dxxxxxxxx_2)
-#      - '51054655_3' # SAP Solution Manager 7.2 SR2 Language, ZIP. (SAP:SAP:SAP:MM:SAP:Dxxxxxxxx_3)
+      # - '51054655_3' # SAP Solution Manager 7.2 SR2 Language, ZIP. (SAP:SAP:SAP:MM:SAP:Dxxxxxxxx_3)
       - '51057961_1' # SAP ASE 16.0.04.06 HF1 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
-#      - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
-#      - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
-
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
-
-
-  # SAP Solution Manager 7.2 Support Release 2 > SAP Solution Manager 7.2 Java Support Release 2 > SAP ASE > Installation > Application Server Java > Standard System > Standard System
-  sap_solman_72_sr2_sapase_sandbox_java:
-
-    sap_swpm_product_catalog_id: NW_Java_OneHost:SOLMAN72SR2.JAVA.SYB.PD
-
-    sap_swpm_inifile_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1_exportfiles
-      - swpm_installation_media_swpm1_sapase
-      - credentials
-      - credentials_anydb_sapase
-      - db_config_anydb_sapase
-      - nw_config_anydb
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_central_services_java
-      - nw_config_primary_application_server_instance
-      - nw_config_java_ume
-      - nw_config_ports
-      - nw_config_host_agent
-      #- sap_os_linux_user # Ignore, and SAP SWPM will auto-assign UID and GID
-      - nw_config_java_icm_credentials
-      - nw_config_java_feature_template_ids
-
-    sap_swpm_java_template_id_selected_list:
-      - java_solman
-
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT" # SMJ
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # AnyDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT" # AS1
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP NetWeaver JAVA Parameters
-      sap_swpm_load_type: SAP
-      sap_swpm_java_scs_instance_hostname: "{{ sap_hostname }}"
-      sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
-      sap_swpm_ume_sapjsf_password: "{{ sap_swpm_master_password }}"
-      sap_swpm_ume_type: db # db, abap
-      sap_swpm_ascs_instance_hostname: "{{ sap_hostname }}"
-      sap_swpm_pas_instance_hostname: "{{ sap_hostname }}" # NW JAVA reuses param NW_CI_Instance.ciVirtualHostname
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
-
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
-      - 'SWPM10SP43_2-20009701.SAR'
-      - 'igsexe_13-80003187.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
-      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      #- 'SAPJVM8_90-80000202.SAR' # SAP JVM 8.1 PL 90
+      # - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
+      # - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
+      # JAVA specific
+      # - 'SAPJVM8_90-80000202.SAR' # SAP JVM 8.1 PL 90
       - 'SAPJVM8_63-80000202.SAR' # SAP JVM 8.1 PL 63. See SAP Note 1680045 for 3 updates on SEP 17, 2020 related to SAP NetWeaver 7.5 JAVA before SP22 - "SAPJVM 8.1 archive you use has a patch level of 63 or lower"
       - '51054655_4' # SAP Solution Manager 7.2 SR2 - Java, ZIP. Uses SAP Netweaver 7.5 SP19 JAVA. Contains SOLMAN72_JAVA_UT (SAP:UT_SOLMAN:SR2SOLMAN72:SP00:*:*), JAVA_EXPORT (SAP:JEXPORT:SR2_72SOLMAN_2020S4:*:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:SR2_72SOLMAN_2020S4:*:*:*), JAVA_J2EE_OSINDEP (SAP:J2EE-CD:SR2_72SOLMAN_2020S4:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:SR2_72SOLMAN_2020S4:*:*:*), JAVA_J2EE_OSINDEP_UT (SAP:UT:SR2_72SOLMAN_2020S4:*:*:*)
-      - '51057961_1' # SAP ASE 16.0.04.06 HF1 RDBMS Linux on x86_64 64bit
-      - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
-      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
 
+    # SAP Solution Manager 7.2 Support Release 2 > SAP Solution Manager 7.2 ABAP Support Release 2 > SAP ASE > Installation > Application Server ABAP > Standard System > Standard System
+    abap:
+
+      # SWPM product catalog ID for the installation (String).
+      sap_swpm_product_catalog_id: NW_ABAP_OneHost:SOLMAN72SR2.ABAP.SYB.PD
+
+      # List of INI file sections to generate using sap_install.sap_swpm role (List).
+      sap_swpm_inifile_sections_list:
+        - swpm_installation_media
+        - swpm_installation_media_swpm1_exportfiles
+        - swpm_installation_media_swpm1_sapase
+        - credentials
+        - credentials_anydb_sapase
+        - db_config_anydb_all
+        - db_config_anydb_sapase
+        - nw_config_anydb
+        - nw_config_other
+        - nw_config_central_services_abap
+        - nw_config_primary_application_server_instance
+        - nw_config_java_ume
+        - nw_config_ports
+        - nw_config_java_ume
+        - nw_config_host_agent
+        - sap_os_linux_user
+        - nw_config_java_icm_credentials
+        - solman_abap_swpm1
+
+      sap_swpm_inifile_dictionary:
+
+        sap_swpm_ascs_instance_hostname: "{{ sap_hostname }}"
+        sap_swpm_pas_instance_hostname: "{{ sap_hostname }}" # NW JAVA reuses param NW_CI_Instance.ciVirtualHostname
+        sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
+
+    # SAP Solution Manager 7.2 Support Release 2 > SAP Solution Manager 7.2 Java Support Release 2 > SAP ASE > Installation > Application Server Java > Standard System > Standard System
+    java:
+
+      sap_swpm_product_catalog_id: NW_Java_OneHost:SOLMAN72SR2.JAVA.SYB.PD
+
+      sap_swpm_inifile_sections_list:
+        - swpm_installation_media
+        - swpm_installation_media_swpm1_exportfiles
+        - swpm_installation_media_swpm1_sapase
+        - credentials
+        - credentials_anydb_sapase
+        - db_config_anydb_sapase
+        - nw_config_anydb
+        - nw_config_other
+        - nw_config_central_services_abap
+        - nw_config_central_services_java
+        - nw_config_primary_application_server_instance
+        - nw_config_java_ume
+        - nw_config_ports
+        - nw_config_host_agent
+        # - sap_os_linux_user # Ignore, and SAP SWPM will auto-assign UID and GID
+        - nw_config_java_icm_credentials
+        - nw_config_java_feature_template_ids
+
+      sap_swpm_java_template_id_selected_list:
+        - java_solman
+
+      sap_swpm_inifile_dictionary:
+
+        # SAP NetWeaver JAVA Parameters
+        sap_swpm_load_type: SAP
+        sap_swpm_java_scs_instance_hostname: "{{ sap_hostname }}"
+        sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
+        sap_swpm_ume_sapjsf_password: "{{ sap_swpm_master_password }}"
+        sap_swpm_ume_type: db # db, abap
+        sap_swpm_ascs_instance_hostname: "{{ sap_hostname }}"
+        sap_swpm_pas_instance_hostname: "{{ sap_hostname }}" # NW JAVA reuses param NW_CI_Instance.ciVirtualHostname
