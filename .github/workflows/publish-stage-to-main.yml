@@ -30,6 +30,26 @@ jobs:
           path: repo_playbooks_main
           ref: main
 
+      - name: Remove internal scenarios from publishing
+        working-directory: repo_playbooks_stage
+        run: |
+          shopt -s nullglob # Ensures that empty glob results are empty
+
+          # Loop through all deploy_scenarios and supported special_actions
+          for dir in ./deploy_scenarios/* ./special_actions/*; do
+            extravars_file="$dir/ansible_extravars.yml"
+
+            # Check if the ansible_extravars.yml file exists
+            if [ -f "$extravars_file" ]; then
+              # Check if the file contains "sap_playbook_internal: true"
+              if grep -q "sap_playbook_internal: true" "$extravars_file"; then
+                rm -rf "$dir"
+              fi  # string is present
+            fi  # extravars file exists
+          done
+ 
+          shopt -u nullglob # Revert nullglob to its default behavior
+
       - name: Copy shared files to scenarios
         working-directory: repo_playbooks_stage
         run: |
