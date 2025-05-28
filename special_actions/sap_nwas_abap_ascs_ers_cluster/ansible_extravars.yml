@@ -1,4 +1,9 @@
 ---
+# EXPERIMENTAL
+# This scenario is for internal purpose only.
+# This variable controls if scenario is published to main branch.
+sap_playbook_internal: true
+
 #### Infrastructure Provisioning selection ####
 # Type of infrastructure provisioning method to use (String).
 # Options: ansible, ansible_to_terraform, existing_hosts

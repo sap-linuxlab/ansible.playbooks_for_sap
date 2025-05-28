@@ -189,7 +189,7 @@ sap_software_install_dictionary:
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_Webdispatcher:NW750.IND.PD
 
-    sap_swpm_inifile_list:
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - credentials
       - nw_config_other
@@ -198,7 +198,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
       - nw_config_java_icm_credentials # use ICM Auth Web Admin password
 
-    sap_swpm_inifile_sections_list:
+    sap_swpm_inifile_dictionary:
 
       # SAP Host Agent
       sap_swpm_install_saphostagent: 'false'
@@ -209,7 +209,7 @@ sap_software_install_dictionary:
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_Webdispatcher:GENERIC.IND.PD
 
-    sap_swpm_inifile_list:
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm1
       - credentials
@@ -219,7 +219,7 @@ sap_software_install_dictionary:
       - sap_os_linux_user
       - nw_config_java_icm_credentials # use ICM Auth Web Admin password
 
-    sap_swpm_inifile_sections_list:
+    sap_swpm_inifile_dictionary:
 
       # SAP Host Agent
       sap_swpm_install_saphostagent: 'false'
