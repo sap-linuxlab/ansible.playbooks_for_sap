@@ -32,7 +32,7 @@ skip_list:
   # Used for /etc/hosts edits
   - no-tabs
 
-  # Incorrectly shows error for nested {%- endfor -%} already correct idententation
+  # Incorrectly shows error for nested {%- endfor -%} already correct indent
   - jinja[spacing]
 
   # Shell commands are required
