@@ -2,134 +2,131 @@
 # Ansible Playbook for SAP S/4HANA Distributed installation
 
 # Use include_role / include_tasks inside Ansible Task block, instead of using roles declaration or Task block with import_roles.
-# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation.
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
+
+
+#### Interactive Mode ####
+# Interactive mode section can be safely removed without impact if all mandatory variables are provided.
+- name: Ansible Play to Interactively gather all mandatory variables
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+
+    - name: Block for collection for interactive prompts
+      when:
+        - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
+        - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
+        - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
+      block:
+        - name: Check if interactive tasks are available
+          ansible.builtin.stat:
+            path: ../../common_fragments/tasks/interactive/main.yml
+          register: sap_playbook_interactive_tasks_availability
+          ignore_errors: true
+
+        - name: Execute collection of interactive inputs
+          ansible.builtin.include_tasks:
+            file: ../../common_fragments/tasks/interactive/main.yml
+          when: sap_playbook_interactive_tasks_availability.stat.exists
 
 
 #### Begin Infrastructure-as-Code provisioning ####
-
-- name: Ansible Play to gather input for gathering vars and VM provisioning
-  hosts: localhost
-  gather_facts: false
-
-  # pre_tasks used only for Interactive Prompts only and can be removed without impact
-  pre_tasks:
-
-    - name: Playbook Interactive - Check if standard execution with an Ansible Extravars file is requested by end user
-      ansible.builtin.set_fact:
-        playbook_enable_interactive_prompts: "{{ true if (sap_vm_provision_iac_type is undefined and sap_vm_provision_iac_platform is undefined) else false }}"
-
-    - name: Playbook Interactive - Provision execution - Input for sap_vm_provision_iac_type
-      ansible.builtin.pause:
-        prompt: "Please choose Infrastructure-as-Code automation from list - ansible , ansible_to_terraform (for existing_hosts, use Ansible standard execution with an Ansible Extravars file)"
-      register: sap_vm_provision_iac_type_register
-      no_log: true
-      when: playbook_enable_interactive_prompts
-
-    - name: Playbook Interactive - Provision execution - Input for sap_vm_provision_iac_platform
-      ansible.builtin.pause:
-        prompt: "Please choose Infrastructure Platform from list - aws_ec2_vs , gcp_ce_vm , ibmcloud_powervs , ibmcloud_vs , ibmpowervm_vm , kubevirt_vm , msazure_vm , ovirt_vm"
-      register: sap_vm_provision_iac_platform_register
-      no_log: true
-      when: playbook_enable_interactive_prompts
-
-    - name: Playbook Interactive - SAP Deployment execution - Input for playbook_enable_default_vars_sap
-      ansible.builtin.pause:
-        prompt: "Please choose if defaults should be used for SAP Software installation (e.g. SAP System ID) - true , false"
-      register: playbook_enable_default_vars_sap_register
-      no_log: true
-      when: playbook_enable_interactive_prompts
-
-    - name: Playbook Interactive - Set facts from initial prompts
-      ansible.builtin.set_fact:
-        sap_vm_provision_iac_type: "{{ sap_vm_provision_iac_type_register.user_input }}"
-        sap_vm_provision_iac_platform: "{{ sap_vm_provision_iac_platform_register.user_input }}"
-        playbook_enable_default_vars_sap: "{{ playbook_enable_default_vars_sap_register.user_input }}"
-      when: playbook_enable_interactive_prompts
-
-
-#### Provision VM ####
-
 - name: Ansible Play to create dynamic inventory group for provisioning
   hosts: localhost
   gather_facts: false
   tasks:
 
+    - name: Set fact with selected host dictionary
+      ansible.builtin.set_fact:
+        sap_playbook_host_dictionary:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+            + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+
     - name: Create dynamic inventory group for Ansible Role sap_vm_provision
       ansible.builtin.add_host:
         name: "{{ item }}"
         group: sap_vm_provision_target_inventory_group
-      loop: "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys() }}"
-      when: sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
+      loop: "{{ sap_playbook_host_dictionary.keys() }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
 
+
+# Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
 - name: Ansible Play to provision hosts for SAP
-  hosts: sap_vm_provision_target_inventory_group # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
+  hosts: sap_vm_provision_target_inventory_group
   gather_facts: false
   tasks:
+
+    # Ensure that all sap_* or __sap_* variables set in Interactive Mode are appended to the target inventory Group
+    - name: Assign all relevant facts from execution node before provisioning  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+        cacheable: true
+      loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
 
     - name: Execute Ansible Role sap_vm_provision
       ansible.builtin.include_role:
         name: community.sap_infrastructure.sap_vm_provision
-      when: sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+
+- name: Ansible Play to set sap variables on provisioned hosts
+  hosts: sap_vm_provision_target_inventory_group  # noqa: ignore-errors
+  gather_facts: false
+  tasks:
+
+    - name: Assign all relevant facts from execution node after provisioning  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+        cacheable: true
+      loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
 
 
 #### VM storage filesystem setup ####
-
 - name: Ansible Play for hosts storage setup
   hosts: hana_primary, nwas_ascs, nwas_pas, nwas_aas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
-    # Use inventory_hostname_short to retrieve host specification from the dictionary. While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
+    # Use inventory_hostname_short to retrieve host specification from the dictionary.
+    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
     - name: Execute Ansible Role sap_storage_setup
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
       vars:
-        sap_storage_setup_sid: "{{ host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].sap_storage_setup_sid | default('') }}"
-        sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].sap_storage_setup_nwas_abap_ascs_instance_nr | default('') }}"
-        sap_storage_setup_nwas_abap_pas_instance_nr: "{{ host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].sap_storage_setup_nwas_abap_pas_instance_nr | default('') }}"
-        sap_storage_setup_nwas_abap_aas_instance_nr: "{{ host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].sap_storage_setup_nwas_abap_aas_instance_nr | default('') }}"
-        sap_storage_setup_host_type: "{{ host_specifications_dictionary[sap_vm_provision_host_specification_plan][inventory_hostname_short].sap_storage_setup_host_type | list }}"
-        # sap_storage_setup_definition set for the host by sap_vm_provision Ansible Role
-      when:
-        - sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
-        - not sap_vm_provision_iac_type == "existing_hosts"
-
-
-# - name: Ansible Play to execute Preflight Checks
-#   hosts: hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-#   become: true
-#   any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
-#   max_fail_percentage: 0
-#   tasks:
-
-#     - name: Execute Ansible Role sap_vm_preflight_checks
-#       ansible.builtin.include_role:
-#         name: community.sap_infrastructure.sap_vm_verify
+        sap_playbook_host_dictionary_hostname:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+           + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][inventory_hostname_short] }}"
+        sap_storage_setup_sid: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_sid'] | d('') }}"
+        sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_ascs_instance_nr'] | d('') }}"
+        sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_pas_instance_nr'] | d('') }}"
+        sap_storage_setup_nwas_abap_aas_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_aas_instance_nr'] | d('') }}"
+        sap_storage_setup_host_type: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_host_type'] | list }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
 
 - name: Ansible Play for ensuring rsync on all hosts
   hosts: hana_primary, nwas_ascs, nwas_pas, nwas_aas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
     - name: Install rsync
       ansible.builtin.package:
-        name:
-          - rsync
+        name: rsync
         state: present
 
 
-
 #### Begin downloading SAP software installation media to hosts ####
-
 - name: Ansible Play for downloading SAP S/4HANA installation media
   hosts: nwas_pas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -137,6 +134,7 @@
     # Playbook will continue without the collection, assuming SAP software is already available.
     - name: Check availability of sap_launchpad collection on execution node
       delegate_to: localhost
+      become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
       register: sap_playbook_collection_list_output
@@ -149,8 +147,8 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
-        sap_software_download_files: "{{ sap_swpm_templates_install_dictionary[sap_swpm_templates_product_input_prefix + '_installation_media']
-          ['softwarecenter_search_list_saphana_' ~ ansible_architecture] }}"
+        sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
+          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
       when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
 
@@ -158,7 +156,7 @@
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_hana_install_media_dictionary.sap_hana_2_install.software_files_wildcard_list }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['software_files_hana_wildcard_list'] }}"
         recurse: true
       register: sap_hana_install_media_files
 
@@ -166,7 +164,7 @@
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_swpm_templates_install_dictionary[sap_swpm_templates_product_input_prefix + '_nwas_ascs'].software_files_wildcard_list }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_ascs']['software_files_wildcard_list'] }}"
         recurse: true
       register: sap_nwas_ascs_install_media_files
 
@@ -174,48 +172,28 @@
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_swpm_templates_install_dictionary[sap_swpm_templates_product_input_prefix + '_nwas_aas'].software_files_wildcard_list }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_aas']['software_files_wildcard_list'] }}"
         recurse: true
       register: sap_nwas_aas_install_media_files
 
-    - name: Prepare for file transfers, copy Private SSH Key used in Terraform deployment (temporary)
+    - name: Prepare for file transfers, copy Private SSH Key from local
       ansible.builtin.copy:
-        src: "{{ sap_vm_provision_terraform_work_dir_path }}/ssh/hosts_rsa"
+        src: "{{ sap_vm_provision_ssh_host_private_key_file_path
+          if sap_vm_provision_ssh_host_private_key_file_path is defined
+          else sap_vm_provision_terraform_work_dir_path ~ '/ssh/hosts_rsa' }}"
         dest: "/tmp/hosts_rsa"
         mode: "0400"
-      when: sap_vm_provision_ssh_host_private_key_file_path is undefined
-
-    - name: Prepare for file transfers, copy Private SSH Key from local (Ansible host)
-      ansible.builtin.copy:
-        src: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
-        dest: "/tmp/hosts_rsa"
-        mode: "0400"
-      when: sap_vm_provision_ssh_host_private_key_file_path is defined
 
 
 - name: Ansible Play for copying SAP HANA Database Server installation media to other hosts
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
-    - name: Set var of IP Address of SAP NetWeaver PAS
-      ansible.builtin.set_fact:
-        sap_nwas_pas_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_pas_hostname }}"
-        sap_nwas_pas_ip: "{{ sap_vm_provision_dynamic_inventory_nw_pas_ip }}"
-
-    - name: Set var of files list from SAP NWAS, using lookup from Ansible hostvars with key as SAP NWAS PAS IP Address
-      ansible.builtin.set_fact:
-        sap_hana_install_media_files_list: "{{ hostvars[sap_nwas_pas_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
-
-#    - name: Debug output
-#      debug:
-#        var: sap_hana_install_media_files_list
-#        var: sap_nwas_pas_ip
-
     - name: Transfer SAP HANA installation media to SAP HANA Primary
-      delegate_to: "{{ sap_nwas_pas_ip }}"
+      delegate_to: "{{ software_source_ip }}"
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ item }}"
@@ -225,34 +203,22 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
-      loop: "{{ sap_hana_install_media_files_list }}"
-
+        # set_remote_user: false
+      loop: "{{ hostvars[software_source_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
+      vars:
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
 
 
 - name: Ansible Play for copying SAP NetWeaver ASCS installation media to host
   hosts: nwas_ascs
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
-    - name: Set var of IP Address of SAP NetWeaver PAS
-      ansible.builtin.set_fact:
-        sap_nwas_pas_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_pas_hostname }}"
-        sap_nwas_pas_ip: "{{ sap_vm_provision_dynamic_inventory_nw_pas_ip }}"
-
-    - name: Set var of files list from SAP NWAS, using lookup from Ansible hostvars with key as SAP NWAS PAS IP Address
-      ansible.builtin.set_fact:
-        sap_nwas_ascs_install_media_files_list: "{{ hostvars[sap_nwas_pas_hostname].sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
-
-#    - name: Debug output
-#      debug:
-#        var: sap_nwas_ascs_install_media_files_list
-#        var: sap_nwas_pas_ip
-
     - name: Transfer SAP NetWeaver ASCS installation media to host
-      delegate_to: "{{ sap_nwas_pas_ip }}"
+      delegate_to: "{{ software_source_ip }}"
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ item }}"
@@ -262,33 +228,22 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
-      loop: "{{ sap_nwas_ascs_install_media_files_list }}"
+        # set_remote_user: false
+      loop: "{{ hostvars[software_source_hostname].sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
+      vars:
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
 
 
 - name: Ansible Play for copying SAP NetWeaver AAS installation media to host
   hosts: nwas_aas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
-    - name: Set var of IP Address of SAP NetWeaver PAS
-      ansible.builtin.set_fact:
-        sap_nwas_pas_hostname: "{{ sap_vm_provision_dynamic_inventory_nw_pas_hostname }}"
-        sap_nwas_pas_ip: "{{ sap_vm_provision_dynamic_inventory_nw_pas_ip }}"
-
-    - name: Set var of files list from SAP NWAS, using lookup from Ansible hostvars with key as SAP NWAS PAS IP Address
-      ansible.builtin.set_fact:
-        sap_nwas_aas_install_media_files_list: "{{ hostvars[sap_nwas_pas_hostname].sap_nwas_aas_install_media_files.files | map(attribute='path') | list }}"
-
-#    - name: Debug output
-#      debug:
-#        var: sap_nwas_aas_install_media_files_list
-#        var: sap_nwas_pas_ip
-
     - name: Transfer SAP NetWeaver AAS installation media to host
-      delegate_to: "{{ sap_nwas_pas_ip }}"
+      delegate_to: "{{ software_source_ip }}"
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ item }}"
@@ -298,15 +253,17 @@
         use_ssh_args: false
         verify_host: false
         private_key: "/tmp/hosts_rsa"
-#        set_remote_user: false
-      loop: "{{ sap_nwas_aas_install_media_files_list }}"
-
+        # set_remote_user: false
+      loop: "{{ hostvars[software_source_hostname].sap_nwas_aas_install_media_files.files | map(attribute='path') | list }}"
+      vars:
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
 
 
 - name: Ansible Play to remove temporary files from SAP NetWeaver PAS
   hosts: nwas_pas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -317,11 +274,10 @@
 
 
 #### Begin SAP software hosts preparation ####
-
 - name: Ansible Play for preparing all SAP software hosts
   hosts: hana_primary, nwas_ascs, nwas_pas, nwas_aas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -333,7 +289,7 @@
 - name: Ansible Play for preparing all SAP NetWeaver hosts
   hosts: nwas_ascs, nwas_pas, nwas_aas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
     - name: Execute Ansible Role sap_netweaver_preconfigure
@@ -344,7 +300,7 @@
 - name: Ansible Play for preparing all SAP HANA hosts
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
     - name: Execute Ansible Role sap_hana_preconfigure
@@ -352,13 +308,11 @@
         name: community.sap_install.sap_hana_preconfigure
 
 
-
 #### Begin SAP software installations ####
-
 - name: Ansible Play for SAP HANA Database Server installation
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -373,17 +327,15 @@
         sap_install_media_detect_webdisp: false
         sap_install_media_detect_db: "saphana"
 
-    # Install SAP HANA
     - name: Execute Ansible Role sap_hana_install
       ansible.builtin.include_role:
         name: community.sap_install.sap_hana_install
 
 
-
 - name: Ansible Play for SAP NetWeaver Application Server installation - ABAP Central Services (ASCS)
   hosts: nwas_ascs
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -397,19 +349,17 @@
         sap_install_media_detect_kernel: true
         sap_install_media_detect_webdisp: false
 
-    # Install SAP NetWeaver ASCS via Ansible Role sap_swpm
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
       vars:
-        sap_swpm_templates_product_input: "{{ sap_swpm_templates_product_input_prefix }}_nwas_ascs"
-
+        sap_swpm_templates_product_input: "nwas_ascs"
 
 
 - name: Ansible Play for SAP NetWeaver Application Server - Installation Export Database Load from the Primary Application Server (PAS)
   hosts: nwas_pas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -425,19 +375,17 @@
         sap_install_media_detect_db_client: "saphana"
         sap_install_media_detect_export: "saps4hana"
 
-    # Install SAP NetWeaver PAS via Ansible Role sap_swpm
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
       vars:
-        sap_swpm_templates_product_input: "{{ sap_swpm_templates_product_input_prefix }}_nwas_pas_dbload"
-
+        sap_swpm_templates_product_input: "nwas_pas_dbload"
 
 
 - name: Ansible Play for SAP NetWeaver Application Server - Primary Application Server (PAS)
   hosts: nwas_pas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -451,21 +399,21 @@
         sap_install_media_detect_kernel: true
         sap_install_media_detect_webdisp: false
         sap_install_media_detect_db_client: "saphana"
-        sap_install_media_detect_export: "saps4hana" # Should not be necessary. Add to avoid unknown error from 'step SpecifyArchive' with error 'Parameter for download basket is empty' caused by no EXPORT files (aka. BACKUP1 'S4HANA2022CORE HANA DB Export 1')
+        # Should not be necessary. Add to avoid unknown error from 'step SpecifyArchive' with error
+        # 'Parameter for download basket is empty' caused by no EXPORT files (aka. BACKUP1 'S4HANA2022CORE HANA DB Export 1')
+        sap_install_media_detect_export: "saps4hana"
 
-    # Install SAP NetWeaver PAS via Ansible Role sap_swpm
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
       vars:
-        sap_swpm_templates_product_input: "{{ sap_swpm_templates_product_input_prefix }}_nwas_pas"
-
+        sap_swpm_templates_product_input: "nwas_pas"
 
 
 - name: Ansible Play for SAP NetWeaver Application Server - Additional Application Servers (AAS)
   hosts: nwas_aas
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -480,29 +428,8 @@
         sap_install_media_detect_webdisp: false
         sap_install_media_detect_db_client: "saphana"
 
-    # Install SAP NetWeaver AAS via Ansible Role sap_swpm
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
       vars:
-        sap_swpm_templates_product_input: "{{ sap_swpm_templates_product_input_prefix }}_nwas_aas"
-
-
-
-    # - name: Execute Ansible Role sap_profile_update to update Profile for ICM HTTPS
-    #   ansible.builtin.include_role:
-    #     name: community.sap_operations.sap_profile_update
-    #   vars:
-    #     sap_update_profile_sid: "{{ sap_system_sid }}"
-    #     sap_update_profile_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
-    #     sap_update_profile_default_profile_params:
-    #       - icm/server_port_1 = PROT=HTTPS,PORT=443$$,PROCTIMEOUT=600,TIMEOUT=3600
-    #     sap_update_profile_instance_profile_params:
-    #       - icm/server_port_1 = PROT=HTTPS,PORT=443$$,PROCTIMEOUT=600,TIMEOUT=3600
-
-    # - name: Execute Ansible Role sap_control to restart SAP System/s for Profile update changes
-    #   ansible.builtin.include_role:
-    #     name: community.sap_operations.sap_control
-    #   vars:
-    #     sap_control_function: "restart_all_sap"
-
+        sap_swpm_templates_product_input: "nwas_aas"

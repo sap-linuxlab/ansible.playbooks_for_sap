@@ -1,0 +1,30 @@
+---
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private SSH key on execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private host key on execution node (String).
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion public host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "gcp_ce_vm"  # Name of the provisioning platform (String).
+sap_vm_provision_gcp_credentials_json: "ENTER_STRING_VALUE_HERE"  # Path to JSON credentials file (String).
+sap_vm_provision_gcp_project: "ENTER_STRING_VALUE_HERE"  # Project name (String).
+sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"  # Region (String).
+sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"  # Region zone (String).
+sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"  # VPC name (String).
+sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"  # VPC Subnet name (String).
+
+# Enter image name from dictionary sap_vm_provision_gcp_ce_vm_host_os_image_dictionary keys (String)..
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-latest (Red Hat)
+sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"

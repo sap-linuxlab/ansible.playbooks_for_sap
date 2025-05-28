@@ -1,0 +1,189 @@
+---
+# EXPERIMENTAL
+# This scenario is for internal purpose only.
+# This variable controls if scenario is published to main branch.
+sap_playbook_internal: true
+
+#### Infrastructure Provisioning selection ####
+# Type of infrastructure provisioning method to use (String).
+# Options: ansible, ansible_to_terraform, existing_hosts
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"
+
+# Infrastructure platform for provisioning (String).
+# Options: aws_ec2_vs, gcp_ce_vm, ibmcloud_vs, ibmcloud_powervs, msazure_vm, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
+
+# Name of the host specification plan to use (String).
+# Options: Defined in host_specifications_dictionary.
+sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+
+# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
+
+
+#### Key SAP System variables ####
+sap_system_sid: "AE1"  # SAP System ID (SID) (String)
+sap_system_nwas_abap_ascs_instance_nr: "00"  # SAP NetWeaver ABAP ASCS instance number (String).
+sap_system_nwas_abap_ers_instance_nr: "10"  # SAP NetWeaver ABAP ERS instance number (String).
+
+
+#### SAP Software installation media downloads ####
+## Required for download using community.sap_launchpad
+# SAP ONE Support Launchpad credentials
+sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+
+# Directory with SAP installation media (e.g. /software) (String)
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_reboot_ok: true  # SAP Netweaver hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_netweaver_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APPSERVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP SWPM Installation ####
+sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+
+sap_swpm_master_password: "NewPass$321"  # Master password for the SAP system (String).
+sap_swpm_ddic_000_password: "NewPass$321"  # Password for the DDIC user in client 000 (String).
+
+sap_swpm_db_schema_abap: "SAPHANADB"  # Name of the ABAP schema in the SAP HANA database (String).
+
+sap_swpm_db_schema_abap_password: "NewPass$321"  # Password for the ABAP schema user (String).
+sap_swpm_db_sidadm_password: "NewPass$321"  # Password for the <sid>adm user in the database (String).
+sap_swpm_db_system_password: "NewPass$321"  # Password for the SYSTEM user in the SAP HANA database (String).
+sap_swpm_db_systemdb_password: "NewPass$321"  # Password for the SYSTEM user in the SAP HANA system database (String).
+
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_sid: "{{ sap_system_sid }}"
+sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+sap_swpm_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary[sap_software_product] }}"  # Distributed
+sap_swpm_fqdn: "{{ ansible_domain }}"
+
+#### SAP SWPM Installation - Optional variables ####
+## Unix User ID
+sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
+sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
+sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
+
+sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+
+
+#### High Availability variables ####
+## Virtual host names
+# See virtual hostname information in SAP Note 2279110 and 962955
+# Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
+# sap_swpm_virtual_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ascs[0] }}-ha"
+sap_swpm_ascs_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ascs[0] }}-ha"
+sap_swpm_ers_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ers[0] }}-ha"
+
+## Infrastructure Platform - High Availability Virtual IPs (VIPs)
+# AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+# IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+# MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+# IBM PowerVM:          the VIP must be within the VLAN Subnet range
+# OVirt KVM:            the VIP must be within the VLAN Subnet range
+# KubeVirt:             the VIP must be within the VLAN Subnet range
+sap_vm_provision_ha_vip_nwas_abap_ascs: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_ha_vip_nwas_abap_ers: "ENTER_STRING_VALUE_HERE"
+
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+# ASCS/ERS Pacemaker Cluster
+sap_system_ascs_ers_cluster_name: 'clusterascs'  # Pacemaker cluster name (String).
+sap_system_ascs_ers_hacluster_user_password: 'clusterpass'  # Pacemaker cluster 'hacluster' user password (String).
+
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
+#### SAP Product selection ####
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_2023_distributed).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
+
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
+
+  sap_s4hana_2023_distributed:
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM20SP20_1-80003424.SAR'
+      - 'igsexe_4-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent
+
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'SWPM20SP20_1-80003426.SAR'
+      - 'igsexe_4-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent
+
+    nwas_ascs_ha:
+
+      # SWPM product catalog ID for the installation (String).
+      sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2023.CORE.HDB.ABAPHA
+
+      # List of INI file sections to generate using sap_install.sap_swpm role (List).
+      sap_swpm_inifile_sections_list:
+        - swpm_installation_media
+        - swpm_installation_media_swpm2_hana
+        - credentials
+        - credentials_hana
+        - db_config_hana
+        - db_connection_nw_hana
+        - nw_config_other
+        - nw_config_central_services_abap
+        - nw_config_primary_application_server_instance
+        - nw_config_ports
+        - nw_config_host_agent
+        - sap_os_linux_user
+
+      software_files_wildcard_list:
+        - 'SAPCAR*'
+        - 'SWPM20*'
+        - 'igsexe_*'
+        - 'igshelper_*'
+        - 'SAPEXE_*' # Kernel Part I (785)
+        - 'SAPEXEDB_*' # Kernel Part I (785)
+        - 'SAPHOSTAGENT*'
+
+    nwas_ers_ha:
+
+      # Product ID for New Installation
+      sap_swpm_product_catalog_id: NW_ERS:S4HANA2023.CORE.HDB.ABAPHA
+
+      sap_swpm_inifile_sections_list:
+        - swpm_installation_media
+        - credentials
+        - nw_config_other
+        - nw_config_ers
+        - sap_os_linux_user
+
+      software_files_wildcard_list:
+        - 'SAPCAR*'
+        - 'SWPM20*'
+        - 'igsexe_*'
+        - 'igshelper_*'
+        - 'SAPEXE_*' # Kernel Part I (785)
+        - 'SAPEXEDB_*' # Kernel Part I (785)
+        - 'SAPHOSTAGENT*'

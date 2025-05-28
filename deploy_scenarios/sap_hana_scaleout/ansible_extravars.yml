@@ -1,160 +1,151 @@
 ---
+#### Infrastructure Provisioning selection ####
+# Type of infrastructure provisioning method to use (String).
+# Options: ansible, ansible_to_terraform, existing_hosts
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"
 
-####
-# Key SAP System variables
-####
+# Infrastructure platform for provisioning (String).
+# Options: aws_ec2_vs, gcp_ce_vm, ibmcloud_vs, ibmcloud_powervs, msazure_vm, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
 
-sap_system_hana_db_sid: "H01"
-sap_system_hana_db_instance_nr: "90"
-
-
-####
-# Infrastructure Provisioning selection
-####
-
-sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"  # ansible , ansible_to_terraform , existing_hosts
-sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"  # aws_ec2_vs , gcp_ce_vm , ibmcloud_vs , ibmcloud_powervs , msazure_vm , ibmpowervm_vm , kubevirt_vm , ovirt_vm , vmware_vm
-
+# Name of the host specification plan to use (String).
+# Options: Defined in host_specifications_dictionary.
 sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+
+# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
 sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
 
+# SAP HANA Scale-Out variables for role sap_vm_provision
+sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator: 1  # Number of active coordinators (Integer).
+sap_vm_provision_calculate_sap_hana_scaleout_active_worker: 2  # Number of active workers (Integer).
+sap_vm_provision_calculate_sap_hana_scaleout_standby: 1  # Number of standby nodes. Options: 0, 1 (Integer).
 
 
-####
-# Mandatory parameters : Ansible Defaults
-####
+#### Key SAP System variables ####
+sap_system_hana_db_sid: "H01"  # SAP HANA Database ID (SID) (String).
+sap_system_hana_db_instance_nr: "90"  # SAP HANA Database instance number (String).
 
-# Default Ansible Facts populate into default variables for all Ansible Roles
+
+#### SAP Software installation media downloads ####
+## Required for download using community.sap_launchpad
+# SAP ONE Support Launchpad credentials
+sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+
+# Directory with SAP installation media (e.g. /software) (String)
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_reboot_ok: true  # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_hana_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_hana_preconfigure_saptune_solution: 'HANA'  # SUSE saptune solution to apply for SAP HANA (String).
+
+
+#### SAP HANA Database Server installation ####
+# SAP HANA Master password
+sap_hana_install_use_master_password: "y"  # Use a master password for SAP HANA installation (y/n) (String).
+sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"  # The master password for SAP HANA (String).
+
+# SAP HANA Scale-Out variables for role sap_Hana_install
+sap_hana_install_new_system: true  # Set to 'false', when adding hosts using sap_hana_install_addhosts
+# sap_hana_install_addhosts: ''  # Set to 'true', when adding hosts dynamically after provisioning
+sap_hana_install_workergroup: default  # must be 'default', see README
+sap_hana_install_group: default  # must be 'default', see README
+
+# Dynamic assignment of SAP HANA variables
+sap_hana_sid: "{{ sap_system_hana_db_sid }}"
+sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
+
+#### SAP HANA Database Server installation - Optional variables ####
+## SAP HANA log mode (set to overwrite for Sandbox only, HA cannot use overwrite) (String)
+# sap_hana_install_log_mode: overwrite  # Options: normal, overwrite.
+
+## List of comma separated components to be installed, default 'all'
+# sap_hana_install_components: 'all'  # Comma-separated list of SAP HANA components to install (String).
+
+## Unix User ID. Leave this blank if you want this set automatically by hdblcm
+## For production systems, it's highly advisable to set this manually according to your environment's Unix ID policies
+# sap_hana_install_userid:  # Unix User ID for SAP HANA (String).
+# sap_hana_install_groupid:  # Unix Group ID for SAP HANA (String).
+
+# sap_hana_install_system_usage: custom  # hdblcm parameter system_usage (String).
+# sap_hana_install_restrict_max_mem: 'n'  # hdblcm parameter restrict_max_mem (y/n) (String).
+# sap_hana_install_max_mem:  # hdblcm parameter max_mem in MB required when sap_hana_install_restrict_max_mem is y (String).
+# sap_hana_install_system_restart: 'n'  # select if role should start SAP HANA after each system boot (y/n) (String).
+## Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
+# sap_hana_install_hdblcm_extraargs:   # Extra arguments for hdblcm (String).
+
+
+#### Shared Ansible Facts ####
 sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
+#### SAP Product selection ####
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_hana_2_sps07_install).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
 
-####
-# Mandatory parameters : Preconfigure OS for SAP Software
-####
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
 
-# Configuration of Ansible Roles for preconfigure SAP (general, hana, netweaver)
-sap_general_preconfigure_modify_etc_hosts: false
-sap_general_preconfigure_reboot_ok: true
-sap_general_preconfigure_fail_if_reboot_required: false
-sap_hana_preconfigure_reboot_ok: true # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true
-sap_hana_preconfigure_fail_if_reboot_required: false
-sap_hana_preconfigure_update: true
-sap_hana_update_etchosts: true
+  sap_hana_2_sps08_install:
 
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_085_0-80002031.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002082.SAR' # SAP HANA CLIENT Version 2.24
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
 
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_085_0-80002046.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002095.SAR'  # SAP HANA CLIENT Version 2.24
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
 
-####
-# Mandatory parameters : SAP Software installation media downloads
-####
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
 
-# SAP ONE Support Launchpad credentials
-sap_id_user: "ENTER_STRING_VALUE_HERE"
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
-
-# Directory for SAP installation media
-sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /software
-
-# Configuration for SAP installation media detection
-# sap_install_media_detect_** variables are set for each Ansible Task to the respective host
-
-
-
-####
-# Mandatory parameters : Ansible Dictionary for SAP HANA installation media
-####
-
-sap_hana_install_media_dictionary:
 
   sap_hana_2_sps07_install:
 
-    softwarecenter_search_list_saphana_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent 7.22
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
 
-    softwarecenter_search_list_saphana_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent 7.22
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
 
   sap_hana_2_sps06_install:
 
-    softwarecenter_search_list_saphana_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
 
-    softwarecenter_search_list_saphana_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
 
-
-####
-# Mandatory parameters : SAP HANA installation
-####
-
-sap_hana_product_input: "ENTER_STRING_VALUE_HERE" # sap_hana_2_sps07_install , sap_hana_2_sps06_install
-
-# SAP HANA master password
-sap_hana_install_use_master_password: "y"
-sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"
-
-# SAP HANA database server instance details
-sap_hana_sid: "{{ sap_system_hana_db_sid }}"
-sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
-
-# SAP HANA log mode (set to overwrite for Sandbox only, HA cannot use overwrite)
-#sap_hana_install_log_mode: overwrite
-
-
-####
-# Mandatory parameters : SAP HANA Scale-Out installation
-####
-sap_hana_install_new_system: true # Default to true, shown here for reference must be true unless extending an existing scale-out cluster
-#sap_hana_install_addhosts: '' # Set dynamically after provisioning
-sap_hana_install_workergroup: default  # recommend 'default', see SAP Note 3043860 - Recovery fails due to incorrect worker group assignment
-sap_hana_install_group: default  # recommend 'default', see SAP Note 3043860 - Recovery fails due to incorrect worker group assignment
-
-
-####
-# Optional parameters : SAP HANA installation
-####
-
-# List of components to be installed, default 'all'
-# Components should be comma separated
-# sap_hana_install_components: 'all'
-
-# Unix User
-# Leave this blank if you want this set automatically by hdblcm
-# For production systems, it's highly advisable to set this manually according to your environment's Unix ID policies
-# sap_hana_install_userid:
-# sap_hana_install_groupid:
-
-# Adjust these accordingly for your installation type
-# sap_hana_install_env_type: 'production'
-# sap_hana_install_mem_restrict: 'n'
-# sap_hana_install_max_mem:
-# sap_hana_install_system_restart: 'n'
-
-# Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
-# sap_hana_install_hdblcm_extraargs:
-
-# Update hosts file
-sap_hana_install_update_etchosts: 'false'
-
-# For more optional parameters please consult the documentation or
-# Check the file <role path>/defaults/main.yml
-
-
-####
-# Mandatory parameters : Infrastructure provisioning definitions - SAP HANA scale-out
-####
-
-sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator: 1
-sap_vm_provision_calculate_sap_hana_scaleout_active_worker: 2
-sap_vm_provision_calculate_sap_hana_scaleout_standby: 1 # Only 0 or 1
-
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'

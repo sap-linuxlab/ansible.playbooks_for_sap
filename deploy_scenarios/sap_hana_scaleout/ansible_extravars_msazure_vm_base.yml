@@ -1,0 +1,11 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount points for HANA data, log, and shared directories (String).
+sap_vm_provision_nfs_mount_point_hana_data: "ENTER_STRING_VALUE_HERE"  # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_hana_log: "ENTER_STRING_VALUE_HERE"  # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_hana_shared: "ENTER_STRING_VALUE_HERE"  # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_type: nfs4  # NFS version (String).
+# defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
+sap_vm_provision_nfs_mount_point_opts:
+  nfsvers=4.1,timeo=600,retrans=2,hard  # NFS Mount options (String).

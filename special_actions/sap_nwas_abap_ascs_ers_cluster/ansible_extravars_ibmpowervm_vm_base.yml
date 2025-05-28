@@ -1,0 +1,17 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount point (String).
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"  # NFS version (String).
+sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"  # NFS Mount options (String).
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+# IBM Power Hardware Management Console (HMC), not to be confused with IBM PowerVC host and credentials
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host: "ENTER_STRING_VALUE_HERE"
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_port: "ENTER_STRING_VALUE_HERE" # Default, 22 for SSH
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_login: "ENTER_STRING_VALUE_HERE"
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_login_password: "ENTER_STRING_VALUE_HERE"
+sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host_version: "4"

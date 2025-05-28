@@ -1,0 +1,10 @@
+---
+# EXPERIMENTAL
+
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount point (String).
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"  # NFS version (String).
+sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"  # NFS Mount options (String).

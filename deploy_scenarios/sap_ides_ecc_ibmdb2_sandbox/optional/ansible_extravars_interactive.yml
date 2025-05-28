@@ -1,0 +1,157 @@
+---
+#### Instructions for Interactive Prompts ####
+# This file defines the essential set of variables required for initial interactive execution.
+# All other required variables will be dynamically gathered through interactive prompts.
+# Pre-defining a variable in this file will skip the associated interactive prompt.
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP SWPM Installation ####
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}" # Must be SAP AnyDB primary node
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
+
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
+
+  # SAP Business Suite 7i 2016 > EHP8 for SAP ERP 6.0 ABAP > IBM Db2 for Linux, UNIX, and Windows (LUW) > Installation > Application Server ABAP > Standard System
+  # uses SAP NetWeaver 7.5
+  sap_ides_ecc6_ehp8_ibmdb2_onehost:
+
+    # SWPM product catalog ID for the installation (String).
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2016.ERP608.DB6.PD
+
+    # List of INI file sections to generate using sap_install.sap_swpm role (List).
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm1_exportfiles
+      - swpm_installation_media_swpm1_ibmdb2
+      - credentials
+      - credentials_anydb_ibmdb2
+      - db_config_anydb_all
+      - db_config_anydb_ibmdb2
+      - db_connection_nw_anydb_ibmdb2
+      - nw_config_anydb
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
+      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'SWPM10SP43_2-20009701.SAR'
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'igshelper_17-10010245.sar'
+      - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
+      - '73554900102000002424' # IBM DB2 LUW 11.5 SAP OEM license (Note 816773), ZIP
+      - '51056774' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 Client, ZIP
+      - '51053216_1' # IDES SAP ERP 6.0 EHP8 - INSTALL. EXP. (1/2) 1/22
+      - '51053216_2'
+      - '51053216_3'
+      - '51053216_4'
+      - '51053216_5'
+      - '51053216_6'
+      - '51053216_7'
+      - '51053216_8'
+      - '51053216_9'
+      - '51053216_10'
+      - '51053216_11'
+      - '51053216_12'
+      - '51053216_13'
+      - '51053216_14'
+      - '51053216_15'
+      - '51053216_16'
+      - '51053216_17'
+      - '51053216_18'
+      - '51053216_19'
+      - '51053216_20'
+      - '51053216_21'
+      - '51053216_22'
+
+    # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+
+
+  # SAP Business Suite 7i 2013 Support Release 2 > EHP7 for SAP ERP 6.0 ABAP Support Release 2 > IBM Db2 for Linux, UNIX, and Windows (LUW) > Installation > Application Server ABAP > Standard System
+  # uses SAP NetWeaver 7.5
+  sap_ides_ecc6_ehp7_ibmdb2_onehost:
+
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2013SR2.ERP607SR2.DB6.PD
+
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm1_exportfiles
+      - swpm_installation_media_swpm1_ibmdb2
+      - credentials
+      - credentials_anydb_ibmdb2
+      - db_config_anydb_all
+      - db_config_anydb_ibmdb2
+      - db_connection_nw_anydb_ibmdb2
+      - nw_config_anydb
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
+      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'SWPM10SP43_2-20009701.SAR'
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'igshelper_17-10010245.sar'
+      - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
+      - '73554900102000002424' # IBM DB2 LUW 11.5 SAP OEM license (Note 816773), ZIP
+      - '51056774' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 Client, ZIP
+      - '51052818_1' # IDES SAP ERP 6.0 EHP7 Installation Export 1/18
+      - '51052818_2'
+      - '51052818_3'
+      - '51052818_4'
+      - '51052818_5'
+      - '51052818_6'
+      - '51052818_7'
+      - '51052818_8'
+      - '51052818_9'
+      - '51052818_10'
+      - '51052818_11'
+      - '51052818_12'
+      - '51052818_13'
+      - '51052818_14'
+      - '51052818_15'
+      - '51052818_16'
+      - '51052818_17'
+      - '51052818_18'
+
+    # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+
+
+#### Interactive Prompt Control Variables ####
+# Do not change these variables unless you intend to modify the interactive prompt behavior!
+sap_playbook_interactive_product: ecc
+sap_playbook_interactive_database: ibmdb2
+sap_playbook_interactive_layout: sandbox

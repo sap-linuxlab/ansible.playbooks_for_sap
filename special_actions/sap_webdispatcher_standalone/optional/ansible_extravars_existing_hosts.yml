@@ -1,0 +1,64 @@
+---
+#### Instructions for using existing_hosts ####
+# When existing_hosts are used, execution of provisioning role sap_vm_provision will be skipped.
+# This results in the need to define additional variables below, e.g. sap_general_preconfigure_domain.
+# Role sap_storage_setup will be searching for block devices based on their definition in storage_definition
+# under sap_vm_provision_existing_hosts_host_specifications_dictionary. These devices must not be partitioned!
+
+
+# Infrastructure provisioning definitions
+sap_vm_provision_iac_type: "existing_hosts"
+sap_vm_provision_iac_platform: "existing_hosts"
+
+sap_general_preconfigure_modify_etc_hosts: true
+sap_general_preconfigure_domain: "{{ ansible_domain }}"
+
+
+# sap_storage role variable assignment per host
+sap_host_type:
+  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
+    [inventory_hostname_short].sap_host_type }}"
+
+sap_storage_setup_sid:
+  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
+    [inventory_hostname_short].sap_storage_setup_sid }}"
+
+sap_storage_setup_host_type:
+  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
+    [inventory_hostname_short].sap_storage_setup_host_type }}"
+
+sap_storage_setup_definition:
+  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
+    [inventory_hostname_short].storage_definition }}"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_existing_hosts_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    webdisp01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      sap_storage_setup_sid: "W{{ sap_system_wd_instance_nr }}" # SID created automatically as W<NN>
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - all # workaround for generic NWAS instance setup via SAP SWPM
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 256                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs

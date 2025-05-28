@@ -1,0 +1,23 @@
+---
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
+  rhel-8-8: ".*RHEL.*8.*8"
+  rhel-9-2: ".*RHEL.*9.*2"
+  rhel-9-4: ".*RHEL.*9.*4"
+  sles-15-5: ".*SLES.*15.*5$"
+  rhel-8-4-sap-ha: "RHEL8-SP4-SAP"
+  rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
+  rhel-8-8-sap-ha: ".*RHEL.*8.*8.*SAP$" # ensure string suffix using $
+  rhel-9-2-sap-ha: ".*RHEL.*9.*2.*SAP$" # ensure string suffix using $
+  sles-15-2-sap-ha: ".*SLES.*15.*2.*SAP$" # ensure string suffix using $
+  sles-15-3-sap-ha: ".*SLES.*15.*3.*SAP$" # ensure string suffix using $
+  sles-15-4-sap-ha: ".*SLES.*15.*4.*SAP$" # ensure string suffix using $
+  sles-15-5-sap-ha: "SLES15-SP5-SAP"
+  # rhel-8-4-sap-ha-byol: "RHEL8-SP4-SAP-BYOL"
+  # rhel-8-6-sap-ha-byol: ".*RHEL.*8.*6.*SAP-BYOL$" # ensure string suffix using $
+  # rhel-8-8-sap-ha-byol: ".*RHEL.*8.*8.*SAP-BYOL$" # ensure string suffix using $
+  # rhel-9-2-sap-ha-byol: ".*RHEL.*9.*2.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-2-sap-ha-byol: ".*SLES.*15.*2.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-3-sap-ha-byol: ".*SLES.*15.*3.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-4-sap-ha-byol: ".*SLES.*15.*4.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-5-sap-ha-byol: "SLES15-SP5-SAP-BYOL"

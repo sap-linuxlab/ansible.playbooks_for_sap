@@ -1,0 +1,7 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_gcp_project: "{{ sap_vm_provision_gcp_project }}"
+sap_ha_pacemaker_cluster_gcp_region_zone: "{{ sap_vm_provision_gcp_region_zone }}"

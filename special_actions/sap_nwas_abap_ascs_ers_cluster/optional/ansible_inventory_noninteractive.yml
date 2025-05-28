@@ -1,0 +1,21 @@
+---
+
+# Ansible Inventory Group names must match sap_host_type variable - nwas_ascs, nwas_ers
+
+nwas_ascs:
+  hosts:
+    sap-nw-ascs:
+      ansible_host: IP_GOES_HERE
+      ansible_port: 22
+      ansible_user: root
+      ansible_ssh_private_key_file: "{{ playbook_dir }}/ssh/hosts_rsa"
+      ansible_ssh_common_args: -o ConnectTimeout=180 -o ControlMaster=auto -o ControlPersist=3600s -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ForwardX11=no -o ProxyCommand='ssh -W %h:%p bastionuser@IP_GOES_HERE -p 50222 -i {{ playbook_dir }}/ssh/bastion_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'
+
+nwas_ers:
+  hosts:
+    sap-nw-ers:
+      ansible_host: IP_GOES_HERE
+      ansible_port: 22
+      ansible_user: root
+      ansible_ssh_private_key_file: "{{ playbook_dir }}/ssh/hosts_rsa"
+      ansible_ssh_common_args: -o ConnectTimeout=180 -o ControlMaster=auto -o ControlPersist=3600s -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null -o ForwardX11=no -o ProxyCommand='ssh -W %h:%p bastionuser@IP_GOES_HERE -p 50222 -i {{ playbook_dir }}/ssh/bastion_rsa -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'

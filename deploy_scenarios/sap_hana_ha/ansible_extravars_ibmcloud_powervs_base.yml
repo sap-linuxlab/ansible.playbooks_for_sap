@@ -1,0 +1,10 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key }}"
+# sap_ha_pacemaker_cluster_ibmcloud_region: "" # Use sap_vm_provision to set automatically
+# sap_ha_pacemaker_cluster_ibmcloud_powervs_workspace_crn: "" # Use sap_vm_provision to set automatically
+sap_ha_pacemaker_cluster_ibmcloud_powervs_api_type: private
+sap_ha_pacemaker_cluster_ibmcloud_powervs_forward_proxy_url: "http://{{ sap_vm_provision_proxy_web_forward_proxy_ip }}"

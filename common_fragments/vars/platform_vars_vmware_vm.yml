@@ -1,0 +1,32 @@
+---
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private SSH key on execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private host key on execution node (String).
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion public host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "vmware_vm"  # Name of the provisioning platform (String).
+sap_vm_provision_vmware_vcenter_hostname: ""  # VCenter hostname (String).
+sap_vm_provision_vmware_vcenter_validate_certs_bool: false  # Validate certificates (Boolean).
+sap_vm_provision_vmware_vcenter_user: ""  # VCenter user name (String).
+sap_vm_provision_vmware_vcenter_password: ""  # VCenter user password (String).
+
+sap_vm_provision_vmware_vm_folder_name: ""  # VM Folder name (String).
+sap_vm_provision_vmware_vm_cluster_name: ""  # VM Cluster name (String).
+sap_vm_provision_vmware_vm_cluster_host_name: ""  # VM Cluster host name (String).
+sap_vm_provision_vmware_vm_cluster_datastore_name: ""  # VM Cluster datastore name (String).
+
+sap_vm_provision_vmware_vm_content_library_name: ""  # VM Content library name (String).
+sap_vm_provision_vmware_vm_template_name: ""  # VM template name (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"

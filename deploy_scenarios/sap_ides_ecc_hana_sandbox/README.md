@@ -1,11 +1,17 @@
-# Ansible Playbook - IDES for SAP Business Suite on HANA (SoH), aka. SAP ECC on HANA, Sandbox installation
+# Ansible Playbook for IDES for SAP Business Suite on HANA (SoH) - Sandbox Installation
 
-This Ansible Playbook can be executed with:
-- Ansible to provision hosts
-- Ansible + Terraform to provision hosts
-- Existing hosts
+## Overview
 
-This Ansible Playbook can be targeted at the following Infrastructure Platforms:
+This Ansible Playbook automates the deployment of an IDES for SAP Business Suite on HANA (SoH), also referred to as SAP ECC on HANA, in a single-host environment.  
+
+A single-host system, as defined by SAP, consolidates all SAP Database and SAP NetWeaver instances onto a single host.  
+
+This configuration, often referred to as a Two-Tier Architecture, OneHost, or Central System, is ideal for development, testing, and demonstration purposes.  
+
+
+## Supported Infrastructure Platforms
+This Ansible Playbook supports the deployment on the following infrastructure platforms:
+
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
 - IBM Cloud
@@ -15,27 +21,92 @@ This Ansible Playbook can be targeted at the following Infrastructure Platforms:
 - OVirt
 - VMware
 
-SAP Business Suite on HANA (SoH), aka. SAP ECC on HANA, installation:
-- Sandbox System definition by SAP: all SAP HANA and SAP NetWeaver instances run on a single host.
-- System Topology/Architecture: a Sandbox System is commonly referred as Two-Tier Architecture, may also be known as OneHost or Central System.
 
-SAP Business Suite, aka. SAP ECC, software versions:
-EhP8
+## Supported SAP Software
+This playbook includes support for the following software versions:
+- EHP8 for SAP ERP 6.0
 
----
+Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
 
-## Execution of Ansible Playbook
 
-Prior to execution, please read the [full documentation of the Ansible Playbooks for SAP](../../docs/README.md) for the capabilities and different execution methods.
+## System Architecture
+Upon successful execution, this Ansible Playbook will provision the following host(s) (unless an Ansible Inventory is provided for existing host(s)):
+| Count | Component(s) |
+| --- | --- |
+| 1 | SAP HANA Database Server<br> SAP NetWeaver Application Server (ABAP) - Central Services (ASCS)<br> SAP NetWeaver Application Server (ABAP) - Primary Application Server (PAS) |
 
-## Execution outcome
 
-When executing this Ansible Playbook for SAP, the following hosts are provisioned (unless an Ansible Inventory is provided for existing hosts):
-1. Host for SAP HANA Database Server and SAP NetWeaver Application Server (ABAP) - Central Services (ASCS) and Primary Application Server (PAS)
+## Playbook Execution
+Before running the playbook, please read the main [README](https://github.com/sap-linuxlab/ansible.playbooks_for_sap/blob/main/README.md) for detailed instructions, prerequisites, and best practices.
 
-The sequence of a Standard System installation is:
-- `hdblcm`: Install SAP HANA database server
-- `SWPM`: Install SAP NetWeaver Application Server (ABAP) and Installation Export to Database (i.e. Database Load)
+### Provisioning and Installation
+This method provisions a new host(s) and installs the SAP system.
 
-This therefore matches to the SAP SWPM Product ID prefixes that are executed in sequence:
-- `NW_ABAP_OneHost`, Central Services, Database Instance Installation, Primary Application Server
+1.  **Prepare the `ansible_extravars.yml` file:** This file contains the configuration for the SAP system.
+2.  **Prepare the infrastructure-specific `ansible_extravars_*.yml` file:** This file contains the configuration for the target infrastructure.
+3.  **Execute the playbook:** Run the following command.
+
+```bash
+ansible-playbook ansible_playbook.yml \
+ --extra-vars "@./ansible_extravars.yml" \
+ --extra-vars "@./ansible_extravars_aws_ec2_vs.yml"
+```
+
+### Installation on Existing Hosts
+This method is used to install the SAP system on an existing host(s).
+
+1.  **Prepare the `ansible_extravars.yml` file:** This file contains the configuration for the SAP system.
+2.  **Prepare the `optional/ansible_extravars_existing_hosts.yml` file:** This file contains the configuration for the existing host(s).
+3.  **Prepare the `optional/ansible_inventory_noninteractive.yml` file:** Ensure that your inventory file is properly configured to target the existing host.
+4.  **Execute the playbook:** Run the following command.
+
+```bash
+ansible-playbook ansible_playbook.yml \
+ --extra-vars "@./ansible_extravars.yml" \
+ --extra-vars "@./optional/ansible_extravars_existing_hosts.yml" \
+ --inventory "./optional/ansible_inventory_noninteractive.yml"
+```
+
+### Interactive Execution
+This method allows you to provide input during the execution of the playbook.
+
+1.  **Prepare the `optional/ansible_extravars_interactive.yml` file:** This file contains the essential set of variables for initiating Interactive Prompts.
+2.  **Execute the playbook:** Run the following command.
+
+```bash
+ansible-playbook ansible_playbook.yml \
+ --extra-vars "@./optional/ansible_extravars_interactive.yml"
+```
+
+
+## Deployment Process
+The playbook executes the following sequence of tasks:
+
+### Pre-Installation Tasks
+
+1. **Collect User Inputs (Conditional):** If the `ansible_extravars_interactive.yml` file is used, the playbook will prompt for user input to gather necessary configuration details.
+
+2. **Provision Infrastructure (Conditional):** If the `sap_vm_provision_iac_type` variable is not set to `existing_hosts`, the playbook will provision the necessary infrastructure.
+
+3. **Configure Storage:** The `sap_install.sap_storage_setup` Ansible Role is used to configure the required storage.
+
+4. **Download SAP Installation Media (Conditional):** If the `community.sap_launchpad` Ansible Collection is present on execution node, the playbook will download the necessary SAP installation media.
+
+5. **Configure Operating System:** The following Ansible Roles are used to configure the operating system and update `/etc/hosts`, followed by a system reboot:
+   - `sap_install.sap_general_preconfigure`
+   - `sap_install.sap_hana_preconfigure`
+   - `sap_install.sap_netweaver_preconfigure`
+
+### SAP Database Installation
+
+6. **Install SAP HANA Database:** The `hdblcm` tool is used to install the SAP HANA Database.
+   - **Detect Installation Media:** The `sap_install.sap_install_media_detect` Ansible Role is used to detect the provided SAP installation media.
+   - **Install Database:** The `sap_install.sap_hana_install` Ansible Role is used to install the database.
+
+### IDES for SAP Business Suite on HANA Installation
+
+7. **Install IDES for SAP Business Suite on HANA:** The `SWPM` tool is used to install the SAP application.
+   - **Detect Installation Media:** The `sap_install.sap_install_media_detect` Ansible Role is used to detect the provided SAP installation media.
+   - **Install Application:** The `sap_install.sap_swpm` Ansible Role is used to install the application.
+   - **SAP SWPM Product ID Prefix:** `NW_ABAP_OneHost`
+   - Includes Database Load using Installation Export files.

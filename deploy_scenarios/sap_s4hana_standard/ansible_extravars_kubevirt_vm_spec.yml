@@ -1,0 +1,95 @@
+---
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_kubevirt_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      kubevirt_vm_cpu_smt: 2
+      kubevirt_vm_cpu_threads: 32
+      kubevirt_vm_memory_gib: 256
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 128                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 96                  # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 64                  # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2                   # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 52                  # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      kubevirt_vm_cpu_smt: 2
+      kubevirt_vm_cpu_threads: 32
+      kubevirt_vm_memory_gib: 64
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                  # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs

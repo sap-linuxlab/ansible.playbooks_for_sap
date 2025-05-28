@@ -1,0 +1,25 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount point (String).
+sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. fs-0000.efs.eu-west-2.amazonaws.com:/
+sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. fs-0000.efs.eu-west-2.amazonaws.com:/
+sap_vm_provision_nfs_mount_point_type: nfs4  # NFS version (String).
+sap_vm_provision_nfs_mount_point_opts:
+  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl  # NFS Mount options (String).
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
+sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
+sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
+sap_ha_pacemaker_cluster_aws_vip_update_rt: "ENTER_STRING_VALUE_HERE"  # AWS Routing Table ID (String).
+
+# Variables for Ansible Role sap_ha_install_anydb_ibmdb2
+sap_ha_install_anydb_ibmdb2_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
+sap_ha_install_anydb_ibmdb2_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
+sap_ha_install_anydb_ibmdb2_aws_vip_update_rt: "{{ sap_ha_pacemaker_cluster_aws_vip_update_rt }}"
+
+# Override of AWS IAM HA roles is required if 'HA-Role-Pacemaker' already exists
+# sap_vm_provision_aws_ha_iam_role: "HA-Role-Pacemaker-{{ sap_system_sid }}"
+# sap_vm_provision_aws_ha_iam_instance_profile: "HA-Role-Pacemaker-{{ sap_system_sid }}-profile"

@@ -9,7 +9,7 @@ collections:
     version: 1.5.3
   - name: community.sap_launchpad
     type: galaxy
-    version: 1.1.1
+    version: 1.2.0
 
 # Collections from public repositories via HTTPS
 #  - name: https://github.com/sap-linuxlab/community.sap_launchpad.git
