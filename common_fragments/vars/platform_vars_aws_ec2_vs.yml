@@ -1,0 +1,36 @@
+---
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private SSH key on execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "aws_ec2_vs"  # Name of the provisioning platform (String).
+sap_vm_provision_aws_access_key: "ENTER_STRING_VALUE_HERE"  # Access key ID (String).
+sap_vm_provision_aws_secret_access_key: "ENTER_STRING_VALUE_HERE"  # Secret access key (String).
+sap_vm_provision_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"  # Region (String).
+sap_vm_provision_aws_vpc_availability_zone: "ENTER_STRING_VALUE_HERE"  # Availability zone (String).
+sap_vm_provision_aws_vpc_subnet_id: "ENTER_STRING_VALUE_HERE" # VPC Subnet ID (String). if ansible_to_terraform, use "new"
+sap_vm_provision_aws_vpc_subnet_create_boolean:
+  "{{ true | default(false) if sap_vm_provision_aws_vpc_subnet_id == 'new' else false }}"
+
+
+# Enter image name from dictionary sap_vm_provision_aws_ec2_vs_host_os_image_dictionary keys (String).
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)
+sap_vm_provision_aws_ec2_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_aws_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"  # SSH Key name in AWS Console (String).
+sap_vm_provision_aws_vpc_sg_names: "ENTER_STRING_VALUE_HERE"  # Comma separated list of AWS VPC Service Group names (String).
+# sap_vm_provision_aws_dns_overwrite: 'true'  # Enable to allow overwrite of existing DNS entries (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"

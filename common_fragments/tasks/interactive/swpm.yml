@@ -1,0 +1,524 @@
+---
+# Interactive prompts - Scenario - SWPM
+
+# Following variables are defined and validated:
+# - sap_swpm_master_password
+# - sap_swpm_ddic_000_password
+# - sap_swpm_db_schema_abap
+# - sap_swpm_db_schema_abap_password
+# - sap_swpm_db_sidadm_password
+# - sap_swpm_db_system_password
+# - sap_swpm_db_systemdb_password
+# - sap_swpm_install_saphostagent
+# - sap_swpm_fqdn
+# - High Availability variables
+# - sap_swpm_sapadm_uid
+# - sap_swpm_sidadm_uid
+# - sap_swpm_sapsys_gid
+# - sap_swpm_update_etchosts
+
+
+# Passwords
+- name: Prompt for using Master Password
+  ansible.builtin.pause:
+    prompt: |
+      Do you want to use a Master Password for all SAP user passwords during this installation?
+      - Enter 'y' to use a Master Password.
+      - Enter 'n' to set each password individually.
+
+      Available options: y, n
+      Press enter to skip and use the default value ('n').
+  register: sap_swpm_use_master_password_register
+
+- name: Block for sap_swpm_master_password
+  when: sap_swpm_use_master_password_register.user_input == 'y'
+  no_log: true
+  block:
+    - name: Prompt for SAP Master Password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the SAP Master Password.
+          This password will be used for multiple SAP users.
+          {% if sap_playbook_interactive_database in ['sapase', 'sapmaxdb'] -%}
+            SAP ASE and SAP MaxDB databases do not support special characters: $, #, >
+          {% elif sap_playbook_interactive_database == 'ibmdb2' -%}
+            IBM DB2 database does not support special characters: $
+          {% endif %}
+      register: sap_swpm_master_password_register
+      when: sap_swpm_master_password is not defined
+
+    - name: Set fact for sap_swpm_master_password
+      ansible.builtin.set_fact:
+        sap_swpm_master_password: "{{ sap_swpm_master_password_register.user_input }}"
+      when: sap_swpm_master_password is not defined
+
+    - name: Fail if sap_swpm_master_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_master_password': '{{ sap_swpm_master_password }}'
+          {% if sap_swpm_master_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_master_password | length == 0
+
+
+- name: Block for sap_swpm_ddic_000_password
+  when: sap_swpm_use_master_password_register.user_input == 'n'
+  no_log: true
+  block:
+    - name: Prompt for DDIC user password in client 000
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password for the DDIC user in client 000.
+          {% if sap_playbook_interactive_database in ['sapase', 'sapmaxdb'] -%}
+            SAP ASE and SAP MaxDB databases do not support special characters: $, #, >
+          {% elif sap_playbook_interactive_database == 'ibmdb2' -%}
+            IBM DB2 database does not support special characters: $
+          {% endif %}
+      register: sap_swpm_ddic_000_password_register
+      when: sap_swpm_ddic_000_password is not defined
+
+    - name: Set fact for sap_swpm_ddic_000_password
+      ansible.builtin.set_fact:
+        sap_swpm_ddic_000_password: "{{ sap_swpm_ddic_000_password_register.user_input }}"
+      when: sap_swpm_ddic_000_password is not defined
+
+    - name: Fail if sap_swpm_ddic_000_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_ddic_000_password': '{{ sap_swpm_ddic_000_password }}'
+          {% if sap_swpm_ddic_000_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_ddic_000_password | length == 0
+
+
+- name: Block for sap_swpm_sap_sidadm_password
+  when: sap_swpm_use_master_password_register.user_input == 'n'
+  no_log: true
+  block:
+    - name: Prompt for Unix user sidadm password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password for Unix user sidadm.
+          {% if sap_playbook_interactive_database in ['sapase', 'sapmaxdb'] -%}
+            SAP ASE and SAP MaxDB databases do not support special characters: $, #, >
+          {% elif sap_playbook_interactive_database == 'ibmdb2' -%}
+            IBM DB2 database does not support special characters: $
+          {% endif %}
+      register: sap_swpm_sap_sidadm_password_register
+      when: sap_swpm_sap_sidadm_password is not defined
+
+    - name: Set fact for sap_swpm_sap_sidadm_password
+      ansible.builtin.set_fact:
+        sap_swpm_sap_sidadm_password: "{{ sap_swpm_sap_sidadm_password_register.user_input }}"
+      when: sap_swpm_sap_sidadm_password is not defined
+
+    - name: Fail if sap_swpm_sap_sidadm_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_sap_sidadm_password': '{{ sap_swpm_sap_sidadm_password }}'
+          {% if sap_swpm_sap_sidadm_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_sap_sidadm_password | length == 0
+
+
+# Database inputs - ABAP
+- name: Block for sap_swpm_db_schema_abap
+  block:
+    - name: Determine default ABAP database schema name
+      ansible.builtin.set_fact:
+        sap_swpm_db_schema_abap_default:
+          "{{ 'SAPHANADB' if sap_playbook_interactive_database == 'hana'
+            else ('SAPABAP1' if sap_playbook_interactive_database in ['sapase', 'ibmdb2', 'sapmaxdb']
+              else ('SAPSR3' if sap_playbook_interactive_database == 'oracledb' else '')) }}"
+      when: sap_swpm_db_schema_abap is not defined
+
+    - name: Prompt for ABAP database schema name
+      ansible.builtin.pause:
+        prompt: |
+          Enter the name of the ABAP database schema.
+          {% if sap_swpm_db_schema_abap_default | length > 0 -%}
+            Press enter to skip and use the default value ('{{ sap_swpm_db_schema_abap_default }}').
+          {% endif %}
+      register: sap_swpm_db_schema_abap_register
+      when: sap_swpm_db_schema_abap is not defined
+
+    - name: Set fact for sap_swpm_db_schema_abap
+      ansible.builtin.set_fact:
+        sap_swpm_db_schema_abap: "{{ sap_swpm_db_schema_abap_register.user_input
+          if sap_swpm_db_schema_abap_register.user_input | length > 0
+          else sap_swpm_db_schema_abap_default }}"
+      when: sap_swpm_db_schema_abap is not defined
+
+    - name: Fail if sap_swpm_db_schema_abap is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_db_schema_abap': '{{ sap_swpm_db_schema_abap }}'
+          {% if sap_swpm_db_schema_abap_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_db_schema_abap | length == 0
+
+
+- name: Block for sap_swpm_db_schema_abap_password
+  no_log: true
+  block:
+    - name: Prompt for ABAP database schema password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password for the ABAP database schema.
+          {% if sap_playbook_interactive_database in ['sapase', 'sapmaxdb'] -%}
+            SAP ASE and SAP MaxDB databases do not support special characters: $, #, >
+          {% elif sap_playbook_interactive_database == 'ibmdb2' -%}
+            IBM DB2 database does not support special characters: $
+          {% endif %}
+      register: sap_swpm_db_schema_abap_password_register
+      when: sap_swpm_db_schema_abap_password is not defined
+
+    - name: Set fact for sap_swpm_db_schema_abap_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_schema_abap_password: "{{ sap_swpm_db_schema_abap_password_register.user_input }}"
+      when: sap_swpm_db_schema_abap_password is not defined
+
+    - name: Fail if sap_swpm_db_schema_abap_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_db_schema_abap_password': '{{ sap_swpm_db_schema_abap_password }}'
+          {% if sap_swpm_db_schema_abap_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_db_schema_abap_password | length == 0
+
+
+# Database inputs - Shared
+- name: Block for sap_swpm_db_sidadm_password
+  no_log: true
+  block:
+    - name: Prompt for sidadm user password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password for the sidadm user (database administrator) of the database.
+          {% if sap_playbook_interactive_database in ['sapase', 'sapmaxdb'] -%}
+            SAP ASE and SAP MaxDB databases do not support special characters: $, #, >
+          {% elif sap_playbook_interactive_database == 'ibmdb2' -%}
+            IBM DB2 database does not support special characters: $
+          {% endif %}
+      register: sap_swpm_db_sidadm_password_register
+      when: sap_swpm_db_sidadm_password is not defined
+
+    - name: Set fact for sap_swpm_db_sidadm_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_sidadm_password: "{{ sap_swpm_db_sidadm_password_register.user_input }}"
+      when: sap_swpm_db_sidadm_password is not defined
+
+    - name: Fail if sap_swpm_db_sidadm_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_db_sidadm_password': '{{ sap_swpm_db_sidadm_password }}'
+          {% if sap_swpm_db_sidadm_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_db_sidadm_password | length == 0
+
+
+- name: Block for sap_swpm_db_system_password
+  no_log: true
+  block:
+    - name: Prompt for SYSTEM user password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password for the SYSTEM user (database administrator) in the database.
+          {% if sap_playbook_interactive_database in ['sapase', 'sapmaxdb'] -%}
+            SAP ASE and SAP MaxDB databases do not support special characters: $, #, >
+          {% elif sap_playbook_interactive_database == 'ibmdb2' -%}
+            IBM DB2 database does not support special characters: $
+          {% endif %}
+      register: sap_swpm_db_system_password_register
+      when: sap_swpm_db_system_password is not defined
+
+    - name: Set fact for sap_swpm_db_system_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_system_password: "{{ sap_swpm_db_system_password_register.user_input }}"
+      when: sap_swpm_db_system_password is not defined
+
+    - name: Fail if sap_swpm_db_system_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_db_system_password': '{{ sap_swpm_db_system_password }}'
+          {% if sap_swpm_db_system_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_db_system_password | length == 0
+
+
+- name: Block for sap_swpm_db_systemdb_password
+  no_log: true
+  block:
+    - name: Prompt for SYSTEMDB user password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password for the SYSTEMDB user (database administrator for the system database) in the database.
+          {% if sap_playbook_interactive_database in ['sapase', 'sapmaxdb'] -%}
+            SAP ASE and SAP MaxDB databases do not support special characters: $, #, >
+          {% elif sap_playbook_interactive_database == 'ibmdb2' -%}
+            IBM DB2 database does not support special characters: $
+          {% endif %}
+      register: sap_swpm_db_systemdb_password_register
+      when: sap_swpm_db_systemdb_password is not defined
+
+    - name: Set fact for sap_swpm_db_systemdb_password
+      ansible.builtin.set_fact:
+        sap_swpm_db_systemdb_password: "{{ sap_swpm_db_systemdb_password_register.user_input }}"
+      when: sap_swpm_db_systemdb_password is not defined
+
+    - name: Fail if sap_swpm_db_systemdb_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_db_systemdb_password': '{{ sap_swpm_db_systemdb_password }}'
+          {% if sap_swpm_db_systemdb_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_db_systemdb_password | length == 0
+
+
+- name: Block for sap_swpm_install_saphostagent
+  no_log: true
+  block:
+    - name: Prompt for installation for SAP Hostagent
+      ansible.builtin.pause:
+        prompt: |
+          Enter 'true' to install SAP Host Agent during SWPM execution, or 'false' to skip.
+          SAP Host Agent is required for monitoring and managing SAP systems.
+          Ensure that the SAPHOSTAGENT installation files are available in the installation media directory.
+          Press enter to skip and use the default value ('true').
+      register: sap_swpm_install_saphostagent_register
+      when: sap_swpm_install_saphostagent is not defined
+
+    - name: Set fact for sap_swpm_install_saphostagent
+      ansible.builtin.set_fact:
+        sap_swpm_install_saphostagent:
+          "{{ false
+            if sap_swpm_install_saphostagent_register.user_input == 'false'
+            else (sap_swpm_install_saphostagent_register.user_input
+              if sap_swpm_install_saphostagent_register.user_input | length > 0 else true) }}"
+      when: sap_swpm_install_saphostagent is not defined
+
+    - name: Fail if sap_swpm_install_saphostagent is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_install_saphostagent': '{{ sap_swpm_install_saphostagent }}'
+          Available options: true, false
+          {% if sap_swpm_install_saphostagent_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_install_saphostagent is not boolean
+
+
+- name: Block for sap_swpm_fqdn
+  block:
+    - name: Prompt for root domain for the SAP system
+      ansible.builtin.pause:
+        prompt: |
+          Enter the root domain for the SAP system.
+          This domain will be used to construct Fully Qualified Domain Names (FQDNs) for the SAP servers.
+          Example: example.com
+          {% if sap_vm_provision_dns_root_domain is defined and sap_vm_provision_dns_root_domain | length > 0 -%}
+            Press enter to skip and use the default value ('{{ sap_vm_provision_dns_root_domain }}').
+          {% elif ansible_domain is defined and ansible_domain | length > 0 -%}
+            Press enter to skip and use the default value ('{{ ansible_domain }}').
+          {% endif %}
+      register: sap_swpm_fqdn_register
+      when: sap_swpm_fqdn is not defined
+
+    - name: Set fact for sap_swpm_fqdn
+      ansible.builtin.set_fact:
+        sap_swpm_fqdn:
+          "{{ sap_swpm_fqdn_register.user_input
+            if sap_swpm_fqdn_register.user_input | length > 0
+            else sap_vm_provision_dns_root_domain | d(ansible_domain) | d('') }}"
+      when: sap_swpm_fqdn is not defined
+
+    - name: Fail if sap_swpm_fqdn is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_fqdn': '{{ sap_swpm_fqdn }}'
+          {% if sap_swpm_fqdn_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_fqdn | length == 0
+
+
+- name: Block for interactive tasks - SWPM - HA
+  when: sap_playbook_interactive_layout in ['distributed_ha']
+  block:
+    - name: Check if interactive task file is available - SWPM - HA
+      ansible.builtin.stat:
+        file: "../../common_fragments/tasks/interactive/swpm_ha.yml"
+      register: sap_playbook_interactive_tasks_swpm_ha_availability
+      ignore_errors: true
+
+    - name: Execute interactive task file - SWPM - HA
+      ansible.builtin.include_tasks:
+        file: "../../common_fragments/tasks/interactive/swpm_ha.yml"
+      when: sap_playbook_interactive_tasks_swpm_ha_availability.stat.exists
+
+    - name: Skip if interactive file was not found - SWPM - HA
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/swpm_ha.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_swpm_ha_availability.stat.exists
+
+
+# Optional inputs
+- name: Prompt for entering optional variables
+  ansible.builtin.pause:
+    prompt: |
+      Would you like to configure optional settings for SWPM, such as user and group IDs?
+      Enter 'y' to configure optional settings, or 'n' to skip.
+      Available options: y, n
+      Press enter to skip and use the default value ('n').
+  register: sap_playbook_interactive_swpm_optional
+  no_log: true
+
+- name: Block for sap_swpm_sapadm_uid
+  when: sap_playbook_interactive_swpm_optional.user_input == 'y'
+  block:
+    - name: Prompt for sapadm numeric Unix User ID (UID)
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the numeric Unix User ID (UID) for the `sapadm` user (SAP system administrator).
+          Example: 3000
+      register: sap_swpm_sapadm_uid_register
+      when: sap_swpm_sapadm_uid is not defined
+
+    - name: Set fact for sap_swpm_sapadm_uid
+      ansible.builtin.set_fact:
+        sap_swpm_sapadm_uid: "{{ sap_swpm_sapadm_uid_register.user_input }}"
+      when: sap_swpm_sapadm_uid is not defined
+
+    - name: Fail if sap_swpm_sapadm_uid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_sapadm_uid': '{{ sap_swpm_sapadm_uid }}'
+          {% if sap_swpm_sapadm_uid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_swpm_sapadm_uid | length == 0
+          or sap_swpm_sapadm_uid is not match('^[0-9]+$')  # Accepts only numbers
+
+
+- name: Block for sap_swpm_sidadm_uid
+  when: sap_playbook_interactive_swpm_optional.user_input == 'y'
+  block:
+    - name: Prompt for sidadm numeric Unix User ID (UID)
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the numeric Unix User ID (UID) for the `sidadm` user (SAP database administrator).
+          Example: 3001
+      register: sap_swpm_sidadm_uid_register
+      when: sap_swpm_sidadm_uid is not defined
+
+    - name: Set fact for sap_swpm_sidadm_uid
+      ansible.builtin.set_fact:
+        sap_swpm_sidadm_uid: "{{ sap_swpm_sidadm_uid_register.user_input }}"
+      when: sap_swpm_sidadm_uid is not defined
+
+    - name: Fail if sap_swpm_sidadm_uid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_sidadm_uid': '{{ sap_swpm_sidadm_uid }}'
+          {% if sap_swpm_sidadm_uid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_swpm_sidadm_uid | length == 0
+          or sap_swpm_sidadm_uid is not match('^[0-9]+$')  # Accepts only numbers
+
+
+- name: Block for sap_swpm_sapsys_gid
+  when: sap_playbook_interactive_swpm_optional.user_input == 'y'
+  block:
+    - name: Prompt for sapsys numeric Unix Group ID (GID)
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the numeric Unix Group ID (GID) for the `sapsys` group (SAP System users).
+          Example: 3002
+      register: sap_swpm_sapsys_gid_register
+      when: sap_swpm_sapsys_gid is not defined
+
+    - name: Set fact for sap_swpm_sapsys_gid
+      ansible.builtin.set_fact:
+        sap_swpm_sapsys_gid: "{{ sap_swpm_sapsys_gid_register.user_input }}"
+      when: sap_swpm_sapsys_gid is not defined
+
+    - name: Fail if sap_swpm_sapsys_gid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_sapsys_gid': '{{ sap_swpm_sapsys_gid }}'
+          {% if sap_swpm_sapsys_gid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_swpm_sapsys_gid | length == 0
+          or sap_swpm_sapsys_gid is not match('^[0-9]+$')  # Accepts only numbers
+
+
+- name: Block for sap_swpm_update_etchosts
+  when: sap_playbook_interactive_swpm_optional.user_input == 'y'
+  block:
+    - name: Prompt for /etc/hosts configuration
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter 'true' to configure /etc/hosts file during SAP installation.
+          Press enter to skip and use the default value ('false').
+      register: sap_swpm_update_etchosts_register
+      when: sap_swpm_update_etchosts is not defined
+
+    - name: Set fact for sap_swpm_update_etchosts
+      ansible.builtin.set_fact:
+        sap_swpm_update_etchosts:
+          "{{ true
+            if sap_swpm_update_etchosts_register.user_input == 'true'
+            else (sap_swpm_update_etchosts_register.user_input
+              if sap_swpm_update_etchosts_register.user_input | length > 0 else false) }}"
+      when: sap_swpm_update_etchosts is not defined
+
+    - name: Fail if sap_swpm_update_etchosts is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_update_etchosts': '{{ sap_swpm_update_etchosts }}'
+          Available options: true, false
+          {% if sap_swpm_update_etchosts_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_update_etchosts is not boolean

@@ -1,15 +1,15 @@
 # Documentation of Ansible Playbooks for SAP
 
+This Readme document contains additional instructions for using Ansible Playbooks for SAP.
+
 Table of Contents:
-- [Introduction](#introduction)
-- [Structure of Ansible Playbooks for SAP](#structure-of-ansible-playbooks-for-sap)
-- [Minimum OS compatibility from Ansible Playbooks for SAP](#minimum-os-compatibility-from-ansible-playbooks-for-sap)
-- [Available Scenarios with Ansible Playbooks for SAP](#available-scenarios-with-ansible-playbooks-for-sap)
-- [Prepare to execute Ansible Playbooks for SAP](#prepare-to-execute-ansible-playbooks-for-sap)
-- [Prepare Infrastructure Platform for Ansible Playbooks for SAP](#prepare-infrastructure-platform-for-ansible-playbooks-for-sap)
+- [Operating System Requirements](#operating-system-requirements)
+- [Available Scenarios](#available-scenarios)
+- [Prepare the execution node](#prepare-the-execution-node)
+- [Prepare the Infrastructure Platform for provisioning](#prepare-the-infrastructure-platform-for-provisioning)
 - [Customization of Ansible Playbooks for SAP](#customization-of-ansible-playbooks-for-sap)
-- [Example execution of Ansible Playbooks for SAP](#example-execution-of-ansible-playbooks-for-sap)
-- [Infrastructure Platform provisioned resources by Ansible Playbooks for SAP](#infrastructure-platform-provisioned-resources-by-ansible-playbooks-for-sap)
+- [Playbook Execution](#playbook-execution)
+- [Provisioned Infrastructure Platform Resources](#provisioned-infrastructure-platform-resources)
 
 Related documents:
 - [Getting Started - Windows](./GET_STARTED_WINDOWS.md)
@@ -18,91 +18,32 @@ Related documents:
 - [FAQ](./FAQ.md)
 
 
-## Introduction
+## Operating System Requirements
+### Control Nodes
+Operating system:
+- Any operating system with required Python and Ansible versions.
 
-There are multiple methods to executing the Ansible Playbook for SAP, it depends on user preference and the desired automation to be performed.
+Python: 3.11 or higher  
+Ansible: 9 or higher  
+Ansible-core: 2.16 or higher  
 
-Each Ansible Playbook for SAP can use Interactive Prompts or Standard (Non-Interactive, variable files) for variable inputs, and can be executed as:
+### Managed Nodes
+Operating system:
+- SUSE Linux Enterprise Server for SAP Applications 15 SP5+ (SLE4SAP)
+- Red Hat Enterprise Linux for SAP Solutions 8.x 9.x (RHEL4SAP)
 
-- **Ansible with existing host/s:** this executes using the Ansible Inventory to perform an SAP Software installation. `This requires prior setup of Infrastructure Platform.`
-- **Ansible to provision hosts:** this provisions host/s using Ansible Tasks and performs an SAP Software installation. `This requires prior setup of Infrastructure Platform.`
-- **Ansible executes Terraform to provision hosts:** this executes Terraform (v1.0.0-v1.5.5) to provision a minimal landing zone on the Infrastructure Platform, then provisions host/s and performs an SAP Software installation.
-    - _Ideally suited for isolated Sandbox testing, as this provisions an isolated environment on the target Infrastructure Platform which can easily be destroyed with a re-run of the Ansible Playbook using variable `sap_vm_provision_terraform_state: absent` ._
-    - _**`NOTE:`** Ansible to Terraform is only compatible with provisioning Sandboxes. This is a design decision, based upon Terraform BSL transition reducing developer interest and effort to provide equal functionality (e.g. HA) via Terraform._
+Python: 3.9 or higher
 
-<br/>
-These Ansible Playbooks for SAP are designed to be:
-
-- simple to understand,
-- highly reconfigurable and extendable,
-- self-enclosed for a specific scenario,
-- result in an equal installation performed to any Infrastructure Platform (Hyperscaler Cloud Service Providers and Hypervisor platforms),
-- use either Ansible or Terraform to provision Infrastructure,
-- use Ansible for configuration of OS and installation of SAP Software,
-- and `licensed for corporate usage` by SAP Customers, SAP Service Partners and SAP Technology Partners
-
-<br/>
-The Ansible Playbooks for SAP therefore assist SAP-run enterprises to achieve various outcomes, such as:
-<br/><br/>
-
-| Business requirement | Potential activities assisted by this project |
-| --- | --- |
-| **Migration to SAP S/4HANA AnyPremise:** | **Greenfield**; perform a new installation from SAP Maintenance Planner |
-| | **Brownfield**; perform a backup, execute a System Copy (Homogeneous) and execute DMO for SUM with System Move, begin testing activities, add to remediation plan, repeat until cutover plan completed |
-| | **Selective Data Transition**; perform a backup, execute a System Copy (Homogeneous), execute Shell Conversion or Mix&Match, begin testing activities, add to remediation plan, repeat until cutover plan completed |
-| **Datacenter Exit / Cloud Service Provider switch:** | **Compute Re-locate**; perform a backup, execute a System Copy (Homogeneous) to a target infrastructure, begin testing activities, add to remediation plan, repeat until cutover plan completed |
-| | **Compute Re-locate and move to SAP HANA**; perform a backup, execute a System Copy (Homogeneous), upgrade ECC EHP and SAP NetWeaver versions, then System Copy (Heterogeneous) using SWPM |
-| **Enterprise re-structures:** | **Spin-offs and Divestitures** (Grow through focus on core value); define split-by action *(e.g. Organizational Units such as Company Code, Plants, Controlling area, Profit centers)*, perform a backup, execute a System Copy (Homogeneous), perform carve-out activities, begin testing activities, add to remediation plan, repeat until cutover plan completed |
-| | **Mergers and Acquisitions** (Grow through expansion); merge of SAP Systems, perform a backup of each, execute a System Copy (Homogeneous) of each, upgrade to ECC EHP and SAP NetWeaver versions to match, smoke test functionality of both post-upgrade, begin testing and identification of business process alterations with the corresponding creation of Transports (e.g. altered BC Sets) to manually move |
-
-
----
-
-## Structure of Ansible Playbooks for SAP
-
-Each Ansible Playbook for SAP is for deployment of an SAP Software Solution Scenario to an Infrastructure Platform. The user is provided a choice whether to use:
-- existing hosts
-- provision hosts via Ansible to an existing Infrastructure Platform setup
-- provision hosts and minimal setup of an Infrastructure Platform via Terraform Template (which leverages the [Terraform Modules for SAP](https://github.com/sap-linuxlab/terraform.modules_for_sap#terraform-modules-for-sap))
-
-Segregation of definitions for the Host/s and SAP Software are:
-- Ansible Dictionary for each Infrastructure Platform, with default sizes for sandboxes
-- Ansible Dictionary for each SAP Software installation / SAP System templates
-
-Within each Ansible Playbook, there are various Ansible Tasks for handling the infrastructure/hosts. Afterwards, the referenced Ansible Collection Role/s for configuration of OS and installation of SAP software is identical for each Infrastructure Platform.
-
-For the execution process, please read the detailed [Execution workflow structure](./DEV_EXECUTION_FLOW.md) for further details.
-
-For the execution outcome, please read the Infrastructure Platform provisioned resources for further details:
-- [Infrastructure Platform provisioned resources](#infrastructure-platform-provisioned-resources-by-ansible-playbooks-for-sap)
-
-
----
-
-## Minimum OS compatibility from Ansible Playbooks for SAP
-
-The Ansible Playbooks for SAP are designed for Linux operating systems, the minimum compatible and tested versions are:
-
-- SUSE Linux Enterprise Server for SAP Applications (SLES4SAP) 15 SP5 +
-- Red Hat Enterprise Linux for SAP Solutions (RHEL4SAP) 8.4 +
-
-_Additional notes regarding OS Editions and Versions:_
-
-- SLES with HAE is not compatible due to missing OS Packages for SAP
-- RHEL for _SAP Applications_ may not have incompatibility, depending on selected scenario, due to missing OS Packages for SAP HANA, High Availability and extended patching (EUS/E4S)
+Additional information:
+- RHEL for _SAP Applications_ may have incompatibility, depending on selected scenario, due to missing OS Packages for SAP HANA, High Availability and extended patching (EUS/E4S)
 - RHEL for _SAP Solutions_ may be labelled 'RHEL for SAP with High Availability and Update Services (HA-US)' on Cloud Hyperscalers
 
-Assumptions for executing the Ansible Roles from this Ansible Collection include:
-
-- If using existing hosts, then the host is a Registered OS with an active license
-- If using existing hosts, then the host has access to OS Package repositories (from the relevant content delivery network of the OS vendor)
+Requirements for using Existing Hosts:
+- **NOTE: Operating system needs to have access to required package repositories either directly or via subscription registration.**
 
 
----
-
-## Available Scenarios with Ansible Playbooks for SAP
-
-| <br/><br/><br/><br/>SAP Software solution scenario:<br/>Ansible Playbook name | <sub>**Amazon Web Services (AWS)**</sub> | <sub>**Google Cloud**</sub> | <sub>**Microsoft Azure**</sub> | <sub>**IBM Cloud**<br/><sub>[x86_64]</sub></sub> | <sub>**IBM Cloud**<br/><sub>[ppc64le]</sub></sub> | <sub>**IBM PowerVC**</sub> | <sub>**KubeVirt**</sub> | <sub>**OVirt KVM**</sub> | <sub>**VMware vCenter**</sub> |
+## Available Scenarios
+| <br/><br/><br/><br/>Scenario name | Amazon Web Services (AWS) | Google Cloud| Microsoft Azure | IBM Cloud<br/>[x86_64] | IBM Cloud<br/>[ppc64le] | IBM PowerVC | KubeVirt | OVirt KVM | VMware vCenter |
 |:---|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
 | <br/>***Deploy Scenario - Sandbox*** |
 | sap_bw4hana_sandbox | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :warning: | :white_check_mark: | :white_check_mark: |
@@ -141,6 +82,7 @@ Assumptions for executing the Ansible Roles from this Ansible Collection include
 | sap_s4hana_standard | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | sap_s4hana_standard_maintplan | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: |
 | <br/>***Special Actions*** |
+| sap_nwas_abap_ascs_ers_cluster | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :white_check_mark: | :warning: | :white_check_mark: | :white_check_mark: |
 | sap_download_install_media | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | sap_sda | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
 | sap_system_copy_export | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A | N/A |
@@ -156,29 +98,21 @@ Assumptions for executing the Ansible Roles from this Ansible Collection include
 - <sub>N/A: Not Applicable</sub>
 
 
----
 
-## Prepare to execute Ansible Playbooks for SAP
+## Prepare the execution node
 
-### Preparations - Generic
+### Preparations - Requirements
 
 The following are the requirements for successful execution of an Ansible Playbook, please read these and configure accordingly on your Ansible execution/controller host.
 
-- Ensure Ansible Core 2.12+ and Python 3.9+ (i.e. CPython distribution) are available
-    - It is recommended to avoid using the default OS system Python. Instead the suggestion is to create and activate a Python virtual environment for the current shell session (e.g. `python -m venv /tmp/playbooks_sap && source /tmp/playbooks_sap/bin/activate && python -m pip install ansible-core`).
-    - Ansible discovers the Python interpreter automatically, if a specific Python version is required on the host executing the Ansible Playbook then it is recommended to use Ansible special variable `ansible_python_interpreter` for the localhost in the Ansible Inventory file. This will avoid Ansible being instructed to look for the customized Python path on the target/remote hosts (which likely will be default /usr/bin/python) and cause errors such as `/bin/sh: python3: command not found`.
+- Ensure Ansible Core 2.16+ and Python 3.11+ (i.e. CPython distribution) are available
+    - It is recommended to avoid using the default OS system Python. Instead the suggestion is to create and activate a Python virtual environment for the current shell session<br>(e.g. `python -m venv /tmp/playbooks_sap && source /tmp/playbooks_sap/bin/activate && python -m pip install ansible-core`).
+    - Ansible discovers the Python interpreter automatically, if a specific Python version is required on the host executing the Ansible Playbook then it is recommended to use Ansible special variable `ansible_python_interpreter` for the localhost in the Ansible Inventory file.<br> This will avoid Ansible being instructed to look for the customized Python path on the target/remote hosts (which likely will be default /usr/bin/python) and cause errors such as `/bin/sh: python3: command not found`.
 
 - Ensure all Python Packages are available for Ansible to use:
-    - Required for all Ansible Playbooks, use `python -m pip install ansible-core beautifulsoup4 lxml requests passlib jmespath`
-        - ansible-core 2.12.0+
-        - beautifulsoup4 4.0+
-        - lxml 4.0+
-        - requests 2.0+
-        - passlib 1.7+
-        - jmespath 1.0.1+
     - If Ansible Playbook provisioning to AWS, use `python -m pip install boto3`
     - If Ansible Playbook provisioning to Google Cloud, use `python -m pip install google-auth`
-    - If Ansible Playbook provisioning to MS Azure, use `python -m pip install -r https://raw.githubusercontent.com/ansible-collections/azure/dev/requirements-azure.txt`
+    - If Ansible Playbook provisioning to MS Azure, use `python -m pip install -r https://github.com/ansible-collections/azure/blob/dev/requirements.txt`
     - If Ansible Playbook provisioning to IBM PowerVM, use `python -m pip install openstacksdk`
     - If Ansible Playbook provisioning to OVirt, use `python -m pip install ovirt-engine-sdk-python`
     - If Ansible Playbook provisioning to VMware, use `python -m pip install aiohttp`
@@ -208,11 +142,12 @@ stdout_callback = yaml
 bin_ansible_callbacks = True
 ```
 
-### Preparations - SAP User ID credentials
+### Preparations - SAP User ID credentials (Optional)
+The download of the SAP Installation Media Software from SAP will be executed if `community.sap_launchpad` Ansible Collection is available on Execution Node. 
 
-SAP software installation media must be obtained from SAP directly, and requires valid license agreements with SAP in order to access these files.
+The software must be obtained from SAP directly, and requires valid license agreements with SAP in order to access these files.
 
-An SAP Company Number (SCN) contains one or more Installation Number/s, providing licences for specified SAP Software. When an SAP User ID is created within the SAP Customer Number (SCN), the administrator must provide SAP Download authorizations for the SAP User ID.
+An SAP Company Number (SCN) contains one or more Installation Number/s, providing licenses for specified SAP Software. When an SAP User ID is created within the SAP Customer Number (SCN), the administrator must provide SAP Download authorizations for the SAP User ID.
 
 When an SAP User ID (e.g. S-User) is enabled with and part of an SAP Universal ID, then the `sap_launchpad` Ansible Collection **must** use:
 - the SAP User ID
@@ -220,12 +155,11 @@ When an SAP User ID (e.g. S-User) is enabled with and part of an SAP Universal I
 
 In addition, if a SAP Universal ID is used then the recommendation is to check and reset the SAP User ID ‘Account Password’ in the [SAP Universal ID Account Manager](https://account.sap.com/manage/accounts), which will help to avoid any potential conflicts.
 
-
----
-
-## Prepare Infrastructure Platform for Ansible Playbooks for SAP
+**NOTE: The `community.sap_launchpad` Ansible Collection supports only S-Users without Multi Factor Authentication.**
 
 
+## Prepare the Infrastructure Platform for provisioning
+This section is not required when using Existing Hosts with `sap_vm_provision_iac_platform: existing_hosts`.
 
 ### Preparations - Ansible for provisioning VMs
 
@@ -236,7 +170,7 @@ For further details on the output, please see [Host provisioning via Ansible](#h
 
 ### Design assumptions with execution impact
 
-- Throughout Ansible Playbook, use of Ansible Play option `any_errors_fatal: true` to enforce abort on all hosts if there is any error (and therefore stop Ansible Playbook). Please see [Using Ansible Playbooks - Error handling in playbooks - Aborting a play on all hosts](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts) for further information.
+- Throughout Ansible Playbook, use of Ansible Play option `any_errors_fatal: true` to enforce abort on all hosts if there is any error (and therefore stop Ansible Playbook).<br> Please see [Using Ansible Playbooks - Error handling in playbooks - Aborting a play on all hosts](https://docs.ansible.com/ansible/latest/playbook_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts) for further information.
 - For Hyperscaler Cloud Service Providers that use Resource Groups (IBM Cloud, Microsoft Azure):
     - Virtual Machine and associated resources (Disks, Network Interfaces, Load Balancer etc.) will be provisioned to the same Resource Group as the targeted network/subnet.
     - Optional: Private DNS may be allocated to another Resource Group, and an optional variable is provided for this.
@@ -539,7 +473,6 @@ N.B. When VMware vCenter and vSphere clusters with direct network subnet IP allo
 </details>
 
 
----
 
 ## Customization of Ansible Playbooks for SAP
 
@@ -578,7 +511,7 @@ For Hyperscaler Cloud Service Providers, the baseline infrastructure (hardware) 
     - IBM Cloud, IBM Power: `cnp-2x32`
     - Microsoft Azure: `Standard_D16s_v5` _(lowest certified 16 vCPU uses 64 GB DRAM)_
 
-> Note: See below for default swap sizes, with refereence to SAP Note 1597355 - Swap-space recommendation for Linux.
+> Note: See below for default swap sizes, with reference to SAP Note 1597355 - Swap-space recommendation for Linux.
 > - For SAP HANA, swap is 2GiB.
 > - For SAP NetWeaver, swap is 64GiB.
 > - For SAP AnyDB, IBM Db2 swap is 128GiB (minimum) else swap is 96GiB.
@@ -644,75 +577,89 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 ```
 
+### Using NFS with Prepared Software
+The playbooks validate if the Ansible Collection `community.sap_launchpad` is present before attempting to download SAP installation media.  
+However, you can execute all playbooks without downloading software by leveraging an NFS mount.  
+This approach is beneficial when you already have the necessary SAP software available on a network share, allowing for faster and more efficient deployments.
 
----
+To use this method, modify the `storage_definition` section within the `host_specifications_dictionary` variable to include the NFS mount details.
 
-## Example execution of Ansible Playbooks for SAP
+**Example for AWS:**
+```yaml
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
+  xsmall_256gb:
+    h01hana:
+      storage_definition:
+
+        - name: software
+          mountpoint: /software
+          nfs_path: ''
+          nfs_server: "fs-example.efs.eu-central-1.amazonaws.com:/sap_hana_2_sps07"
+          nfs_filesystem_type: nfs4
+          nfs_mount_options: "nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl"
+```
+
+
+## Playbook Execution
 
 The following execution examples are dependent on whether the desired outcome is using Existing Hosts, Hosts provisioned via Ansible to an existing environment, or using Ansible to Terraform to provision an environment and hosts.
 
 Please ensure the tasks in the following section has been completed:
-
-- [Prepare to execute Ansible Playbooks for SAP](#prepare-to-execute-ansible-playbooks-for-sap)
+- [Prepare the execution node](#prepare-the-execution-node)
+- [Prepare the Infrastructure Platform for provisioning](#prepare-the-infrastructure-platform-for-provisioning)
 
 For first-time user how-to guidance, please also see:
-
 - [Getting Started - Windows](./GET_STARTED_WINDOWS.md)
 - [Getting Started - macOS](./GET_STARTED_MACOS.md)
 - [Getting Started - Azure DevOps Pipelines](./GET_STARTED_AZURE_DEVOPS.md)
 
 
-#### Execution Option 1. Standard (non-interactive)
+### Provisioning and Installation
+This method provisions a new host(s) and installs the SAP system.
 
-1. Execute the Ansible Playbook using:
-    - the Ansible Extra Vars file (contains static definitions for filenames etc)
-    - another Ansible Extra Vars file for all variables which would otherwise be prompted (such as S-User ID and Password)
-2. Execution of host provisioning and SAP installation
+1.  **Prepare the `ansible_extravars.yml` file:** This file contains the configuration for the SAP system.
+2.  **Prepare the infrastructure-specific `ansible_extravars_*.yml` file:** This file contains the configuration for the target infrastructure.
+3.  **Execute the playbook:** Run the following command.
 
-Example:
-```shell
+```bash
 ansible-playbook ansible_playbook.yml \
---extra-vars "@./ansible_extravars.yml" \
---extra-vars "@./ansible_extravars_aws_ec2_vs.yml"
+ --extra-vars "@./ansible_extravars.yml" \
+ --extra-vars "@./ansible_extravars_aws_ec2_vs.yml"
 ```
 
-#### Execution Option 2. Interactive variable prompts
+### Installation on Existing Hosts
+This method is used to install the SAP system on an existing host(s).
 
-1. Execute the Ansible Playbook using the Ansible Extra Vars file (contains static definitions for filenames etc)
-2. Follow Ansible Variable input prompts; depending on selection, different variables will be prompted.
-3. Execution of host provisioning and SAP installation
+1.  **Prepare the `ansible_extravars.yml` file:** This file contains the configuration for the SAP system.
+2.  **Prepare the `optional/ansible_extravars_existing_hosts.yml` file:** This file contains the configuration for the existing host(s).
+3.  **Prepare the `optional/ansible_inventory_noninteractive.yml` file:** Ensure that your inventory file is properly configured to target the existing host.
+4.  **Execute the playbook:** Run the following command.
 
-Example:
-```shell
+```bash
 ansible-playbook ansible_playbook.yml \
---extra-vars "@./ansible_extravars.yml"
+ --extra-vars "@./ansible_extravars.yml" \
+ --extra-vars "@./optional/ansible_extravars_existing_hosts.yml" \
+ --inventory "./optional/ansible_inventory_noninteractive.yml"
 ```
 
-#### Execution Option 3. Standard (non-interactive) with Existing Hosts
+### Interactive Execution
+This method allows you to provide input during the execution of the playbook.
 
-Alternatively, to execute SAP installation to existing hosts use variable `sap_vm_provision_iac_type: existing_hosts` in the Ansible Playbook to ignore provisioning. Then append the operator `--inventory`.
+1.  **Prepare the `optional/ansible_extravars_interactive.yml` file:** This file contains the essential set of variables for initiating Interactive Prompts.
+2.  **Execute the playbook:** Run the following command.
 
-1. Execute the Ansible Playbook using:
-    - the Ansible Extra Vars file (contains static definitions for filenames etc)
-    - another Ansible Extra Vars file for all variables which would otherwise be prompted (such as S-User ID and Password)
-    - **and an Ansible Inventory file**
-2. Execution of host provisioning and SAP installation
-
-Example:
-```shell
+```bash
 ansible-playbook ansible_playbook.yml \
---inventory "./optional/ansible_inventory_noninteractive.yml" \
---extra-vars "@./ansible_extravars.yml"
+ --extra-vars "@./optional/ansible_extravars_interactive.yml"
 ```
 
 
----
-
-## Infrastructure Platform provisioned resources by Ansible Playbooks for SAP
+## Provisioned Infrastructure Platform Resources
 
 Various SAP Software solution scenario and Infrastructure Platforms are available using the Ansible Playbooks for SAP.
 
-### Host provisioning via Ansible
+###  Resources provisioned by Ansible
 
 When Ansible is used for provisioning hosts on an existing setup of an Infrastructure Platform, the following is an overview of the Infrastructure-as-Code (IaC) provisioning:
 
@@ -733,7 +680,7 @@ When Ansible is used for provisioning hosts on an existing setup of an Infrastru
 - <sub>N/A: Not Applicable</sub>
 
 
-### Infrastructure setup and Host provisioning via Terraform
+### Resources provisioned by Terraform
 
 When Ansible uses Terraform to provision minimal landing zone and host/s, the following is an overview of the Infrastructure-as-Code (IaC) provisioning, for full details please see the underlying [Terraform Modules for SAP documentation](https://github.com/sap-linuxlab/terraform.modules_for_sap#terraform-modules-for-sap).
 

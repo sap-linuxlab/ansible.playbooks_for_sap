@@ -5,7 +5,9 @@ exclude_paths:
   - .cache/
   - .github/
   #- docs/
-  #- roles/sap_vm_provision
+  # Ansible requirements are not recognized as valid yaml file
+  - deploy_scenarios/.*/ansible_requirements\.yml$
+  - common_fragments/vars/ansible_requirements.yml
 
 enable_list:
   - yaml
@@ -45,7 +47,7 @@ skip_list:
   - yaml[empty-lines]
 
   # Ignore ha_cluster vars used within sap_ha_pacemaker_cluster
-  - var-naming[no-role-prefix]
+  # - var-naming[no-role-prefix]
 
   # Ignore dynamic variable population for Scale-Out
   - var-naming[no-jinja]
