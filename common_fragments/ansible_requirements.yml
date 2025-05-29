@@ -8,10 +8,10 @@ collections:
     version: 10.1.0
   - name: fedora.linux_system_roles
     type: galaxy
-    version: 1.95.0
+    version: 1.100.0
   - name: community.sap_install
     type: galaxy
-    version: 1.5.2
+    version: 1.5.3
   - name: community.sap_launchpad
     type: galaxy
     version: 1.2.0

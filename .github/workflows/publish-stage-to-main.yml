@@ -134,8 +134,9 @@ jobs:
 
       - name: Synchronize main with transformed stage
         run: |
-          rsync --archive --delete --exclude '.git' repo_playbooks_stage/ repo_playbooks_main/
-
+          rsync --human-readable --itemize-changes --archive --delete --exclude '.git' repo_playbooks_stage/ repo_playbooks_main/ > rsync.log
+          echo "--- rsync.log content (filtered) ---"
+          cat rsync.log | grep -v '^[>.][df]\.\.t\.\.\.\.\.\.' || true
 
       - name: Check for changes
         working-directory: repo_playbooks_main
@@ -143,8 +144,10 @@ jobs:
         run: |
           git add .
           if [[ -n "$(git status --porcelain)" ]]; then
+            echo "Git changes detected. Proceeding with subsequent steps."
             echo "::set-output name=has_changes::true"
           else
+            echo "No Git changes detected. Skipping subsequent steps."
             echo "::set-output name=has_changes::false"
           fi
 
@@ -152,8 +155,25 @@ jobs:
         working-directory: repo_playbooks_main
         if: steps.check_changes.outputs.has_changes == 'true'
         run: |
-          git config user.name github-actions
-          git config user.email github-actions@github.com
+          PR_AUTHOR_NAME=""
+          PR_AUTHOR_EMAIL=""
+
+          # Check if the trigger was a pull_request and it was merged
+          if [[ "${{ github.event_name }}" == "pull_request" && "${{ github.event.pull_request.merged }}" == "true" ]]; then
+            PR_AUTHOR_NAME="${{ github.event.pull_request.user.login }}"
+            # Construct a no-reply email for the PR author
+            PR_AUTHOR_EMAIL="${{ github.event.pull_request.user.id }}+${PR_AUTHOR_NAME}@users.noreply.github.com"
+            echo "Using PR author: $PR_AUTHOR_NAME <$PR_AUTHOR_EMAIL>"
+          else
+            # Default to github-actions[bot] for manual triggers or other non-PR scenarios
+            PR_AUTHOR_NAME="github-actions[bot]"
+            PR_AUTHOR_EMAIL="41898282+github-actions[bot]@users.noreply.github.com"
+            echo "Using default author: $PR_AUTHOR_NAME <$PR_AUTHOR_EMAIL>"
+          fi
+
+          git config user.name "$PR_AUTHOR_NAME"
+          git config user.email "$PR_AUTHOR_EMAIL"
+
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             PR_NUMBER=$(echo ${{ github.event.pull_request.number }})
           else
