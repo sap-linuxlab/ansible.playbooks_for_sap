@@ -1,179 +1,134 @@
 ---
+#### Infrastructure Provisioning selection ####
+# Type of infrastructure provisioning method to use (String).
+# Options: ansible, ansible_to_terraform, existing_hosts
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"
 
-####
-# Key SAP System variables
-####
+# Infrastructure platform for provisioning (String).
+# Options: aws_ec2_vs, gcp_ce_vm, ibmcloud_vs, ibmcloud_powervs, msazure_vm, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
 
-sap_system_sid: "N01"
-sap_system_hana_db_sid: "H01"
-sap_system_hana_db_instance_nr: "90"
-sap_system_nwas_abap_ascs_instance_nr: "00"
-sap_system_nwas_abap_pas_instance_nr: "01"
-
-
-####
-# Infrastructure Provisioning selection
-####
-
-sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"  # ansible , ansible_to_terraform , existing_hosts
-sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"  # aws_ec2_vs , gcp_ce_vm , ibmcloud_vs , ibmcloud_powervs , msazure_vm , ibmpowervm_vm , kubevirt_vm , ovirt_vm , vmware_vm
-
+# Name of the host specification plan to use (String).
+# Options: Defined in host_specifications_dictionary.
 sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+
+# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
 sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
 
 
-####
-# Mandatory parameters : Ansible Defaults
-####
+#### Key SAP System variables ####
+sap_system_sid: "N01"  # SAP System ID (SID) (String)
+sap_system_hana_db_sid: "H01"  # SAP HANA Database ID (SID) (String).
+sap_system_hana_db_instance_nr: "90"  # SAP HANA Database instance number (String).
+sap_system_nwas_abap_ascs_instance_nr: "00"  # SAP NetWeaver ABAP ASCS instance number (String).
+sap_system_nwas_abap_pas_instance_nr: "01"  # SAP NetWeaver ABAP PAS instance number (String).
 
-# Default Ansible Facts populate into default variables for all Ansible Roles
+
+#### SAP Software installation media downloads ####
+## Required for download using community.sap_launchpad
+# SAP ONE Support Launchpad credentials
+sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+
+# Directory with SAP installation media (e.g. /software) (String)
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_reboot_ok: true  # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_hana_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_hana_preconfigure_saptune_solution: 'NETWEAVER+HANA'  # SUSE saptune solution to apply for SAP HANA (String).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+# sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER+HANA'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP HANA Database Server installation ####
+# SAP HANA Master password
+sap_hana_install_use_master_password: "y"  # Use a master password for SAP HANA installation (y/n) (String).
+sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"  # The master password for SAP HANA (String).
+
+# Dynamic assignment of SAP HANA variables
+sap_hana_sid: "{{ sap_system_hana_db_sid }}"
+sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
+
+#### SAP HANA Database Server installation - Optional variables ####
+## SAP HANA log mode (set to overwrite for Sandbox only, HA cannot use overwrite) (String)
+sap_hana_install_log_mode: overwrite  # Options: normal, overwrite.
+
+## List of comma separated components to be installed, default 'all'
+# sap_hana_install_components: 'all'  # Comma-separated list of SAP HANA components to install (String).
+
+## Unix User ID. Leave this blank if you want this set automatically by hdblcm
+## For production systems, it's highly advisable to set this manually according to your environment's Unix ID policies
+# sap_hana_install_userid:  # Unix User ID for SAP HANA (String).
+# sap_hana_install_groupid:  # Unix Group ID for SAP HANA (String).
+
+# sap_hana_install_system_usage: custom  # hdblcm parameter system_usage (String).
+# sap_hana_install_restrict_max_mem: 'n'  # hdblcm parameter restrict_max_mem (y/n) (String).
+# sap_hana_install_max_mem:  # hdblcm parameter max_mem in MB required when sap_hana_install_restrict_max_mem is y (String).
+# sap_hana_install_system_restart: 'n'  # select if role should start SAP HANA after each system boot (y/n) (String).
+## Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
+# sap_hana_install_hdblcm_extraargs:   # Extra arguments for hdblcm (String).
+
+
+#### SAP SWPM Installation ####
+sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+
+sap_swpm_master_password: "NewPass$321"  # Master password for the SAP system (String).
+sap_swpm_ddic_000_password: "NewPass$321"  # Password for the DDIC user in client 000 (String).
+
+sap_swpm_db_schema_abap: "SAPHANADB"  # Name of the ABAP schema in the SAP HANA database (String).
+
+sap_swpm_db_schema_abap_password: "NewPass$321"  # Password for the ABAP schema user (String).
+sap_swpm_db_sidadm_password: "NewPass$321"  # Password for the <sid>adm user in the database (String).
+sap_swpm_db_system_password: "NewPass$321"  # Password for the SYSTEM user in the SAP HANA database (String).
+sap_swpm_db_systemdb_password: "NewPass$321"  # Password for the SYSTEM user in the SAP HANA system database (String).
+
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_sid: "{{ sap_system_sid }}"
+sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}"
+sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
+sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
+sap_swpm_fqdn: "{{ ansible_domain }}"
+
+#### SAP SWPM Installation - Optional variables ####
+## Unix User ID
+sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
+sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
+sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
+
+sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+
+
+#### Shared Ansible Facts ####
 sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
+#### SAP Product selection ####
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_nwas_752_sp00_abap_hana_sandbox).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
 
-####
-# Mandatory parameters : Preconfigure OS for SAP Software
-####
-
-# Configuration of Ansible Roles for preconfigure SAP (general, hana, netweaver)
-sap_general_preconfigure_modify_etc_hosts: false
-sap_general_preconfigure_reboot_ok: true
-sap_general_preconfigure_fail_if_reboot_required: false
-sap_hana_preconfigure_reboot_ok: true # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true
-sap_hana_preconfigure_fail_if_reboot_required: false
-sap_hana_preconfigure_update: true
-sap_hana_update_etchosts: true
-sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
-
-
-
-####
-# Mandatory parameters : SAP Software installation media downloads
-####
-
-# SAP ONE Support Launchpad credentials
-sap_id_user: "ENTER_STRING_VALUE_HERE"
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
-
-# Directory for SAP installation media
-sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /software
-
-# Configuration for SAP installation media detection
-# sap_install_media_detect_** variables are set for each Ansible Task to the respective host
-
-
-
-####
-# Mandatory parameters : SAP HANA installation
-####
-
-# SAP HANA master password
-sap_hana_install_use_master_password: "y"
-sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"
-
-# SAP HANA database server instance details
-sap_hana_sid: "{{ sap_system_hana_db_sid }}"
-sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
-
-# SAP HANA log mode (set to overwrite for Sandbox only, HA cannot use overwrite)
-sap_hana_install_log_mode: overwrite
-
-
-####
-# Optional parameters : SAP HANA installation
-####
-
-# List of components to be installed, default 'all'
-# Components should be comma separated
-# sap_hana_install_components: 'all'
-
-# Unix User
-# Leave this blank if you want this set automatically by hdblcm
-# For production systems, it's highly advisable to set this manually according to your environment's Unix ID policies
-# sap_hana_install_userid:
-# sap_hana_install_groupid:
-
-# Adjust these accordingly for your installation type
-# sap_hana_install_env_type: 'production'
-# sap_hana_install_mem_restrict: 'n'
-# sap_hana_install_max_mem:
-# sap_hana_install_system_restart: 'n'
-
-# Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
-# sap_hana_install_hdblcm_extraargs:
-
-# Update hosts file
-sap_hana_install_update_etchosts: 'false'
-
-# For more optional parameters please consult the documentation or
-# Check the file <role path>/defaults/main.yml
-
-
-
-####
-# Mandatory parameters : SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-sap_swpm_ansible_role_mode: default_templates
-sap_swpm_templates_product_input: "ENTER_STRING_VALUE_HERE" # sap_nwas_752_sp00_abap_hana_sandbox, sap_nwas_750_sp00_abap_hana_sandbox
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# NW Instance Parameters
-sap_swpm_sid: "{{ sap_system_sid }}"
-sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
-sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# HDB Instance Parameters
-sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
-sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# NW Passwords
-sap_swpm_master_password: "NewPass$321"
-sap_swpm_ddic_000_password: "NewPass$321"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# HDB Configuration
-sap_swpm_db_schema_abap: "SAPHANADB"
-sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}" # Must be SAP HANA primary node
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# HDB Passwords
-sap_swpm_db_schema_abap_password: "NewPass$321"
-sap_swpm_db_sidadm_password: "NewPass$321"
-sap_swpm_db_system_password: "NewPass$321"
-sap_swpm_db_systemdb_password: "NewPass$321"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Unix User ID
-sap_swpm_sapadm_uid: '3000'
-sap_swpm_sapsys_gid: '3001'
-sap_swpm_sidadm_uid: '3001'
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Other
-sap_swpm_fqdn: "{{ ansible_domain }}"
-sap_swpm_update_etchosts: 'false'
-
-
-
-####
-# Mandatory parameters : Ansible Dictionary for SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-# Templates and default values
-sap_swpm_templates_install_dictionary:
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
 
   # SAP NetWeaver AS for ABAP 7.52 > SAP HANA > Installation > Application Server ABAP > Standard System
   sap_nwas_752_sp00_abap_hana_sandbox:
 
-    # Product ID for New Installation
+    # SWPM product catalog ID for the installation (String).
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:NW752.HDB.PD
 
-    sap_swpm_inifile_list:
+    # List of INI file sections to generate using sap_install.sap_swpm role (List).
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm1
       - swpm_installation_media_swpm1_exportfiles
@@ -188,46 +143,31 @@ sap_swpm_templates_install_dictionary:
       - nw_config_host_agent
       - sap_os_linux_user
 
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
-
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_067_4-80002031.SAR'
-#      - 'VCH202000_2059_0-80005463.SAR'
-      - 'SWPM10SP43_2-20009701.SAR'
-      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_085_0-80002031.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002082.SAR' # SAP HANA CLIENT Version 2.24
+      # - 'VCH202300_2085_0-70007416.SAR'  # Not mandatory
+      - 'SWPM10SP43_3-20009701.SAR'
+      - 'igsexe_5-80007786.sar' # IGS 7.54
       - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
-      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'SAPEXE_500-80007612.SAR'  # Kernel Part I (754)
+      - 'SAPEXEDB_500-80007611.SAR'  # Kernel Part II (754)
+      - 'SAPHOSTAGENT67_67-80004822.SAR'  # SAP HOST AGENT 7.22 SP67
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_067_4-80002046.SAR'
-#      - 'VCH202000_2059_0-80005464.SAR'
-      - 'SWPM10SP43_2-70002492.SAR'
-      - 'igsexe_13-80003246.sar' # IGS 7.53
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_085_0-80002046.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_024_24-80002095.SAR'  # SAP HANA CLIENT Version 2.24
+      # - 'VCH202300_2085_0-70007417.SAR'  # Not mandatory
+      - 'SWPM10SP43_3-70002492.SAR'
+      - 'igsexe_5-80007795.sar' # IGS 7.54
       - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_800-80002630.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_800-80002629.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
-      - 'SAPHOSTAGENT51_51-70002261.SAR' # SAP Host Agent 7.21
+      - 'SAPEXE_500-80007669.SAR' # Kernel Part I (754)
+      - 'SAPEXEDB_500-80007668.SAR' # Kernel Part II (754), SAP HANA
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP HOST AGENT 7.22 SP67
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
 
@@ -237,7 +177,7 @@ sap_swpm_templates_install_dictionary:
 
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:NW750.HDB.ABAP
 
-    sap_swpm_inifile_list:
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm1
       - swpm_installation_media_swpm1_exportfiles
@@ -252,25 +192,10 @@ sap_swpm_templates_install_dictionary:
       - nw_config_host_agent
       - sap_os_linux_user
 
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
-
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
-#      - 'VCH202000_2059_0-80005463.SAR'
+    #  - 'VCH202000_2059_0-80005463.SAR'
       - 'SWPM10SP43_2-20009701.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -279,17 +204,17 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
-#      - '51050829_4' # NW 7.5 Language 1/2
-#      - '51050829_5' # NW 7.5 Language 2/2
-#      - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
-#      - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
-#      - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
-#      - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2
+    #  - '51050829_4' # NW 7.5 Language 1/2
+    #  - '51050829_5' # NW 7.5 Language 2/2
+    #  - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
+    #  - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
+    #  - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
+    #  - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
-#      - 'VCH202000_2059_0-80005464.SAR'
+    #  - 'VCH202000_2059_0-80005464.SAR'
       - 'SWPM10SP43_2-70002492.SAR'
       - 'igsexe_13-80003246.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
@@ -298,10 +223,9 @@ sap_swpm_templates_install_dictionary:
       - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT51_51-70002261.SAR' # SAP Host Agent 7.21
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
-#      - '51050829_4' # NW 7.5 Language 1/2
-#      - '51050829_5' # NW 7.5 Language 2/2
-#      - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
-#      - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
-#      - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
-#      - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2
-
+    #  - '51050829_4' # NW 7.5 Language 1/2
+    #  - '51050829_5' # NW 7.5 Language 2/2
+    #  - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
+    #  - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
+    #  - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
+    #  - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2

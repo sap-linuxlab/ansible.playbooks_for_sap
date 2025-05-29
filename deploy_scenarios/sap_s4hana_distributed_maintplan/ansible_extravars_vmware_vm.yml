@@ -1,34 +1,40 @@
 ---
+# EXPERIMENTAL
 
-####
-# Infrastructure Provisioning selection
-# VMware
-#
-# Only for use when 'vmware_vm' is value provided for variable sap_vm_provision_iac_platform
-####
+#### Scenario specific infrastructure platform variables ####
 
-sap_vm_provision_vmware_vcenter_hostname: ""
-sap_vm_provision_vmware_vcenter_validate_certs_bool: false
-sap_vm_provision_vmware_vcenter_user: ""
-sap_vm_provision_vmware_vcenter_password: ""
-
-sap_vm_provision_vmware_vm_folder_name: ""
-sap_vm_provision_vmware_vm_cluster_name: ""
-sap_vm_provision_vmware_vm_cluster_host_name: ""
-sap_vm_provision_vmware_vm_cluster_datastore_name: ""
-
-sap_vm_provision_vmware_vm_content_library_name: ""
-sap_vm_provision_vmware_vm_template_name: ""
-
-# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
-####
-sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
-
+# Define the NFS mount point (String).
 sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"  # NFS version (String).
+sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"  # NFS Mount options (String).
+
+
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private SSH key on execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private host key on execution node (String).
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion public host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "vmware_vm"  # Name of the provisioning platform (String).
+sap_vm_provision_vmware_vcenter_hostname: ""  # VCenter hostname (String).
+sap_vm_provision_vmware_vcenter_validate_certs_bool: false  # Validate certificates (Boolean).
+sap_vm_provision_vmware_vcenter_user: ""  # VCenter user name (String).
+sap_vm_provision_vmware_vcenter_password: ""  # VCenter user password (String).
+
+sap_vm_provision_vmware_vm_folder_name: ""  # VM Folder name (String).
+sap_vm_provision_vmware_vm_cluster_name: ""  # VM Cluster name (String).
+sap_vm_provision_vmware_vm_cluster_host_name: ""  # VM Cluster host name (String).
+sap_vm_provision_vmware_vm_cluster_datastore_name: ""  # VM Cluster datastore name (String).
+
+sap_vm_provision_vmware_vm_content_library_name: ""  # VM Content library name (String).
+sap_vm_provision_vmware_vm_template_name: ""  # VM template name (String).
 
 # Variables required for sap_vm_provision_iac_type=ansible_to_terraform
 # sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
@@ -37,28 +43,7 @@ sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"
 # sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 
-####
-# Infrastructure Provisioning selection,
-# additional configuration when provisioning On-Premise hosts
-####
-
-# Only for use when environment does not contain an SNAT for Outbound Internet activity
-# sap_vm_provision_proxy_web_forward_proxy_ip: "ENTER_STRING_VALUE_HERE" # IP:Port only, no http:// prefix
-# sap_vm_provision_proxy_web_forward_exclusions: "localhost,127.0.0.1,{{ sap_vm_provision_dns_root_domain }},{{ sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host }},{{ ibmpower_vc_auth_endpoint.rpartition('//')[-1].partition('/')[0].partition(':')[0] }}"
-
-# OS Package Repo Mirror - CA file downloaded from RHT Satellite / SUSE RMT for injection to host
-# sap_vm_provision_os_registration_ca_file_path: "ENTER_STRING_VALUE_HERE"
-
-# OS Package Repo Mirror - RHEL command example: curl -sS 'https://RHT_SATELLITE_SERVER/register?activation_keys=&location_id=&organization_id=&setup_insights=false&setup_remote_execution=false&update_packages=false' -H 'Authorization: Bearer XXXX' | bash
-# OS Package Repo Mirror - SLES command example: curl http://SUSE_RMT_SERVER/tools/rmt-client-setup | bash 'https://SUSE_RMT_SERVER/' --yes
-# sap_vm_provision_os_registration_script_command: "ENTER_STRING_VALUE_HERE"
-
-# OS Package Repo Direct - Cannot be used in conjunction with OS Package Repository Mirrors
-#sap_vm_provision_os_online_registration_user: "ENTER_STRING_VALUE_HERE"
-#sap_vm_provision_os_online_registration_passcode: "ENTER_STRING_VALUE_HERE"
-
-
-#### Mandatory parameters : Ansible Dictionary for host specifications ####
+#### Ansible Dictionary for host specifications ####
 sap_vm_provision_vmware_vm_host_specifications_dictionary:
 
   xsmall_256gb:
@@ -86,18 +71,18 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           disk_size: 384                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
           disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
-          #lvm_lv_name:                  # default: lv_<element_name>
-          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
-          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
-          #lvm_vg_name:                  # default: vg_<element name>
-          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
-          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
-          #nfs_path:                     # subdirectory path on the NFS server
-          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
-          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
-          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
 
         - name: hana_log
           mountpoint: /hana/log

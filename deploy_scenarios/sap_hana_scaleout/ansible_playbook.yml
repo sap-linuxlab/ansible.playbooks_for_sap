@@ -2,125 +2,116 @@
 # Ansible Playbook for SAP HANA Scale-Out
 
 # Use include_role / include_tasks inside Ansible Task block, instead of using roles declaration or Task block with import_roles.
-# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation.
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
+
+
+#### Interactive Mode ####
+# Interactive mode section can be safely removed without impact if all mandatory variables are provided.
+- name: Ansible Play to Interactively gather all mandatory variables
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+
+    - name: Block for collection for interactive prompts
+      when:
+        - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
+        - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
+        - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
+      block:
+        - name: Check if interactive tasks are available
+          ansible.builtin.stat:
+            path: optional/interactive/main.yml
+          register: sap_playbook_interactive_tasks_availability
+          ignore_errors: true
+
+        - name: Execute collection of interactive inputs
+          ansible.builtin.include_tasks:
+            file: optional/interactive/main.yml
+          when: sap_playbook_interactive_tasks_availability.stat.exists
 
 
 #### Begin Infrastructure-as-Code provisioning ####
-
-- name: Ansible Play to gather input for gathering vars and VM provisioning
-  hosts: localhost
-  gather_facts: false
-
-  # pre_tasks used only for Interactive Prompts only and can be removed without impact
-  pre_tasks:
-
-    - name: Playbook Interactive - Check if standard execution with an Ansible Extravars file is requested by end user
-      ansible.builtin.set_fact:
-        playbook_enable_interactive_prompts: "{{ true if (sap_vm_provision_iac_type is undefined and sap_vm_provision_iac_platform is undefined) else false }}"
-
-    - name: Playbook Interactive - Provision execution - Input for sap_vm_provision_iac_type
-      ansible.builtin.pause:
-        prompt: "Please choose Infrastructure-as-Code automation from list - ansible , ansible_to_terraform (for existing_hosts, use Ansible standard execution with an Ansible Extravars file)"
-      register: sap_vm_provision_iac_type_register
-      no_log: true
-      when: playbook_enable_interactive_prompts
-
-    - name: Playbook Interactive - Provision execution - Input for sap_vm_provision_iac_platform
-      ansible.builtin.pause:
-        prompt: "Please choose Infrastructure Platform from list - aws_ec2_vs , gcp_ce_vm , ibmcloud_powervs , ibmcloud_vs , ibmpowervm_vm , kubevirt_vm , msazure_vm , ovirt_vm"
-      register: sap_vm_provision_iac_platform_register
-      no_log: true
-      when: playbook_enable_interactive_prompts
-
-    - name: Playbook Interactive - SAP Deployment execution - Input for playbook_enable_default_vars_sap
-      ansible.builtin.pause:
-        prompt: "Please choose if defaults should be used for SAP Software installation (e.g. SAP System ID) - true , false"
-      register: playbook_enable_default_vars_sap_register
-      no_log: true
-      when: playbook_enable_interactive_prompts
-
-    - name: Playbook Interactive - Set facts from initial prompts
-      ansible.builtin.set_fact:
-        sap_vm_provision_iac_type: "{{ sap_vm_provision_iac_type_register.user_input }}"
-        sap_vm_provision_iac_platform: "{{ sap_vm_provision_iac_platform_register.user_input }}"
-        playbook_enable_default_vars_sap: "{{ playbook_enable_default_vars_sap_register.user_input }}"
-      when: playbook_enable_interactive_prompts
-
-
-  tasks:
-
-    - name: Input construct - VM provisioning via Ansible - SAP HANA Scale-Out - dynamically create new Ansible Dictionary
-      ansible.builtin.set_fact:
-        "{{ sap_vm_provision_iac_platform + '_host_specifications_dictionary_scaleout' }}": "{{ {} | combine({sap_vm_provision_host_specification_plan: {}}) }}"
-      when:
-        - sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
-        # - sap_vm_provision_iac_type == "ansible"
-
-    - name: Input construct - VM provisioning via Ansible - SAP HANA Scale-Out - dynamically build new Ansible Dictionary
-      ansible.builtin.set_fact:
-        "scaleout_build": "{{ scaleout_build | default({}) | combine({(lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys() | first + host_scaleout_node | string): lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys() | first]}) }}"
-      loop: "{{ range(0, (sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator | int + sap_vm_provision_calculate_sap_hana_scaleout_active_worker | int + sap_vm_provision_calculate_sap_hana_scaleout_standby | int), 1) | list }}"
-      loop_control:
-        loop_var: host_scaleout_node
-      when:
-        - sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
-        # - sap_vm_provision_iac_type == "ansible"
-
-    - name: Input construct - VM provisioning via Ansible - SAP HANA Scale-Out - SAP NetWeaver hosts dynamically build new Ansible Dictionary
-      ansible.builtin.set_fact:
-        "other_host_spec_hosts": "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] | combine({lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys() | first: omit}) }}"
-      when:
-        - sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
-        # - sap_vm_provision_iac_type == "ansible"
-
-    - name: Input construct - VM provisioning via Ansible - SAP HANA Scale-Out - Merge dynamically built new Ansible Dictionary keys
-      ansible.builtin.set_fact:
-        all_host_specs: "{{ {} | combine(scaleout_build, other_host_spec_hosts) }}"
-      when:
-        - sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
-        # - sap_vm_provision_iac_type == "ansible"
-
-    - name: Input construct - VM provisioning via Ansible - SAP HANA Scale-Out - populate new Ansible Dictionary
-      ansible.builtin.set_fact:
-        "{{ sap_vm_provision_iac_platform + '_host_specifications_dictionary_scaleout' }}": "{{ lookup('ansible.builtin.vars', sap_vm_provision_iac_platform + '_host_specifications_dictionary_scaleout') | combine({sap_vm_provision_host_specification_plan: all_host_specs}) }}"
-      when:
-        - sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
-        # - sap_vm_provision_iac_type == "ansible"
-
-
-#### Provision VM ####
-
 - name: Ansible Play to create dynamic inventory group for provisioning
   hosts: localhost
   gather_facts: false
   tasks:
 
+    - name: Set fact with selected host dictionary
+      ansible.builtin.set_fact:
+        sap_playbook_host_dictionary:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+            + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+
+    - name: Dynamically create new Ansible Dictionary for SAP HANA Scale-Out
+      ansible.builtin.set_fact:
+        sap_playbook_scaleout_dictionary: "{{ sap_playbook_scaleout_dictionary | default({}) | combine({
+          (sap_playbook_host_dictionary.keys() | first + scaleout_node_number | string): sap_playbook_host_dictionary[sap_playbook_host_dictionary.keys() | first]}) }}"
+      loop: "{{ range(0, scaleout_node_count | int, 1) | list }}"
+      loop_control:
+        loop_var: scaleout_node_number
+      when: sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
+      vars:
+        scaleout_node_count: "{{ sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator | int
+          + sap_vm_provision_calculate_sap_hana_scaleout_active_worker | int
+          + sap_vm_provision_calculate_sap_hana_scaleout_standby | int }}"
+
+    - name: Combine new Ansible Dictionary for SAP HANA Scale-Out with remaining hosts
+      ansible.builtin.set_fact:
+        "{{ sap_vm_provision_iac_platform + '_host_specifications_dictionary' }}":
+          "{{ {} | combine({sap_vm_provision_host_specification_plan: combined_dictionary}) }}"
+      when: sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
+      vars:
+        others_dictionary: "{{ sap_playbook_host_dictionary | combine({sap_playbook_host_dictionary.keys() | first: omit}) }}"
+        combined_dictionary: "{{ {} | combine(sap_playbook_scaleout_dictionary, others_dictionary) }}"
+
     - name: Create dynamic inventory group for Ansible Role sap_vm_provision
       ansible.builtin.add_host:
         name: "{{ item }}"
         group: sap_vm_provision_target_inventory_group
-      loop: "{{ lookup('ansible.builtin.vars', sap_vm_provision_iac_platform + '_host_specifications_dictionary_scaleout')[sap_vm_provision_host_specification_plan].keys() | default(lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys()) }}"
-      when:
-        - sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined
-        - sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
+      loop: "{{ lookup('ansible.builtin.vars', sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys()
+        if sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined else sap_playbook_host_dictionary.keys() }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
 
+
+# Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
 - name: Ansible Play to provision hosts for SAP
-  hosts: sap_vm_provision_target_inventory_group # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
+  hosts: sap_vm_provision_target_inventory_group
   gather_facts: false
   tasks:
+
+    # Ensure that all sap_* or __sap_* variables set in Interactive Mode are appended to the target inventory Group
+    - name: Assign all relevant facts from execution node before provisioning  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+        cacheable: true
+      loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
 
     - name: Execute Ansible Role sap_vm_provision
       ansible.builtin.include_role:
         name: community.sap_infrastructure.sap_vm_provision
-      when: sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+
+- name: Ansible Play to set sap variables on provisioned hosts
+  hosts: sap_vm_provision_target_inventory_group  # noqa: ignore-errors
+  gather_facts: false
+  tasks:
+
+    - name: Assign all relevant facts from execution node after provisioning  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+        cacheable: true
+      loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
 
 
 #### VM storage filesystem setup ####
-
 - name: Ansible Play for hosts storage setup
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -129,47 +120,36 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
       vars:
-        sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
-        sap_storage_setup_host_type: "{{ host_specifications_dictionary[sap_vm_provision_host_specification_plan][host_node_scaleout_origin_spec | default(inventory_hostname_short)].sap_storage_setup_host_type | list }}"
-        # sap_storage_setup_definition set for the host by sap_vm_provision Ansible Role
-      when:
-        - sap_vm_provision_iac_type == "ansible" or sap_vm_provision_iac_type == "ansible_to_terraform"
-        - not sap_vm_provision_iac_type == "existing_hosts"
-
-
-# - name: Ansible Play to execute Preflight Checks
-#   hosts: hana_primary
-#   become: true
-#   any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
-#   max_fail_percentage: 0
-#   tasks:
-
-#     - name: Execute Ansible Role sap_vm_preflight_checks
-#       ansible.builtin.include_role:
-#         name: community.sap_infrastructure.sap_vm_verify
+        sap_playbook_host_dictionary_plan:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+           + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+        sap_playbook_host_dictionary_hostname:
+          "{{ sap_playbook_host_dictionary_plan[inventory_hostname_short | regex_replace('^(.+?)\\d*$', '\\1')]
+            if inventory_hostname not in sap_playbook_host_dictionary_plan
+            else sap_playbook_host_dictionary_plan[inventory_hostname_short] }}"
+        sap_storage_setup_sid: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_sid'] | d('') }}"
+        sap_storage_setup_host_type: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_host_type'] | list }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
 
 - name: Ansible Play for ensuring rsync on all hosts
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
     - name: Install rsync
       ansible.builtin.package:
-        name:
-          - rsync
+        name: rsync
         state: present
 
 
-
 #### Begin downloading SAP software installation media to hosts ####
-
 - name: Ansible Play for downloading SAP HANA installation media
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -177,6 +157,7 @@
     # Playbook will continue without the collection, assuming SAP software is already available.
     - name: Check availability of sap_launchpad collection on execution node
       delegate_to: localhost
+      become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
       register: sap_playbook_collection_list_output
@@ -189,18 +170,16 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
-        sap_software_download_files: "{{ sap_hana_install_media_dictionary[sap_hana_product_input]
-          ['softwarecenter_search_list_saphana_' ~ ansible_architecture] }}"
+        sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
+          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
       when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
 
-
 #### Begin SAP software hosts preparation ####
-
 - name: Ansible Play for preparing all SAP software hosts
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -213,11 +192,10 @@
         name: community.sap_install.sap_hana_preconfigure
 
 
-
 - name: Ansible Play to append SSH Public Keys to all SAP HANA nodes, for internode communication
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -259,12 +237,12 @@
       ansible.builtin.shell: ssh-keyscan {{ hostvars[item].ansible_host }} >> ~/.ssh/known_hosts
       loop: "{{ groups['hana_primary'] }}"
 
-#### Begin SAP software installations ####
 
+#### Begin SAP software installations ####
 - name: Ansible Play for SAP HANA Database Server installation
   hosts: hana_primary
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
   tasks:
 
@@ -304,7 +282,6 @@
       ansible.builtin.shell: ssh -q root@{{ hostvars[item].ansible_host }} 'hostname -s'
       loop: "{{ groups['hana_primary'] }}"
 
-    # Install SAP HANA
     - name: Execute Ansible Role sap_hana_install
       ansible.builtin.include_role:
         name: community.sap_install.sap_hana_install

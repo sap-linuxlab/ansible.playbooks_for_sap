@@ -1,0 +1,307 @@
+---
+# This task file will read defined 'sap_vm_provision_<sap_vm_provision_iac_platform>_host_specifications_dictionary'
+# and assign relevant variables that are used in dedicated scenario task files.
+# 'host_specifications_dictionary' and 'sap_vm_provision_host_specification_plan' are defined in their platform files.
+
+# Each dictionary[plan] key is checked for 'sap_host_type' value, which can accept new 'sap_vm_provision_group_*' variables.
+
+- name: Fail if 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined
+  ansible.builtin.fail:
+    msg: |
+      Variable 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined.
+      Correct this variable in extra vars and re-run the playbook.
+  when:
+    - "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars"
+    - lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') | length == 0
+
+- name: Block for sap_vm_provision_host_specification_plan
+  vars:
+    __host_specifications_dictionary:
+      "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') }}"
+  block:
+    - name: Prompt for deployment plan selection
+      ansible.builtin.pause:
+        prompt: |
+          Select a deployment plan from the 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary'.
+          Available values: {{ __host_specifications_dictionary.keys() | list }}
+          Press enter to skip and use the default value ('{{ __default_plan }}').
+      register: sap_vm_provision_host_specification_plan_register
+      vars:
+        __default_plan: "{{ (__host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Set fact for sap_vm_provision_host_specification_plan
+      ansible.builtin.set_fact:
+        sap_vm_provision_host_specification_plan:
+          "{{ sap_vm_provision_host_specification_plan_register.user_input
+            if sap_vm_provision_host_specification_plan_register.user_input | length > 0
+            else (__host_specifications_dictionary | dict2items | first).key }}"
+      when: sap_vm_provision_host_specification_plan is not defined
+
+    - name: Fail if sap_vm_provision_host_specification_plan is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_host_specification_plan': '{{ sap_vm_provision_host_specification_plan }}'
+          Available options: {{ __host_specifications_dictionary.keys()
+            }} are defined in 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary'.
+          {% if sap_vm_provision_host_specification_plan_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_host_specification_plan not in __host_specifications_dictionary.keys()
+
+
+- name: Set temporary fact for host specification dictionary
+  ansible.builtin.set_fact:
+    __sap_playbook_host_spec_dict:
+      "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+        + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] | d(None) }}"
+
+
+### SAP HANA Primary
+- name: Set fact with list of SAP HANA Primary hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_hana_primary_list: "{{ sap_playbook_host_hana_primary_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_hana_primary | d('hana_primary'))
+
+- name: Set facts if SAP HANA Primary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_hana_primary: true
+    sap_playbook_host_hana_primary_hostname: "{{ sap_playbook_host_hana_primary_list[0] }}"
+  when: sap_playbook_host_hana_primary_list | d([]) | length > 0
+
+# HANA scenarios require at least one hana_primary node
+- name: Fail if required hosts are not present - SAP HANA
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP HANA host defined in host_specifications_dictionary.
+      'sap_host_type': {{ sap_vm_provision_group_hana_primary | d('hana_primary') }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_database == 'hana'
+    - sap_playbook_host_hana_primary_list | d([]) | length == 0
+
+
+### SAP HANA Secondary
+- name: Set fact with list of SAP HANA Secondary hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_hana_secondary_list: "{{ sap_playbook_host_hana_secondary_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_hana_secondary | d('hana_secondary'))
+
+- name: Set facts if SAP HANA Secondary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_hana_secondary: true
+    sap_playbook_host_hana_secondary_hostname: "{{ sap_playbook_host_hana_secondary_list[0] }}"
+  when: sap_playbook_host_hana_secondary_list | d([]) | length > 0
+
+# HANA HA scenarios require at least one hana_primary and hana_secondary nodes
+- name: Fail if required hosts are not present - SAP HANA HA
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP HANA HA hosts defined in host_specifications_dictionary.
+      Following hosts were identified based on 'sap_host_type' variable:
+      {{ sap_vm_provision_group_hana_primary | d('hana_primary') }}: {{ sap_playbook_host_hana_primary_list }}
+      {{ sap_vm_provision_group_hana_secondary | d('hana_secondary') }}: {{ sap_playbook_host_hana_secondary_list }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_database == 'hana'
+    - sap_playbook_interactive_layout in ['hana_ha', 'distributed_ha']
+    - (sap_playbook_host_hana_secondary_list | d([]) | length == 0) or (sap_playbook_host_hana_primary_list | d([]) | length == 0)
+
+
+### SAP ASCS
+- name: Set fact with list of SAP ASCS hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_ascs_list: "{{ sap_playbook_host_nwas_ascs_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_ascs | d('nwas_ascs'))
+
+- name: Set facts if SAP ASCS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_ascs: true
+    sap_playbook_host_nwas_ascs_hostname: "{{ sap_playbook_host_nwas_ascs_list[0] }}"
+  when: sap_playbook_host_nwas_ascs_list | d([]) | length > 0
+
+# ABAP scenarios, except dedicated HANA scenarios, require at least one nwas_ascs
+- name: Fail if required hosts are not present - SAP ASCS
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP ASCS host defined in host_specifications_dictionary.
+      'sap_host_type': {{ sap_vm_provision_group_nwas_ascs | d('nwas_ascs') }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_product not in ['hana', 'nwas_java']
+    - sap_playbook_host_nwas_ascs_list | d([]) | length == 0
+
+
+### SAP SCS
+- name: Set fact with list of SAP SCS hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_scs_list: "{{ sap_playbook_host_nwas_scs_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_scs | d('nwas_scs'))
+
+- name: Set facts if SAP SCS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_scs: true
+    sap_playbook_host_nwas_scs_hostname: "{{ sap_playbook_host_nwas_scs_list[0] }}"
+  when: sap_playbook_host_nwas_scs_list | d([]) | length > 0
+
+# JAVA scenarios, except dedicated HANA scenarios, require at least one nwas_scs
+- name: Fail if required hosts are not present - SAP SCS
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP SCS host defined in host_specifications_dictionary.
+      'sap_host_type': {{ sap_vm_provision_group_nwas_scs | d('nwas_scs') }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_product not in ['hana', 'nwas_java']
+    - sap_playbook_host_nwas_scs_list | d([]) | length == 0
+
+
+### SAP ERS
+- name: Set fact with list of SAP ERS hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_ers_list: "{{ sap_playbook_host_nwas_ers_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_ers | d('nwas_ers'))
+
+- name: Set facts if SAP ERS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_ers: true
+    sap_playbook_host_nwas_ers_hostname: "{{ sap_playbook_host_nwas_ers_list[0] }}"
+  when: sap_playbook_host_nwas_ers_list | d([]) | length > 0
+
+# ABAP HA scenarios require at least one nwas_ascs and nwas_ers nodes
+- name: Fail if required hosts are not present - SAP ASCS/ERS
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP ASCS and ERS hosts defined in host_specifications_dictionary.
+      Following hosts were identified:
+      {{ sap_vm_provision_group_nwas_ascs | d('nwas_ascs') }}: {{ sap_playbook_host_nwas_ascs_list }}
+      {{ sap_vm_provision_group_nwas_ers | d('nwas_ers') }}: {{ sap_playbook_host_nwas_ers_list }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_product in ['bw4hana', 'ecc', 's4hana', 'nwas_abap']
+    - sap_playbook_interactive_layout == 'distributed_ha'
+    - (sap_playbook_host_nwas_ascs_list | d([]) | length == 0) or (sap_playbook_host_nwas_ers_list | d([]) | length == 0)
+
+# JAVA HA scenarios require at least one nwas_scs and nwas_ers nodes
+- name: Fail if required hosts are not present - SAP SCS/ERS
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP SCS and ERS hosts defined in host_specifications_dictionary.
+      Following hosts were identified:
+      {{ sap_vm_provision_group_nwas_scs | d('nwas_scs') }}: {{ sap_playbook_host_nwas_scs_list }}
+      {{ sap_vm_provision_group_nwas_ers | d('nwas_ers') }}: {{ sap_playbook_host_nwas_ers_list }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_product == 'nwas_java'
+    - sap_playbook_interactive_layout == 'distributed_ha'
+    - (sap_playbook_host_nwas_scs_list | d([]) | length == 0) or (sap_playbook_host_nwas_ers_list | d([]) | length == 0)
+
+
+### SAP PAS
+- name: Set fact with list of SAP PAS hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_pas_list: "{{ sap_playbook_host_nwas_pas_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_pas | d('nwas_pas'))
+
+- name: Set facts if SAP PAS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_pas: true
+    sap_playbook_host_nwas_pas_hostname: "{{ sap_playbook_host_nwas_pas_list[0] }}"
+  when: sap_playbook_host_nwas_pas_list | d([]) | length > 0
+
+# All scenarios, except dedicated HANA scenarios, require at least one nwas_pas
+- name: Fail if required hosts are not present - SAP PAS
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP PAS host defined in host_specifications_dictionary.
+      'sap_host_type': {{ sap_vm_provision_group_nwas_pas | d('nwas_pas') }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_product not in ['hana']
+    - sap_playbook_host_nwas_pas_list | d([]) | length == 0
+
+
+### AAS
+- name: Set fact with list of SAP AAS hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_aas_list: "{{ sap_playbook_host_nwas_aas_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_nwas_aas | d('nwas_aas'))
+
+- name: Set facts if SAP AAS was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_nwas_aas: true
+    sap_playbook_host_nwas_aas_hostname: "{{ sap_playbook_host_nwas_aas_list[0] }}"
+  when: sap_playbook_host_nwas_aas_list | d([]) | length > 0
+
+# All distributed scenarios require at least one nwas_aas
+- name: Fail if required hosts are not present - SAP AAS
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP AAS host defined in host_specifications_dictionary.
+      'sap_host_type': {{ sap_vm_provision_group_nwas_aas | d('nwas_aas') }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_layout in ['distributed', 'distributed_ha']
+    - sap_playbook_host_nwas_aas_list | d([]) | length == 0
+
+
+### AnyDB Primary
+- name: Set fact with list of AnyDB Primary hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_anydb_primary_list: "{{ sap_playbook_host_anydb_primary_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_anydb_primary | d('anydb_primary'))
+
+- name: Set facts if AnyDB Primary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_anydb_primary: true
+    sap_playbook_host_anydb_primary_hostname: "{{ sap_playbook_host_anydb_primary_list[0] }}"
+  when: sap_playbook_host_anydb_primary_list | d([]) | length > 0
+
+# AnyDB sandbox and standard scenarios use nwas_pas node
+- name: Fail if required hosts are not present - SAP AnyDB
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP AnyDB host defined in host_specifications_dictionary.
+      'sap_host_type': {{ sap_vm_provision_group_anydb_primary | d('anydb_primary') }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_database != 'hana'
+    - sap_playbook_interactive_layout == 'distributed'
+    - sap_playbook_host_anydb_primary_list | d([]) | length == 0
+
+
+### AnyDB Secondary
+- name: Set fact with list of AnyDB Secondary hosts in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_anydb_secondary_list: "{{ sap_playbook_host_anydb_secondary_list | d([]) + [item] }}"
+  loop: "{{ __sap_playbook_host_spec_dict.keys() }}"
+  when: (__sap_playbook_host_spec_dict[item]['sap_host_type'] | d('')) == (sap_vm_provision_group_anydb_secondary | d('anydb_secondary'))
+
+- name: Set facts if AnyDB Secondary was detected in host_specifications_dictionary
+  ansible.builtin.set_fact:
+    sap_playbook_host_anydb_secondary: true
+    sap_playbook_host_anydb_secondary_hostname: "{{ sap_playbook_host_anydb_secondary_list[0] }}"
+  when: sap_playbook_host_anydb_secondary_list | d([]) | length > 0
+
+- name: Fail if required hosts are not present - SAP AnyDB HA
+  ansible.builtin.fail:
+    msg: |
+      Deployment scenario requires SAP AnyDB HA hosts defined in host_specifications_dictionary.
+      Following hosts were identified:
+      {{ sap_vm_provision_group_anydb_primary | d('anydb_primary') }}: {{ sap_playbook_host_anydb_primary_list }}
+      {{ sap_vm_provision_group_anydb_secondary | d('anydb_secondary') }}: {{ sap_playbook_host_anydb_secondary_list }}
+      Correct this variable in extra vars re-run the playbook.
+  when:
+    - sap_playbook_interactive_database != 'hana'
+    - sap_playbook_interactive_layout == 'distributed_ha'
+    - (sap_playbook_host_anydb_primary_list | d([]) | length == 0) or (sap_playbook_host_anydb_secondary_list | d([]) | length == 0)

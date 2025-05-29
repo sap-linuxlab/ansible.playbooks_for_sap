@@ -1,15 +1,25 @@
 ---
+# The following variables can be defined to skip prompts:
 
-# ---- Mandatory parameters : Ansible Dictionary for SAP software install media ---- #
+# Enter SAP S-User ID (String).
+# sap_id_user:
 
-# sap_downloads_selected:
+# Enter SAP S-User Password (String).
+# sap_id_user_password:
+
+# Enter key(s) from sap_software_install_dictionary as either String or List
+# sap_software_product:
 #   - sap_s4hana_2022
 #   - sap_s4hana_2021
 
-# sap_downloads_cpu_architecture: x86_64 # x86_64 or ppc64le
+# Enter CPU architecture (String). Available options: x86_64, ppc64le
+# sap_software_cpu_architecture: x86_64
+
+# Enter download directory path on target host (String).
+# sap_software_target_directory: /software
 
 # Templates and default values
-sap_software_templates_dictionary:
+sap_software_install_dictionary:
 
   sap_s4hana_2023:
 
@@ -47,7 +57,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_20.zip'
       - 'S4CORE108_INST_EXPORT_21.zip'
       - 'S4CORE108_INST_EXPORT_22.zip'
-      - '19118000000000008988'
+      - 'S4CORE108_INST_EXPORT_23.zip'
       - 'S4CORE108_INST_EXPORT_24.zip'
       - 'S4CORE108_INST_EXPORT_25.zip'
       - 'S4CORE108_INST_EXPORT_26.zip'
@@ -93,7 +103,7 @@ sap_software_templates_dictionary:
       - 'S4CORE108_INST_EXPORT_20.zip'
       - 'S4CORE108_INST_EXPORT_21.zip'
       - 'S4CORE108_INST_EXPORT_22.zip'
-      - '19118000000000008988'
+      - 'S4CORE108_INST_EXPORT_23.zip'
       - 'S4CORE108_INST_EXPORT_24.zip'
       - 'S4CORE108_INST_EXPORT_25.zip'
       - 'S4CORE108_INST_EXPORT_26.zip'
@@ -132,7 +142,7 @@ sap_software_templates_dictionary:
       - 'S4CORE107_INST_EXPORT_10.zip'
       - 'S4CORE107_INST_EXPORT_11.zip'
       - 'S4CORE107_INST_EXPORT_12.zip'
-      - '19118000000000007795'
+      - 'S4CORE107_INST_EXPORT_13.zip'
       - 'S4CORE107_INST_EXPORT_14.zip'
       - 'S4CORE107_INST_EXPORT_15.zip'
       - 'S4CORE107_INST_EXPORT_16.zip'
@@ -180,7 +190,7 @@ sap_software_templates_dictionary:
       - 'S4CORE107_INST_EXPORT_10.zip'
       - 'S4CORE107_INST_EXPORT_11.zip'
       - 'S4CORE107_INST_EXPORT_12.zip'
-      - '19118000000000007795'
+      - 'S4CORE107_INST_EXPORT_13.zip'
       - 'S4CORE107_INST_EXPORT_14.zip'
       - 'S4CORE107_INST_EXPORT_15.zip'
       - 'S4CORE107_INST_EXPORT_16.zip'
@@ -230,9 +240,9 @@ sap_software_templates_dictionary:
       - 'S4CORE106_INST_EXPORT_9.zip'
       - 'S4CORE106_INST_EXPORT_10.zip'
       - 'S4CORE106_INST_EXPORT_11.zip'
-      - '19118000000000006085'
+      - 'S4CORE106_INST_EXPORT_12.zip'
       - 'S4CORE106_INST_EXPORT_13.zip'
-      - '19118000000000006087'
+      - 'S4CORE106_INST_EXPORT_14.zip'
       - 'S4CORE106_INST_EXPORT_15.zip'
       - 'S4CORE106_INST_EXPORT_16.zip'
       - 'S4CORE106_INST_EXPORT_17.zip'
@@ -272,9 +282,9 @@ sap_software_templates_dictionary:
       - 'S4CORE106_INST_EXPORT_9.zip'
       - 'S4CORE106_INST_EXPORT_10.zip'
       - 'S4CORE106_INST_EXPORT_11.zip'
-      - '19118000000000006085'
+      - 'S4CORE106_INST_EXPORT_12.zip'
       - 'S4CORE106_INST_EXPORT_13.zip'
-      - '19118000000000006087'
+      - 'S4CORE106_INST_EXPORT_14.zip'
       - 'S4CORE106_INST_EXPORT_15.zip'
       - 'S4CORE106_INST_EXPORT_16.zip'
       - 'S4CORE106_INST_EXPORT_17.zip'

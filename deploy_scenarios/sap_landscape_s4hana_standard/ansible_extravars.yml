@@ -1,265 +1,122 @@
 ---
+#### Infrastructure Provisioning selection ####
+# Type of infrastructure provisioning method to use (String).
+# Options: ansible, ansible_to_terraform, existing_hosts
+sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"
 
-####
-# Infrastructure Provisioning selection
-####
+# Infrastructure platform for provisioning (String).
+# Options: aws_ec2_vs, gcp_ce_vm, ibmcloud_vs, ibmcloud_powervs, msazure_vm, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm
+sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
 
-sap_vm_provision_iac_type: "ENTER_STRING_VALUE_HERE"  # ansible , ansible_to_terraform , existing_hosts
-sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"  # aws_ec2_vs , gcp_ce_vm , ibmcloud_vs , ibmcloud_powervs , msazure_vm , ibmpowervm_vm , kubevirt_vm , ovirt_vm , vmware_vm
-
+# Name of the host specification plan to use (String).
+# Options: Defined in host_specifications_dictionary.
 sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
+
+# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
 sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
 
 
-####
-# Mandatory parameters : Ansible Defaults
-####
+#### Key SAP System variables ####
+# Key variables are defined directly in host_specifications_dictionary
 
-# Default Ansible Facts populate into default variables for all Ansible Roles
+
+#### SAP Software installation media downloads ####
+## Required for download using community.sap_launchpad
+# SAP ONE Support Launchpad credentials
+sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
+sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+
+# Directory with SAP installation media (e.g. /software) (String)
+sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_reboot_ok: true  # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_hana_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_hana_preconfigure_saptune_solution: 'S4HANA-DBSERVER'  # SUSE saptune solution to apply for SAP HANA (String).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_reboot_ok: true  # SAP Netweaver hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_netweaver_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APPSERVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP HANA Database Server installation ####
+# SAP HANA Master password
+sap_hana_install_use_master_password: "y"  # Use a master password for SAP HANA installation (y/n) (String).
+sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"  # The master password for SAP HANA (String).
+
+#### SAP HANA Database Server installation - Optional variables ####
+## SAP HANA log mode (set to overwrite for Sandbox only, HA cannot use overwrite) (String)
+# sap_hana_install_log_mode: overwrite  # Options: normal, overwrite.
+
+## List of comma separated components to be installed, default 'all'
+# sap_hana_install_components: 'all'  # Comma-separated list of SAP HANA components to install (String).
+
+## Unix User ID. Leave this blank if you want this set automatically by hdblcm
+## For production systems, it's highly advisable to set this manually according to your environment's Unix ID policies
+# sap_hana_install_userid:  # Unix User ID for SAP HANA (String).
+# sap_hana_install_groupid:  # Unix Group ID for SAP HANA (String).
+
+# sap_hana_install_system_usage: custom  # hdblcm parameter system_usage (String).
+# sap_hana_install_restrict_max_mem: 'n'  # hdblcm parameter restrict_max_mem (y/n) (String).
+# sap_hana_install_max_mem:  # hdblcm parameter max_mem in MB required when sap_hana_install_restrict_max_mem is y (String).
+# sap_hana_install_system_restart: 'n'  # select if role should start SAP HANA after each system boot (y/n) (String).
+## Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
+# sap_hana_install_hdblcm_extraargs:   # Extra arguments for hdblcm (String).
+
+
+#### SAP SWPM Installation ####
+sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+
+sap_swpm_master_password: "NewPass$321"  # Master password for the SAP system (String).
+sap_swpm_ddic_000_password: "NewPass$321"  # Password for the DDIC user in client 000 (String).
+
+sap_swpm_db_schema_abap: "SAPHANADB"  # Name of the ABAP schema in the SAP HANA database (String).
+
+sap_swpm_db_schema_abap_password: "NewPass$321"  # Password for the ABAP schema user (String).
+sap_swpm_db_sidadm_password: "NewPass$321"  # Password for the <sid>adm user in the database (String).
+sap_swpm_db_system_password: "NewPass$321"  # Password for the SYSTEM user in the SAP HANA database (String).
+sap_swpm_db_systemdb_password: "NewPass$321"  # Password for the SYSTEM user in the SAP HANA system database (String).
+
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
+sap_swpm_fqdn: "{{ ansible_domain }}"
+
+#### SAP SWPM Installation - Optional variables ####
+## Unix User ID
+sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
+sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
+sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
+
+sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+
+
+#### Shared Ansible Facts ####
 sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
 
 
+#### SAP Product selection ####
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_ides_ecc6_ehp8_ibmdb2_onehost).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
 
-####
-# Mandatory parameters : Preconfigure OS for SAP Software
-####
-
-# Configuration of Ansible Roles for preconfigure SAP (general, hana, netweaver)
-sap_general_preconfigure_modify_etc_hosts: false
-sap_general_preconfigure_reboot_ok: true
-sap_general_preconfigure_fail_if_reboot_required: false
-sap_hana_preconfigure_reboot_ok: true # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true
-sap_hana_preconfigure_fail_if_reboot_required: false
-sap_hana_preconfigure_update: true
-sap_hana_update_etchosts: true
-sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false
-
-
-
-####
-# Mandatory parameters : SAP Software installation media downloads
-####
-
-# SAP ONE Support Launchpad credentials
-sap_id_user: "ENTER_STRING_VALUE_HERE"
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'
-
-# Directory for SAP installation media
-sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE" # e.g. /software
-
-# Configuration for SAP installation media detection
-# sap_install_media_detect_** variables are set for each Ansible Task to the respective host
-
-
-
-####
-# Mandatory parameters : SAP HANA installation
-####
-
-# SAP HANA master password
-sap_hana_install_use_master_password: "y"
-sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"
-
-# SAP HANA database server instance details
-#sap_hana_sid: "SET_IN_VAR_PROMPT"
-#sap_hana_install_instance_nr: "SET_IN_VAR_PROMPT"
-
-# SAP HANA log mode (set to overwrite for Sandbox only, HA cannot use overwrite)
-#sap_hana_install_log_mode: overwrite
-
-
-####
-# Optional parameters : SAP HANA installation
-####
-
-# List of components to be installed, default 'all'
-# Components should be comma separated
-# sap_hana_install_components: 'all'
-
-# Unix User
-# Leave this blank if you want this set automatically by hdblcm
-# For production systems, it's highly advisable to set this manually according to your environment's Unix ID policies
-# sap_hana_install_userid:
-# sap_hana_install_groupid:
-
-# Adjust these accordingly for your installation type
-# sap_hana_install_env_type: 'production'
-# sap_hana_install_mem_restrict: 'n'
-# sap_hana_install_max_mem:
-# sap_hana_install_system_restart: 'n'
-
-# Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
-# sap_hana_install_hdblcm_extraargs:
-
-# Update hosts file
-sap_hana_install_update_etchosts: 'false'
-
-# For more optional parameters please consult the documentation or
-# Check the file <role path>/defaults/main.yml
-
-
-
-####
-# Mandatory parameters : Ansible Dictionary for SAP HANA installation media
-####
-
-sap_hana_install_media_dictionary:
-
-  sap_hana_2_install:
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
-
-
-
-####
-# Mandatory parameters : SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-sap_swpm_ansible_role_mode: default_templates
-sap_swpm_templates_product_input_prefix: "ENTER_STRING_VALUE_HERE" # sap_s4hana_2023_standard , sap_s4hana_2022_standard , sap_s4hana_2021_standard , sap_s4hana_2020_standard , sap_s4hana_1909_standard
-#sap_swpm_templates_product_input: # Set for each Ansible Task to the respective host
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# NW Passwords
-sap_swpm_master_password: "NewPass$321"
-sap_swpm_ddic_000_password: "NewPass$321"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# HDB Configuration
-sap_swpm_db_schema_abap: "SAPHANADB"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# HDB Passwords
-sap_swpm_db_schema_abap_password: "NewPass$321"
-sap_swpm_db_sidadm_password: "NewPass$321"
-sap_swpm_db_system_password: "NewPass$321"
-sap_swpm_db_systemdb_password: "NewPass$321"
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Unix User ID
-sap_swpm_sapadm_uid: '3000'
-sap_swpm_sapsys_gid: '3001'
-sap_swpm_sidadm_uid: '3001'
-
-# Override any variable set in sap_swpm_inifile_dictionary
-# Other
-sap_swpm_fqdn: "{{ ansible_domain }}"
-sap_swpm_update_etchosts: 'false'
-
-
-
-####
-# Mandatory parameters : Ansible Dictionary for SAP SWPM installation using Default Templates mode of the Ansible Role
-####
-
-# Templates and default values
-sap_swpm_templates_install_dictionary:
-
-  sap_s4hana_2023_standard_installation_media:
-
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'IMDB_LCAPPS_2077_3-20010426.SAR'
-      - 'IMDB_AFL20_077_0-80001894.SAR'
-      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
-      - 'SWPM20SP20_1-80003424.SAR'
-      - 'igsexe_4-70005417.sar' # IGS 7.81
-      - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
-      - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (793)
-      - 'SAPHOSTAGENT62_62-80004822.SAR' # SAP Host Agent
-      - 'S4CORE108_INST_EXPORT_1.zip'
-      - 'S4CORE108_INST_EXPORT_2.zip'
-      - 'S4CORE108_INST_EXPORT_3.zip'
-      - 'S4CORE108_INST_EXPORT_4.zip'
-      - 'S4CORE108_INST_EXPORT_5.zip'
-      - 'S4CORE108_INST_EXPORT_6.zip'
-      - 'S4CORE108_INST_EXPORT_7.zip'
-      - 'S4CORE108_INST_EXPORT_8.zip'
-      - 'S4CORE108_INST_EXPORT_9.zip'
-      - 'S4CORE108_INST_EXPORT_10.zip'
-      - 'S4CORE108_INST_EXPORT_11.zip'
-      - 'S4CORE108_INST_EXPORT_12.zip'
-      - 'S4CORE108_INST_EXPORT_13.zip'
-      - 'S4CORE108_INST_EXPORT_14.zip'
-      - 'S4CORE108_INST_EXPORT_15.zip'
-      - 'S4CORE108_INST_EXPORT_16.zip'
-      - 'S4CORE108_INST_EXPORT_17.zip'
-      - 'S4CORE108_INST_EXPORT_18.zip'
-      - 'S4CORE108_INST_EXPORT_19.zip'
-      - 'S4CORE108_INST_EXPORT_20.zip'
-      - 'S4CORE108_INST_EXPORT_21.zip'
-      - 'S4CORE108_INST_EXPORT_22.zip'
-      - '19118000000000008988'
-      - 'S4CORE108_INST_EXPORT_24.zip'
-      - 'S4CORE108_INST_EXPORT_25.zip'
-      - 'S4CORE108_INST_EXPORT_26.zip'
-      - 'S4CORE108_INST_EXPORT_27.zip'
-      - 'S4CORE108_INST_EXPORT_28.zip'
-      - 'S4CORE108_INST_EXPORT_29.zip'
-      - 'S4CORE108_INST_EXPORT_30.zip'
-      - 'S4HANAOP108_ERP_LANG_EN.SAR'
-#      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
-#      - 'SUM20SP22_3-80002456.SAR' # SUM 2.0
-
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
-      - 'IMDB_AFL20_077_0-80002045.SAR'
-      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
-      - 'SWPM20SP20_1-80003426.SAR'
-      - 'igsexe_4-70005446.sar' # IGS 7.81
-      - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
-      - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (793)
-      - 'SAPHOSTAGENT62_62-80004831.SAR' # SAP Host Agent
-      - 'S4CORE108_INST_EXPORT_1.zip'
-      - 'S4CORE108_INST_EXPORT_2.zip'
-      - 'S4CORE108_INST_EXPORT_3.zip'
-      - 'S4CORE108_INST_EXPORT_4.zip'
-      - 'S4CORE108_INST_EXPORT_5.zip'
-      - 'S4CORE108_INST_EXPORT_6.zip'
-      - 'S4CORE108_INST_EXPORT_7.zip'
-      - 'S4CORE108_INST_EXPORT_8.zip'
-      - 'S4CORE108_INST_EXPORT_9.zip'
-      - 'S4CORE108_INST_EXPORT_10.zip'
-      - 'S4CORE108_INST_EXPORT_11.zip'
-      - 'S4CORE108_INST_EXPORT_12.zip'
-      - 'S4CORE108_INST_EXPORT_13.zip'
-      - 'S4CORE108_INST_EXPORT_14.zip'
-      - 'S4CORE108_INST_EXPORT_15.zip'
-      - 'S4CORE108_INST_EXPORT_16.zip'
-      - 'S4CORE108_INST_EXPORT_17.zip'
-      - 'S4CORE108_INST_EXPORT_18.zip'
-      - 'S4CORE108_INST_EXPORT_19.zip'
-      - 'S4CORE108_INST_EXPORT_20.zip'
-      - 'S4CORE108_INST_EXPORT_21.zip'
-      - 'S4CORE108_INST_EXPORT_22.zip'
-      - '19118000000000008988'
-      - 'S4CORE108_INST_EXPORT_24.zip'
-      - 'S4CORE108_INST_EXPORT_25.zip'
-      - 'S4CORE108_INST_EXPORT_26.zip'
-      - 'S4CORE108_INST_EXPORT_27.zip'
-      - 'S4CORE108_INST_EXPORT_28.zip'
-      - 'S4CORE108_INST_EXPORT_29.zip'
-      - 'S4CORE108_INST_EXPORT_30.zip'
-      - 'S4HANAOP108_ERP_LANG_EN.SAR'
-#      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
-#      - 'SUM20SP22_3-80002470.SAR' # SUM 2.0
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
 
   sap_s4hana_2023_standard:
 
-    # Product ID for New Installation
+    # SWPM product catalog ID for the installation (String).
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.CORE.HDB.ABAP
 
-    sap_swpm_inifile_list:
+    # List of INI file sections to generate using sap_install.sap_swpm role (List).
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm2_hana
       - credentials
@@ -272,21 +129,6 @@ sap_swpm_templates_install_dictionary:
       - nw_config_ports
       - nw_config_host_agent
       - sap_os_linux_user
-
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
 
     software_files_wildcard_list:
       - 'SAPCAR*'
@@ -308,11 +150,150 @@ sap_swpm_templates_install_dictionary:
       - 'SAPPAAPL*'
       - 'SAP_BASIS*'
 
-
-  sap_s4hana_2022_standard_installation_media:
+    software_files_hana_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_077_0-80002031.SAR'
+      - 'IMDB_LCAPPS_2077_3-20010426.SAR'
+      - 'IMDB_AFL20_077_0-80001894.SAR'
+      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003424.SAR'
+      - 'igsexe_4-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent
+      - 'S4CORE108_INST_EXPORT_1.zip'
+      - 'S4CORE108_INST_EXPORT_2.zip'
+      - 'S4CORE108_INST_EXPORT_3.zip'
+      - 'S4CORE108_INST_EXPORT_4.zip'
+      - 'S4CORE108_INST_EXPORT_5.zip'
+      - 'S4CORE108_INST_EXPORT_6.zip'
+      - 'S4CORE108_INST_EXPORT_7.zip'
+      - 'S4CORE108_INST_EXPORT_8.zip'
+      - 'S4CORE108_INST_EXPORT_9.zip'
+      - 'S4CORE108_INST_EXPORT_10.zip'
+      - 'S4CORE108_INST_EXPORT_11.zip'
+      - 'S4CORE108_INST_EXPORT_12.zip'
+      - 'S4CORE108_INST_EXPORT_13.zip'
+      - 'S4CORE108_INST_EXPORT_14.zip'
+      - 'S4CORE108_INST_EXPORT_15.zip'
+      - 'S4CORE108_INST_EXPORT_16.zip'
+      - 'S4CORE108_INST_EXPORT_17.zip'
+      - 'S4CORE108_INST_EXPORT_18.zip'
+      - 'S4CORE108_INST_EXPORT_19.zip'
+      - 'S4CORE108_INST_EXPORT_20.zip'
+      - 'S4CORE108_INST_EXPORT_21.zip'
+      - 'S4CORE108_INST_EXPORT_22.zip'
+      - 'S4CORE108_INST_EXPORT_23.zip'
+      - 'S4CORE108_INST_EXPORT_24.zip'
+      - 'S4CORE108_INST_EXPORT_25.zip'
+      - 'S4CORE108_INST_EXPORT_26.zip'
+      - 'S4CORE108_INST_EXPORT_27.zip'
+      - 'S4CORE108_INST_EXPORT_28.zip'
+      - 'S4CORE108_INST_EXPORT_29.zip'
+      - 'S4CORE108_INST_EXPORT_30.zip'
+      - 'S4HANAOP108_ERP_LANG_EN.SAR'
+#      - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
+#      - 'SUM20SP22_3-80002456.SAR' # SUM 2.0
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_077_0-80002046.SAR'
+      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
+      - 'IMDB_AFL20_077_0-80002045.SAR'
+      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003426.SAR'
+      - 'igsexe_4-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent
+      - 'S4CORE108_INST_EXPORT_1.zip'
+      - 'S4CORE108_INST_EXPORT_2.zip'
+      - 'S4CORE108_INST_EXPORT_3.zip'
+      - 'S4CORE108_INST_EXPORT_4.zip'
+      - 'S4CORE108_INST_EXPORT_5.zip'
+      - 'S4CORE108_INST_EXPORT_6.zip'
+      - 'S4CORE108_INST_EXPORT_7.zip'
+      - 'S4CORE108_INST_EXPORT_8.zip'
+      - 'S4CORE108_INST_EXPORT_9.zip'
+      - 'S4CORE108_INST_EXPORT_10.zip'
+      - 'S4CORE108_INST_EXPORT_11.zip'
+      - 'S4CORE108_INST_EXPORT_12.zip'
+      - 'S4CORE108_INST_EXPORT_13.zip'
+      - 'S4CORE108_INST_EXPORT_14.zip'
+      - 'S4CORE108_INST_EXPORT_15.zip'
+      - 'S4CORE108_INST_EXPORT_16.zip'
+      - 'S4CORE108_INST_EXPORT_17.zip'
+      - 'S4CORE108_INST_EXPORT_18.zip'
+      - 'S4CORE108_INST_EXPORT_19.zip'
+      - 'S4CORE108_INST_EXPORT_20.zip'
+      - 'S4CORE108_INST_EXPORT_21.zip'
+      - 'S4CORE108_INST_EXPORT_22.zip'
+      - 'S4CORE108_INST_EXPORT_23.zip'
+      - 'S4CORE108_INST_EXPORT_24.zip'
+      - 'S4CORE108_INST_EXPORT_25.zip'
+      - 'S4CORE108_INST_EXPORT_26.zip'
+      - 'S4CORE108_INST_EXPORT_27.zip'
+      - 'S4CORE108_INST_EXPORT_28.zip'
+      - 'S4CORE108_INST_EXPORT_29.zip'
+      - 'S4CORE108_INST_EXPORT_30.zip'
+      - 'S4HANAOP108_ERP_LANG_EN.SAR'
+#      - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
+#      - 'SUM20SP22_3-80002470.SAR' # SUM 2.0
+
+
+  sap_s4hana_2022_standard:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.CORE.HDB.ABAP
+
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+      - 'S4CORE*'
+      - 'S4HANAOP*'
+      - 'HANAUMML*'
+      - 'K-*'
+      - 'KD*'
+      - 'KE*'
+      - 'KIT*'
+      - 'SAPPAAPL*'
+      - 'SAP_BASIS*'
+
+    software_files_hana_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
@@ -335,7 +316,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE107_INST_EXPORT_10.zip'
       - 'S4CORE107_INST_EXPORT_11.zip'
       - 'S4CORE107_INST_EXPORT_12.zip'
-      - '19118000000000007795'
+      - 'S4CORE107_INST_EXPORT_13.zip'
       - 'S4CORE107_INST_EXPORT_14.zip'
       - 'S4CORE107_INST_EXPORT_15.zip'
       - 'S4CORE107_INST_EXPORT_16.zip'
@@ -360,7 +341,7 @@ sap_swpm_templates_install_dictionary:
 #      - 'SUM20SP22_3-80002456.SAR' # SUM 2.0
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
@@ -383,7 +364,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE107_INST_EXPORT_10.zip'
       - 'S4CORE107_INST_EXPORT_11.zip'
       - 'S4CORE107_INST_EXPORT_12.zip'
-      - '19118000000000007795'
+      - 'S4CORE107_INST_EXPORT_13.zip'
       - 'S4CORE107_INST_EXPORT_14.zip'
       - 'S4CORE107_INST_EXPORT_15.zip'
       - 'S4CORE107_INST_EXPORT_16.zip'
@@ -407,153 +388,13 @@ sap_swpm_templates_install_dictionary:
 #      - 'SAPPAAPL4_2203_2-80004546.ZIP' # Predictive Analytics APL 2203 for SAP HANA 2.0 SPS03 and beyond
 #      - 'SUM20SP22_3-80002470.SAR' # SUM 2.0
 
-  sap_s4hana_2022_standard:
-
-    # Product ID for New Installation
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.CORE.HDB.ABAP
-
-    sap_swpm_inifile_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm2_hana
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
-
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_CLIENT*'
-      - 'SWPM20*'
-      - 'igsexe_*'
-      - 'igshelper_*'
-      - 'SAPEXE_*' # Kernel Part I (785)
-      - 'SAPEXEDB_*' # Kernel Part I (785)
-      - 'SUM*'
-      - 'SAPHOSTAGENT*'
-      - 'S4CORE*'
-      - 'S4HANAOP*'
-      - 'HANAUMML*'
-      - 'K-*'
-      - 'KD*'
-      - 'KE*'
-      - 'KIT*'
-      - 'SAPPAAPL*'
-      - 'SAP_BASIS*'
-
-
-  sap_s4hana_2021_standard_installation_media:
-
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
-      - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
-      - 'SWPM20SP20_1-80003424.SAR'
-      - 'igsexe_4-70005417.sar' # IGS 7.81
-      - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_100-80005374.SAR' # Kernel Part I (785)
-      - 'SAPEXEDB_100-80005373.SAR' # Kernel Part II (785)
-      - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'S4CORE106_INST_EXPORT_1.zip'
-      - 'S4CORE106_INST_EXPORT_2.zip'
-      - 'S4CORE106_INST_EXPORT_3.zip'
-      - 'S4CORE106_INST_EXPORT_4.zip'
-      - 'S4CORE106_INST_EXPORT_5.zip'
-      - 'S4CORE106_INST_EXPORT_6.zip'
-      - 'S4CORE106_INST_EXPORT_7.zip'
-      - 'S4CORE106_INST_EXPORT_8.zip'
-      - 'S4CORE106_INST_EXPORT_9.zip'
-      - 'S4CORE106_INST_EXPORT_10.zip'
-      - 'S4CORE106_INST_EXPORT_11.zip'
-      - '19118000000000006085'
-      - 'S4CORE106_INST_EXPORT_13.zip'
-      - '19118000000000006087'
-      - 'S4CORE106_INST_EXPORT_15.zip'
-      - 'S4CORE106_INST_EXPORT_16.zip'
-      - 'S4CORE106_INST_EXPORT_17.zip'
-      - 'S4CORE106_INST_EXPORT_18.zip'
-      - 'S4CORE106_INST_EXPORT_19.zip'
-      - 'S4CORE106_INST_EXPORT_20.zip'
-      - 'S4CORE106_INST_EXPORT_21.zip'
-      - 'S4CORE106_INST_EXPORT_22.zip'
-      - 'S4CORE106_INST_EXPORT_23.zip'
-      - 'S4CORE106_INST_EXPORT_24.zip'
-      - 'S4CORE106_INST_EXPORT_25.zip'
-      - 'S4CORE106_INST_EXPORT_26.zip'
-      - 'S4CORE106_INST_EXPORT_27.zip'
-      - 'S4CORE106_INST_EXPORT_28.zip'
-      - 'S4HANAOP106_ERP_LANG_EN.SAR'
-
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_067_4-80002046.SAR'
-      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
-      - 'SWPM20SP20_1-80003426.SAR'
-      - 'igsexe_4-70005446.sar' # IGS 7.81
-      - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_100-80005509.SAR' # Kernel Part I (785)
-      - 'SAPEXEDB_100-80005508.SAR' # Kernel Part II (785)
-      - 'SAPHOSTAGENT61_61-80004831.SAR'
-      - 'S4CORE106_INST_EXPORT_1.zip'
-      - 'S4CORE106_INST_EXPORT_2.zip'
-      - 'S4CORE106_INST_EXPORT_3.zip'
-      - 'S4CORE106_INST_EXPORT_4.zip'
-      - 'S4CORE106_INST_EXPORT_5.zip'
-      - 'S4CORE106_INST_EXPORT_6.zip'
-      - 'S4CORE106_INST_EXPORT_7.zip'
-      - 'S4CORE106_INST_EXPORT_8.zip'
-      - 'S4CORE106_INST_EXPORT_9.zip'
-      - 'S4CORE106_INST_EXPORT_10.zip'
-      - 'S4CORE106_INST_EXPORT_11.zip'
-      - '19118000000000006085'
-      - 'S4CORE106_INST_EXPORT_13.zip'
-      - '19118000000000006087'
-      - 'S4CORE106_INST_EXPORT_15.zip'
-      - 'S4CORE106_INST_EXPORT_16.zip'
-      - 'S4CORE106_INST_EXPORT_17.zip'
-      - 'S4CORE106_INST_EXPORT_18.zip'
-      - 'S4CORE106_INST_EXPORT_19.zip'
-      - 'S4CORE106_INST_EXPORT_20.zip'
-      - 'S4CORE106_INST_EXPORT_21.zip'
-      - 'S4CORE106_INST_EXPORT_22.zip'
-      - 'S4CORE106_INST_EXPORT_23.zip'
-      - 'S4CORE106_INST_EXPORT_24.zip'
-      - 'S4CORE106_INST_EXPORT_25.zip'
-      - 'S4CORE106_INST_EXPORT_26.zip'
-      - 'S4CORE106_INST_EXPORT_27.zip'
-      - 'S4CORE106_INST_EXPORT_28.zip'
-      - 'S4HANAOP106_ERP_LANG_EN.SAR'
 
   sap_s4hana_2021_standard:
 
     # Product ID for New Installation
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2021.CORE.HDB.ABAP
 
-    sap_swpm_inifile_list:
+    sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm2_hana
       - credentials
@@ -566,21 +407,6 @@ sap_swpm_templates_install_dictionary:
       - nw_config_ports
       - nw_config_host_agent
       - sap_os_linux_user
-
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
 
     software_files_wildcard_list:
       - 'SAPCAR*'
@@ -602,11 +428,142 @@ sap_swpm_templates_install_dictionary:
       - 'SAPPAAPL*'
       - 'SAP_BASIS*'
 
-
-  sap_s4hana_2020_standard_installation_media:
+    software_files_hana_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
 
     softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_AFL20_067P_400-80001894.SAR'
+      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003424.SAR'
+      - 'igsexe_4-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_100-80005374.SAR' # Kernel Part I (785)
+      - 'SAPEXEDB_100-80005373.SAR' # Kernel Part II (785)
+      - 'SAPHOSTAGENT61_61-80004822.SAR'
+      - 'S4CORE106_INST_EXPORT_1.zip'
+      - 'S4CORE106_INST_EXPORT_2.zip'
+      - 'S4CORE106_INST_EXPORT_3.zip'
+      - 'S4CORE106_INST_EXPORT_4.zip'
+      - 'S4CORE106_INST_EXPORT_5.zip'
+      - 'S4CORE106_INST_EXPORT_6.zip'
+      - 'S4CORE106_INST_EXPORT_7.zip'
+      - 'S4CORE106_INST_EXPORT_8.zip'
+      - 'S4CORE106_INST_EXPORT_9.zip'
+      - 'S4CORE106_INST_EXPORT_10.zip'
+      - 'S4CORE106_INST_EXPORT_11.zip'
+      - 'S4CORE106_INST_EXPORT_12.zip'
+      - 'S4CORE106_INST_EXPORT_13.zip'
+      - 'S4CORE106_INST_EXPORT_14.zip'
+      - 'S4CORE106_INST_EXPORT_15.zip'
+      - 'S4CORE106_INST_EXPORT_16.zip'
+      - 'S4CORE106_INST_EXPORT_17.zip'
+      - 'S4CORE106_INST_EXPORT_18.zip'
+      - 'S4CORE106_INST_EXPORT_19.zip'
+      - 'S4CORE106_INST_EXPORT_20.zip'
+      - 'S4CORE106_INST_EXPORT_21.zip'
+      - 'S4CORE106_INST_EXPORT_22.zip'
+      - 'S4CORE106_INST_EXPORT_23.zip'
+      - 'S4CORE106_INST_EXPORT_24.zip'
+      - 'S4CORE106_INST_EXPORT_25.zip'
+      - 'S4CORE106_INST_EXPORT_26.zip'
+      - 'S4CORE106_INST_EXPORT_27.zip'
+      - 'S4CORE106_INST_EXPORT_28.zip'
+      - 'S4HANAOP106_ERP_LANG_EN.SAR'
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_067_4-80002046.SAR'
+      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
+      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003426.SAR'
+      - 'igsexe_4-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_100-80005509.SAR' # Kernel Part I (785)
+      - 'SAPEXEDB_100-80005508.SAR' # Kernel Part II (785)
+      - 'SAPHOSTAGENT61_61-80004831.SAR'
+      - 'S4CORE106_INST_EXPORT_1.zip'
+      - 'S4CORE106_INST_EXPORT_2.zip'
+      - 'S4CORE106_INST_EXPORT_3.zip'
+      - 'S4CORE106_INST_EXPORT_4.zip'
+      - 'S4CORE106_INST_EXPORT_5.zip'
+      - 'S4CORE106_INST_EXPORT_6.zip'
+      - 'S4CORE106_INST_EXPORT_7.zip'
+      - 'S4CORE106_INST_EXPORT_8.zip'
+      - 'S4CORE106_INST_EXPORT_9.zip'
+      - 'S4CORE106_INST_EXPORT_10.zip'
+      - 'S4CORE106_INST_EXPORT_11.zip'
+      - 'S4CORE106_INST_EXPORT_12.zip'
+      - 'S4CORE106_INST_EXPORT_13.zip'
+      - 'S4CORE106_INST_EXPORT_14.zip'
+      - 'S4CORE106_INST_EXPORT_15.zip'
+      - 'S4CORE106_INST_EXPORT_16.zip'
+      - 'S4CORE106_INST_EXPORT_17.zip'
+      - 'S4CORE106_INST_EXPORT_18.zip'
+      - 'S4CORE106_INST_EXPORT_19.zip'
+      - 'S4CORE106_INST_EXPORT_20.zip'
+      - 'S4CORE106_INST_EXPORT_21.zip'
+      - 'S4CORE106_INST_EXPORT_22.zip'
+      - 'S4CORE106_INST_EXPORT_23.zip'
+      - 'S4CORE106_INST_EXPORT_24.zip'
+      - 'S4CORE106_INST_EXPORT_25.zip'
+      - 'S4CORE106_INST_EXPORT_26.zip'
+      - 'S4CORE106_INST_EXPORT_27.zip'
+      - 'S4CORE106_INST_EXPORT_28.zip'
+      - 'S4HANAOP106_ERP_LANG_EN.SAR'
+
+
+  sap_s4hana_2020_standard:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2020.CORE.HDB.ABAP
+
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    software_files_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_CLIENT*'
+      - 'SWPM20*'
+      - 'igsexe_*'
+      - 'igshelper_*'
+      - 'SAPEXE_*' # Kernel Part I (785)
+      - 'SAPEXEDB_*' # Kernel Part I (785)
+      - 'SUM*'
+      - 'SAPHOSTAGENT*'
+      - 'S4CORE*'
+      - 'S4HANAOP*'
+      - 'HANAUMML*'
+      - 'K-*'
+      - 'KD*'
+      - 'KE*'
+      - 'KIT*'
+      - 'SAPPAAPL*'
+      - 'SAP_BASIS*'
+
+    software_files_hana_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
       - 'IMDB_SERVER20_067_4-80002031.SAR'
       - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
       - 'IMDB_AFL20_067P_400-80001894.SAR'
@@ -644,7 +601,7 @@ sap_swpm_templates_install_dictionary:
       - 'S4HANAOP105_ERP_LANG_EN.SAR'
 
     softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
+      - 'SAPCAR_1300-70007726.EXE'
       - 'IMDB_SERVER20_067_4-80002046.SAR'
       - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
       - 'IMDB_AFL20_067P_400-80002045.SAR'
@@ -680,193 +637,3 @@ sap_swpm_templates_install_dictionary:
       - 'S4CORE105_INST_EXPORT_23.zip'
       - 'S4CORE105_INST_EXPORT_24.zip'
       - 'S4HANAOP105_ERP_LANG_EN.SAR'
-
-  sap_s4hana_2020_standard:
-
-    # Product ID for New Installation
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2020.CORE.HDB.ABAP
-
-    sap_swpm_inifile_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm2_hana
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
-
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_CLIENT*'
-      - 'SWPM20*'
-      - 'igsexe_*'
-      - 'igshelper_*'
-      - 'SAPEXE_*' # Kernel Part I (785)
-      - 'SAPEXEDB_*' # Kernel Part I (785)
-      - 'SUM*'
-      - 'SAPHOSTAGENT*'
-      - 'S4CORE*'
-      - 'S4HANAOP*'
-      - 'HANAUMML*'
-      - 'K-*'
-      - 'KD*'
-      - 'KE*'
-      - 'KIT*'
-      - 'SAPPAAPL*'
-      - 'SAP_BASIS*'
-
-
-  sap_s4hana_1909_standard_installation_media:
-
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1115-70006178.EXE'
-      - 'IMDB_SERVER20_067_4-80002031.SAR'
-      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
-      - 'IMDB_AFL20_067P_400-80001894.SAR'
-      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
-      - 'SWPM20SP20_1-80003424.SAR'
-      - 'igsexe_16-80003187.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_600-80004393.SAR' # Kernel Part I (777)
-      - 'SAPEXEDB_600-80004392.SAR' # Kernel Part II (777)
-      - 'SAPHOSTAGENT61_61-80004822.SAR'
-      - 'S4CORE104_INST_EXPORT_1.zip'
-      - 'S4CORE104_INST_EXPORT_2.zip'
-      - 'S4CORE104_INST_EXPORT_3.zip'
-      - 'S4CORE104_INST_EXPORT_4.zip'
-      - 'S4CORE104_INST_EXPORT_5.zip'
-      - 'S4CORE104_INST_EXPORT_6.zip'
-      - 'S4CORE104_INST_EXPORT_7.zip'
-      - 'S4CORE104_INST_EXPORT_8.zip'
-      - 'S4CORE104_INST_EXPORT_9.zip'
-      - 'S4CORE104_INST_EXPORT_10.zip'
-      - 'S4CORE104_INST_EXPORT_11.zip'
-      - 'S4CORE104_INST_EXPORT_12.zip'
-      - 'S4CORE104_INST_EXPORT_13.zip'
-      - 'S4CORE104_INST_EXPORT_14.zip'
-      - 'S4CORE104_INST_EXPORT_15.zip'
-      - 'S4CORE104_INST_EXPORT_16.zip'
-      - 'S4CORE104_INST_EXPORT_17.zip'
-      - 'S4CORE104_INST_EXPORT_18.zip'
-      - 'S4CORE104_INST_EXPORT_19.zip'
-      - 'S4CORE104_INST_EXPORT_20.zip'
-      - 'S4CORE104_INST_EXPORT_21.zip'
-      - 'S4CORE104_INST_EXPORT_22.zip'
-      - 'S4CORE104_INST_EXPORT_23.zip'
-      - 'S4CORE104_INST_EXPORT_24.zip'
-      - 'S4CORE104_INST_EXPORT_25.zip'
-      - 'S4HANAOP104_ERP_LANG_EN.SAR'
-
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1115-70006238.EXE'
-      - 'IMDB_SERVER20_067_4-80002046.SAR'
-      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
-      - 'IMDB_AFL20_067P_400-80002045.SAR'
-      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
-      - 'SWPM20SP20_1-80003426.SAR'
-      - 'igsexe_16-80003246.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
-      - 'SAPEXE_600-80004418.SAR' # Kernel Part I (777)
-      - 'SAPEXEDB_600-80004417.SAR' # Kernel Part II (777)
-      - 'SAPHOSTAGENT61_61-80004831.SAR'
-      - 'S4CORE104_INST_EXPORT_1.zip'
-      - 'S4CORE104_INST_EXPORT_2.zip'
-      - 'S4CORE104_INST_EXPORT_3.zip'
-      - 'S4CORE104_INST_EXPORT_4.zip'
-      - 'S4CORE104_INST_EXPORT_5.zip'
-      - 'S4CORE104_INST_EXPORT_6.zip'
-      - 'S4CORE104_INST_EXPORT_7.zip'
-      - 'S4CORE104_INST_EXPORT_8.zip'
-      - 'S4CORE104_INST_EXPORT_9.zip'
-      - 'S4CORE104_INST_EXPORT_10.zip'
-      - 'S4CORE104_INST_EXPORT_11.zip'
-      - 'S4CORE104_INST_EXPORT_12.zip'
-      - 'S4CORE104_INST_EXPORT_13.zip'
-      - 'S4CORE104_INST_EXPORT_14.zip'
-      - 'S4CORE104_INST_EXPORT_15.zip'
-      - 'S4CORE104_INST_EXPORT_16.zip'
-      - 'S4CORE104_INST_EXPORT_17.zip'
-      - 'S4CORE104_INST_EXPORT_18.zip'
-      - 'S4CORE104_INST_EXPORT_19.zip'
-      - 'S4CORE104_INST_EXPORT_20.zip'
-      - 'S4CORE104_INST_EXPORT_21.zip'
-      - 'S4CORE104_INST_EXPORT_22.zip'
-      - 'S4CORE104_INST_EXPORT_23.zip'
-      - 'S4CORE104_INST_EXPORT_24.zip'
-      - 'S4CORE104_INST_EXPORT_25.zip'
-      - 'S4HANAOP104_ERP_LANG_EN.SAR'
-
-  sap_s4hana_1909_standard:
-
-    # Product ID for New Installation
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA1909.CORE.HDB.ABAP
-
-    sap_swpm_inifile_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm2_hana
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
-
-    sap_swpm_inifile_dictionary:
-
-      # NW Instance Parameters
-      #sap_swpm_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_virtual_hostname: "{{ ansible_hostname }}"
-      #sap_swpm_ascs_instance_nr: "SET_IN_VAR_PROMPT"
-      #sap_swpm_pas_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # HDB Instance Parameters
-      #sap_swpm_db_sid: "SET_IN_VAR_PROMPT"
-      #sap_swpm_db_instance_nr: "SET_IN_VAR_PROMPT"
-
-      # SAP Host Agent
-      sap_swpm_install_saphostagent: 'true'
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_CLIENT*'
-      - 'SWPM20*'
-      - 'igsexe_*'
-      - 'igshelper_*'
-      - 'SAPEXE_*' # Kernel Part I (777)
-      - 'SAPEXEDB_*' # Kernel Part I (777)
-      - 'SUM*'
-      - 'SAPHOSTAGENT*'
-      - 'S4CORE*'
-      - 'S4HANAOP*'
-      - 'HANAUMML*'
-      - 'K-*'
-      - 'KD*'
-      - 'KE*'
-      - 'KIT*'
-      - 'SAPPAAPL*'
-      - 'SAP_BASIS*'
-

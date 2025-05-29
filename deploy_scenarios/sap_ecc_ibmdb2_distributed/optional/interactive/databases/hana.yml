@@ -1,0 +1,419 @@
+---
+# Interactive prompts - Scenario - hana, hana_ha
+
+# Following variables are defined and validated:
+# - sap_system_hana_db_instance_nr, sap_swpm_db_instance_nr, sap_hana_install_instance_nr, sap_ha_install_hana_hsr_instance_number
+# - sap_hana_install_use_master_password
+# - sap_hana_install_master_password, sap_ha_install_hana_hsr_db_system_password
+# - High Availability variables
+# - sap_hana_install_log_mode
+# - sap_hana_install_components
+# - sap_hana_install_userid
+# - sap_hana_install_groupid
+# - sap_hana_install_system_usage
+# - sap_hana_install_restrict_max_mem
+# - sap_hana_install_max_mem
+# - sap_hana_install_system_restart
+# - sap_hana_install_hdblcm_extraargs
+
+
+- name: Block for sap_system_hana_db_instance_nr
+  block:
+    - name: Prompt for SAP HANA Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter the SAP HANA Instance Number.
+          Example: 90
+      register: sap_system_hana_db_instance_nr_register
+      when: sap_system_hana_db_instance_nr is not defined
+
+    - name: Set fact for sap_system_hana_db_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_hana_db_instance_nr: "{{ sap_system_hana_db_instance_nr_register.user_input }}"
+        sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr_register.user_input }}"
+        sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr_register.user_input }}"
+        sap_ha_install_hana_hsr_instance_number: "{{ sap_system_hana_db_instance_nr_register.user_input }}"
+      when: sap_system_hana_db_instance_nr is not defined
+
+    - name: Fail if sap_swpm_master_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_master_password': '{{ sap_swpm_master_password }}'
+          Required length of SAP HANA Instance Number is 2 letters.
+          {% if sap_system_hana_db_instance_nr_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_system_hana_db_instance_nr | length != 2
+          or sap_system_hana_db_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+
+
+# Passwords
+# - name: Block for sap_hana_install_use_master_password
+#   block:
+#     - name: Prompt for usage of Master password for SAP HANA
+#       ansible.builtin.pause:
+#         prompt: |
+#           Enter y to use Master password for all passwords during HANA installation.
+#           Available options: y, n
+#           Press enter to skip and use the default value ('y').
+#       register: sap_hana_install_use_master_password_register
+#       when: sap_hana_install_use_master_password is not defined
+
+#     - name: Set fact for sap_hana_install_use_master_password
+#       ansible.builtin.set_fact:
+#         sap_hana_install_use_master_password: "{{ sap_hana_install_use_master_password_register.user_input
+#           if sap_hana_install_use_master_password_register.user_input | length > 0
+#           else 'y' }}"
+#       when: sap_hana_install_use_master_password is not defined
+
+#     - name: Fail if sap_hana_install_use_master_password is invalid
+#       ansible.builtin.fail:
+#         msg: |
+#           Invalid value for variable 'sap_hana_install_use_master_password': '{{ sap_hana_install_use_master_password }}'
+#           Available options: y, n
+#           {% if sap_hana_install_use_master_password_register.user_input is not defined -%}
+#             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+#           {% else -%}
+#             Re-run the playbook and provide a valid input.
+#           {% endif %}
+#       when:
+#         - sap_hana_install_use_master_password not in ['y', 'n']
+
+# TODO: Add possibility to use other passwords with sap_hana_install_use_master_password = 'n'
+- name: Block for sap_hana_install_master_password
+  no_log: true
+  block:
+    - name: Prompt for SAP HANA Master Password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the SAP HANA Master Password.
+          This password will be used for multiple SAP users.
+      register: sap_hana_install_master_password_register
+      when: sap_hana_install_master_password is not defined
+
+    - name: Set fact for sap_hana_install_master_password
+      ansible.builtin.set_fact:
+        sap_hana_install_master_password: "{{ sap_hana_install_master_password_register.user_input }}"
+        sap_ha_install_hana_hsr_db_system_password: "{{ sap_hana_install_master_password_register.user_input }}"
+      when: sap_hana_install_master_password is not defined
+
+    - name: Fail if sap_hana_install_master_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_master_password': '{{ sap_hana_install_master_password }}'
+          {% if sap_hana_install_master_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_master_password | length == 0
+          or sap_hana_install_master_password == 'ENTER_STRING_VALUE_HERE'
+
+
+# High Availability variables
+- name: Block for interactive tasks - SAP HANA - HA
+  when: sap_playbook_interactive_layout in ['hana_ha', 'distributed_ha']
+  block:
+    - name: Check if interactive task file is available - SAP HANA - HA
+      ansible.builtin.stat:
+        path: "optional/interactive/db_hana_ha.yml"
+      register: sap_playbook_interactive_tasks_hana_availability
+      ignore_errors: true
+
+    - name: Execute interactive task file - SAP HANA - HA
+      ansible.builtin.include_tasks:
+        file: "optional/interactive/db_hana_ha.yml"
+      when: sap_playbook_interactive_tasks_hana_availability.stat.exists
+
+    - name: Skip if interactive file was not found - SAP HANA - HA
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/db_hana_ha.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_hana_availability.stat.exists
+
+
+# Optional inputs verification
+- name: Prompt for entering optional variables
+  ansible.builtin.pause:
+    prompt: |
+      Would you like to configure optional settings for SAP HANA, such as log mode, components, user and group IDs?
+      Enter 'y' to configure optional settings, or 'n' to skip.
+      Available options: y, n
+      Press enter to skip and use the default value ('n').
+  register: sap_playbook_interactive_hana_optional
+
+- name: Block for sap_hana_install_log_mode
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for SAP HANA Log mode
+      ansible.builtin.pause:
+        prompt: |
+          Enter the SAP HANA Log mode.
+          Available options: normal, overwrite.
+          Press enter to skip and use the default value ('normal').
+      register: sap_hana_install_log_mode_register
+      when: sap_hana_install_log_mode is not defined
+
+    - name: Set fact for sap_hana_install_log_mode
+      ansible.builtin.set_fact:
+        sap_hana_install_log_mode: "{{ sap_hana_install_log_mode_register.user_input
+          if sap_hana_install_log_mode_register.user_input | length > 0
+          else 'normal' }}"
+      when: sap_hana_install_log_mode is not defined
+
+    - name: Fail if sap_hana_install_log_mode is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_log_mode': '{{ sap_hana_install_log_mode }}'
+          Available options: normal, overwrite
+          {% if sap_hana_install_log_mode_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_log_mode not in ['normal', 'overwrite']
+
+
+- name: Block for sap_hana_install_components
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for SAP HANA components
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the comma-separated list of the SAP HANA components to install.
+          Press enter to skip and use the default value ('all').
+      register: sap_hana_install_components_register
+      when: sap_hana_install_components is not defined
+
+    - name: Set fact for sap_hana_install_components
+      ansible.builtin.set_fact:
+        sap_hana_install_components: "{{ sap_hana_install_components_register.user_input
+          if sap_hana_install_components_register.user_input | length > 0
+          else 'all' }}"
+      when: sap_hana_install_components is not defined
+
+    - name: Fail if sap_hana_install_components is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_components': '{{ sap_hana_install_components }}'
+          {% if sap_hana_install_components_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_components | length == 0
+
+
+- name: Block for sap_hana_install_userid
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for SAP HANA user numeric Unix User ID (UID)
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the numeric Unix User ID (UID) for the SAP HANA user.
+          Example: 3002
+      register: sap_hana_install_userid_register
+      when: sap_hana_install_userid is not defined
+
+    - name: Set fact for sap_hana_install_userid
+      ansible.builtin.set_fact:
+        sap_hana_install_userid: "{{ sap_hana_install_userid_register.user_input }}"
+      when: sap_hana_install_userid is not defined
+
+    - name: Fail if sap_hana_install_userid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_userid': '{{ sap_hana_install_userid }}'
+          {% if sap_hana_install_userid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_userid | length == 0
+          or sap_hana_install_userid is not match('^[0-9]+$')  # Accepts only numbers
+
+
+- name: Block for sap_hana_install_groupid
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for SAP HANA user numeric Unix Group ID (GID)
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the numeric Unix Group ID (GID) for the SAP HANA user.
+          Example: 3003
+      register: sap_hana_install_groupid_register
+      when: sap_hana_install_groupid is not defined
+
+    - name: Set fact for sap_hana_install_groupid
+      ansible.builtin.set_fact:
+        sap_hana_install_groupid: "{{ sap_hana_install_groupid_register.user_input }}"
+      when: sap_hana_install_groupid is not defined
+
+    - name: Fail if sap_hana_install_groupid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_groupid': '{{ sap_hana_install_groupid }}'
+          {% if sap_hana_install_groupid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_groupid | length == 0
+          or sap_hana_install_groupid is not match('^[0-9]+$')  # Accepts only numbers
+
+
+- name: Block for sap_hana_install_system_usage
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for hdblcm parameter 'system_usage'
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the hdblcm parameter 'system_usage'.
+          Available options: custom, production, development, test, demo
+          Press enter to skip and use the default value ('custom').
+      register: sap_hana_install_system_usage_register
+      when: sap_hana_install_system_usage is not defined
+
+    - name: Set fact for sap_hana_install_system_usage
+      ansible.builtin.set_fact:
+        sap_hana_install_system_usage: "{{ sap_hana_install_system_usage_register.user_input
+          if sap_hana_install_system_usage_register.user_input | length > 0
+          else 'custom' }}"
+      when: sap_hana_install_system_usage is not defined
+
+    - name: Fail if sap_hana_install_system_usage is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_system_usage': '{{ sap_hana_install_system_usage }}'
+          {% if sap_hana_install_system_usage_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_system_usage | length == 0
+
+
+- name: Block for sap_hana_install_restrict_max_mem
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for hdblcm parameter 'restrict_max_mem'
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the hdblcm parameter 'restrict_max_mem'.
+          Available options: y, n
+          Press enter to skip and use the default value ('n').
+      register: sap_hana_install_restrict_max_mem_register
+      when: sap_hana_install_restrict_max_mem is not defined
+
+    - name: Set fact for sap_hana_install_restrict_max_mem
+      ansible.builtin.set_fact:
+        sap_hana_install_restrict_max_mem: "{{ sap_hana_install_restrict_max_mem_register.user_input
+          if sap_hana_install_restrict_max_mem_register.user_input | length > 0
+          else 'n' }}"
+      when: sap_hana_install_restrict_max_mem is not defined
+
+    - name: Fail if sap_hana_install_restrict_max_mem is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_restrict_max_mem': '{{ sap_hana_install_restrict_max_mem }}'
+          Available options: y, n
+          {% if sap_hana_install_restrict_max_mem_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_restrict_max_mem not in ['y', 'n']
+
+
+- name: Block for sap_hana_install_max_mem
+  when:
+    - sap_playbook_interactive_hana_optional.user_input == 'y'
+    - sap_hana_install_restrict_max_mem is defined and sap_hana_install_restrict_max_mem == 'y'
+  block:
+    - name: Prompt for hdblcm parameter 'max_mem'
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the hdblcm parameter 'max_mem' in MB.
+      register: sap_hana_install_max_mem_register
+      when: sap_hana_install_max_mem is not defined
+
+    - name: Set fact for sap_hana_install_max_mem
+      ansible.builtin.set_fact:
+        sap_hana_install_max_mem: "{{ sap_hana_install_max_mem_register.user_input }}"
+      when: sap_hana_install_max_mem is not defined
+
+    - name: Fail if sap_hana_install_max_mem is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_max_mem': '{{ sap_hana_install_max_mem }}'
+          {% if sap_hana_install_max_mem_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_max_mem | length == 0
+
+
+- name: Block for sap_hana_install_system_restart
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for enabling reboot after boot
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter 'y' if role should start SAP HANA after each system boot.
+          Available options: y, n
+          Press enter to skip and use the default value ('n').
+      register: sap_hana_install_system_restart_register
+      when:
+        - sap_hana_install_system_restart is not defined
+
+    - name: Set fact for sap_hana_install_system_restart
+      ansible.builtin.set_fact:
+        sap_hana_install_system_restart: "{{ sap_hana_install_system_restart_register.user_input
+          if sap_hana_install_system_restart_register.user_input | length > 0
+          else 'n' }}"
+      when:
+        - sap_hana_install_system_restart is not defined
+
+    - name: Fail if sap_hana_install_system_restart is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_hana_install_system_restart': '{{ sap_hana_install_system_restart }}'
+          Available options: y, n
+          {% if sap_hana_install_system_restart_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_hana_install_system_restart not in ['y', 'n']
+
+
+- name: Block for sap_hana_install_hdblcm_extraargs
+  when: sap_playbook_interactive_hana_optional.user_input == 'y'
+  block:
+    - name: Prompt for extra hdblcm parameters
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the list of extra arguments for hdblcm cli.
+          Example:  --ignore=<check1>[,<check2>]...
+          Press enter to skip.
+      register: sap_hana_install_hdblcm_extraargs_register
+      when: sap_hana_install_hdblcm_extraargs is not defined
+
+    - name: Set fact for sap_hana_install_hdblcm_extraargs
+      ansible.builtin.set_fact:
+        sap_hana_install_hdblcm_extraargs: "{{ sap_hana_install_hdblcm_extraargs_register.user_input }}"
+      when:
+        - sap_hana_install_hdblcm_extraargs is not defined
+        - sap_hana_install_hdblcm_extraargs_register.user_input | length > 0

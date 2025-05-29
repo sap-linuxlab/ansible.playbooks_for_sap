@@ -1,0 +1,372 @@
+---
+# Interactive prompts are executed only when `optional/ansible_extravars_interactive.yml` is used.
+# Following interactive variables control prompt selection:
+# - sap_playbook_interactive_product: bw4hana, ecc, hana, s4hana, nwas_abap, nwas_java, solman
+# - sap_playbook_interactive_database: hana, ibmdb2, sapase, oracledb, sapmaxdb
+# - sap_playbook_interactive_layout: sandbox, standard_scaleout, standard, distributed, distributed_ha, hana_ha, hana_scaleout
+# Undefined variables: Prompt and Validation (placeholder, empty, length, syntax)
+# Defined variable: Validation only (placeholder, empty, length, syntax)
+
+# Following variables are defined and validated:
+# - sap_vm_provision_iac_type
+# - sap_vm_provision_iac_platform
+# - sap_software_product
+# - sap_vm_provision_dns_root_domain
+# - sap_vm_provision_nfs_mount_point
+# - sap_install_media_detect_source_directory
+# - sap_id_user
+# - sap_id_user_password
+
+
+- name: Block for sap_vm_provision_iac_type
+  block:
+    - name: Prompt for Infrastructure-as-Code automation type
+      ansible.builtin.pause:
+        prompt: |
+          Select the type of Infrastructure-as-Code (IaC) automation you want to use.
+          Available options:
+            ansible               - Provisioning using Ansible
+            ansible_to_terraform  - Provisioning using Terraform inside of Ansible
+            existing_hosts        - Playbook is executed with provided inventory file without provisioning
+          Press enter to skip and use the default value ('ansible').
+      register: sap_vm_provision_iac_type_register
+      when: sap_vm_provision_iac_type is not defined
+
+    - name: Set fact for sap_vm_provision_iac_type
+      ansible.builtin.set_fact:
+        sap_vm_provision_iac_type:
+          "{{ sap_vm_provision_iac_type_register.user_input
+            if sap_vm_provision_iac_type_register.user_input | length > 0
+            else 'ansible' }}"
+      when: sap_vm_provision_iac_type is not defined
+
+    - name: Fail if sap_vm_provision_iac_type is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_iac_type': '{{ sap_vm_provision_iac_type }}'
+          Available options: ansible, ansible_to_terraform, existing_hosts
+          {% if sap_vm_provision_iac_type_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_iac_type not in ['ansible', 'ansible_to_terraform', 'existing_hosts']
+
+
+- name: Block for sap_vm_provision_iac_platform
+  block:
+    - name: Prompt for Infrastructure Platform
+      ansible.builtin.pause:
+        prompt: |
+          Select the infrastructure platform where you want to deploy the SAP system.
+          Available options:
+            aws_ec2_vs        - AWS EC2 Virtual Servers
+            gcp_ce_vm         - Google Cloud Compute Engine Virtual Machines
+            msazure_vm        - Microsoft Azure Virtual Machines
+            ibmcloud_powervs  - IBM Cloud Power Virtual Servers
+            ibmcloud_vs       - IBM Cloud Intel Virtual Servers
+            ibmpowervm_vm     - IBM PowerVM Virtual Machines
+            kubevirt_vm       - EXPERIMENTAL - OVirt Virtual Machines
+            ovirt_vm          - EXPERIMENTAL - KubeVirt Virtual Machines
+            vmware_vm         - EXPERIMENTAL - VMware vSphere Virtual Machines
+            existing_hosts    - Playbook is executed with provided inventory file without provisioning
+      register: sap_vm_provision_iac_platform_register
+      when: sap_vm_provision_iac_platform is not defined
+
+    - name: Set fact for sap_vm_provision_iac_platform
+      ansible.builtin.set_fact:
+        sap_vm_provision_iac_platform: "{{ sap_vm_provision_iac_platform_register.user_input }}"
+      when: sap_vm_provision_iac_platform is not defined
+
+    - name: Fail if sap_vm_provision_iac_platform is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_iac_platform': '{{ sap_vm_provision_iac_platform }}'
+          Available options: aws_ec2_vs, gcp_ce_vm, msazure_vm, ibmcloud_powervs, ibmcloud_vs, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm, existing_hosts
+          {% if sap_vm_provision_iac_platform_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_vm_provision_iac_platform not in ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs',
+        'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
+
+
+- name: Block for interactive tasks - Get mandatory vars for host_specifications_dictionary
+  block:
+    - name: Check if interactive task file is available - Mandatory variables
+      ansible.builtin.stat:
+        path: "optional/interactive/mandatory_vars.yml"
+      register: sap_playbook_interactive_tasks_mandatory_vars_availability
+      ignore_errors: true
+
+    - name: Execute interactive task file - Mandatory variables
+      ansible.builtin.include_tasks:
+        file: "optional/interactive/mandatory_vars.yml"
+      when: sap_playbook_interactive_tasks_mandatory_vars_availability.stat.exists
+
+    - name: Skip if interactive file was not found - Mandatory variables
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/mandatory_vars.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_mandatory_vars_availability.stat.exists
+
+
+# Host specification dictionary cannot be processed before its variables are defined above
+- name: Block for interactive tasks - Process host_specifications_dictionary
+  block:
+    - name: Check if interactive task file is available - Process host_specifications_dictionary
+      ansible.builtin.stat:
+        path: "optional/interactive/process_host_spec_dictionary.yml"
+      register: sap_playbook_interactive_tasks_process_host_spec_dict_availability
+      ignore_errors: true
+
+    - name: Execute interactive task file - Process host_specifications_dictionary
+      ansible.builtin.include_tasks:
+        file: "optional/interactive/process_host_spec_dictionary.yml"
+      when: sap_playbook_interactive_tasks_process_host_spec_dict_availability.stat.exists
+
+    - name: Skip if interactive file was not found - Process host_specifications_dictionary
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/process_host_spec_dictionary.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_process_host_spec_dict_availability.stat.exists
+
+
+# Interactive input for SAP software selection from dictionary
+- name: Block for sap_software_product
+  block:
+    - name: Fail if sap_software_install_dictionary is undefined or empty
+      ansible.builtin.fail:
+        msg: |
+          Variable 'sap_software_install_dictionary' is undefined or empty.
+          Correct this variable in extra vars and re-run the playbook.
+      when: sap_software_install_dictionary is undefined or sap_software_install_dictionary | length == 0
+
+    - name: Prompt for SAP software product
+      ansible.builtin.pause:
+        prompt: |
+          Select the SAP software product you want to install from the list: {{ sap_software_install_dictionary.keys() }}
+          Products are defined in the 'sap_software_install_dictionary' variable.
+          The default value is the first item in the dictionary.
+          Press enter to skip and use the default value ('{{ __default_product }}').
+      register: sap_software_product_register
+      vars:
+        __default_product: "{{ (sap_software_install_dictionary | dict2items | first).key }}"
+      when: sap_software_product is not defined
+
+    # Select first item in dictionary as default
+    - name: Set fact for sap_software_product
+      ansible.builtin.set_fact:
+        sap_software_product:
+          "{{ sap_software_product_register.user_input
+            if sap_software_product_register.user_input | length > 0
+            else (sap_software_install_dictionary | dict2items | first).key }}"
+      when: sap_software_product is not defined
+
+    - name: Fail if sap_software_product is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_software_product': '{{ sap_software_product }}'
+          Available options: {{ sap_software_install_dictionary.keys() }}
+          {% if sap_software_product_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_software_product not in sap_software_install_dictionary.keys()
+
+
+# Interactive inputs for specific platform
+- name: Block for interactive tasks - {{ sap_vm_provision_iac_platform }}
+  when: sap_vm_provision_iac_platform != 'existing_hosts'
+  block:
+    - name: Check if interactive task file is available - {{ sap_vm_provision_iac_platform }}
+      ansible.builtin.stat:
+        path: "optional/interactive/platforms/{{ sap_vm_provision_iac_platform }}.yml"
+      register: sap_playbook_interactive_tasks_platform_availability
+      ignore_errors: true
+
+    - name: Block for sap_vm_provision_dns_root_domain
+      when: sap_playbook_interactive_tasks_platform_availability.stat.exists
+      block:
+        - name: Prompt for DNS root domain
+          ansible.builtin.pause:
+            prompt: |
+              Enter the DNS root domain that will be used to construct Fully Qualified Domain Names (FQDNs) for the virtual machines.
+              Example: example.com
+          register: sap_vm_provision_dns_root_domain_register
+          when: sap_vm_provision_dns_root_domain is not defined
+
+        - name: Set fact for sap_vm_provision_dns_root_domain
+          ansible.builtin.set_fact:
+            sap_vm_provision_dns_root_domain: "{{ sap_vm_provision_dns_root_domain_register.user_input }}"
+          when: sap_vm_provision_dns_root_domain is not defined
+
+        - name: Fail if sap_vm_provision_dns_root_domain is invalid
+          ansible.builtin.fail:
+            msg: |
+              Invalid value for variable 'sap_vm_provision_dns_root_domain': '{{ sap_vm_provision_dns_root_domain }}'
+              {% if sap_vm_provision_dns_root_domain_register.user_input is not defined -%}
+                Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+              {% else -%}
+                Re-run the playbook and provide a valid input.
+              {% endif %}
+          when:
+            - sap_vm_provision_dns_root_domain | length == 0
+              or sap_vm_provision_dns_root_domain == 'ENTER_STRING_VALUE_HERE'
+
+    - name: Execute interactive task file - {{ sap_vm_provision_iac_platform }}
+      ansible.builtin.include_tasks:
+        file: "optional/interactive/platforms/{{ sap_vm_provision_iac_platform }}.yml"
+      when: sap_playbook_interactive_tasks_platform_availability.stat.exists
+
+    - name: Skip if interactive file was not found - {{ sap_vm_provision_iac_platform }}
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/platforms/{{ sap_vm_provision_iac_platform }}.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_platform_availability.stat.exists
+
+
+# Regex search of input type to determine database task file to include
+# Most of AnyDB variables are defined in sap_swpm variables, so all are combined into same task file.
+- name: Block for interactive tasks - Database
+  vars:
+    sap_playbook_interactive_type_db:
+      "{{ 'hana' if sap_playbook_interactive_database == 'hana'
+        else ('anydb' if sap_playbook_interactive_database in ['ibmdb2', 'sapase', 'oracledb', 'sapmaxdb']
+          else '') }}"
+  block:
+    - name: Check if interactive task file is available - SAP Database
+      ansible.builtin.stat:
+        path: "optional/interactive/databases/{{ sap_playbook_interactive_type_db }}.yml"
+      register: sap_playbook_interactive_tasks_db_availability
+      ignore_errors: true
+
+    - name: Execute interactive task file - SAP Database
+      ansible.builtin.include_tasks:
+        file: "optional/interactive/databases/{{ sap_playbook_interactive_type_db }}.yml"
+      when: sap_playbook_interactive_tasks_db_availability.stat.exists
+
+    - name: Skip if interactive file was not found - SAP Database
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/databases/{{ sap_playbook_interactive_type_db }}.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_db_availability.stat.exists
+
+
+- name: Block for interactive tasks - SWPM
+  when: sap_playbook_interactive_product != 'hana'
+  block:
+    - name: Check if interactive task file is available - SWPM
+      ansible.builtin.stat:
+        path: "optional/interactive/swpm.yml"
+      register: sap_playbook_interactive_tasks_swpm_availability
+      ignore_errors: true
+
+    - name: Execute interactive task file - SWPM
+      ansible.builtin.include_tasks:
+        file: "optional/interactive/swpm.yml"
+      when: sap_playbook_interactive_tasks_swpm_availability.stat.exists
+
+    - name: Skip if interactive file was not found - SWPM
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/swpm.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_swpm_availability.stat.exists
+
+
+- name: Block for sap_install_media_detect_source_directory
+  block:
+    - name: Prompt for SAP installation media path
+      ansible.builtin.pause:
+        prompt: |
+          Enter the path to the directory containing the SAP installation media files.
+          This path will be used to download the SAP installation media files
+          if they are not already present and the 'community.sap_launchpad' collection is available.
+          Press enter to skip and use the default value ('/software').
+      register: sap_install_media_detect_source_directory_register
+      when: sap_install_media_detect_source_directory is not defined
+
+    - name: Set fact for sap_install_media_detect_source_directory
+      ansible.builtin.set_fact:
+        sap_install_media_detect_source_directory: "{{ sap_install_media_detect_source_directory_register.user_input
+          if sap_install_media_detect_source_directory_register.user_input | length > 0
+          else '/software' }}"
+      when: sap_install_media_detect_source_directory is not defined
+
+    - name: Fail if sap_install_media_detect_source_directory is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_install_media_detect_source_directory': '{{ sap_install_media_detect_source_directory }}'
+          {% if sap_install_media_detect_source_directory_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_install_media_detect_source_directory | length == 0
+          or sap_install_media_detect_source_directory == 'ENTER_STRING_VALUE_HERE'
+
+
+# Check of sap_launchpad is present before gathering its variables
+- name: Check availability of sap_launchpad collection on execution node
+  delegate_to: localhost
+  ansible.builtin.command:
+    cmd: ansible-galaxy collection list
+  register: sap_playbook_collection_list_output
+
+- name: Block for sap_id_user
+  when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+  no_log: true
+  block:
+    - name: Prompt for SAP S-User ID
+      ansible.builtin.pause:
+        prompt: |
+          Enter your SAP S-User ID.
+          This ID is required to download SAP installation media from the SAP Support Portal using the `community.sap_launchpad` collection.
+          Example: S0001234567
+      register: sap_id_user_register
+      when: sap_id_user is not defined
+
+    - name: Set fact for sap_id_user
+      ansible.builtin.set_fact:
+        sap_id_user: "{{ sap_id_user_register.user_input }}"
+      when: sap_id_user is not defined
+
+    - name: Fail if sap_id_user is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_id_user': '{{ sap_id_user }}'
+          {% if sap_id_user_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_id_user | length == 0 or sap_id_user == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_id_user_password
+  when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+  no_log: true
+  block:
+    - name: Prompt for SAP S-User Password
+      ansible.builtin.pause:
+        prompt: |
+          Enter your SAP S-User password.
+          This password is required to download SAP installation media from the SAP Support Portal using the `community.sap_launchpad` collection.
+      register: sap_id_user_password_register
+      when: sap_id_user_password is not defined
+
+    - name: Set fact for sap_id_user_password
+      ansible.builtin.set_fact:
+        sap_id_user_password: "{{ sap_id_user_password_register.user_input }}"
+      when: sap_id_user_password is not defined
+
+    - name: Fail if sap_id_user_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_id_user_password': '{{ sap_id_user_password }}'
+          {% if sap_id_user_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_id_user_password | length == 0 or sap_id_user_password == 'ENTER_STRING_VALUE_HERE'

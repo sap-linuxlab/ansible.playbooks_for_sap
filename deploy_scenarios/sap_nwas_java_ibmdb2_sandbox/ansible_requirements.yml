@@ -8,7 +8,7 @@ collections:
     version: 10.1.0
   - name: fedora.linux_system_roles
     type: galaxy
-    version: 1.95.0
+    version: 1.100.0
   - name: community.sap_install
     type: galaxy
     version: 1.5.3
@@ -17,7 +17,7 @@ collections:
     version: 1.2.0
   - name: community.sap_infrastructure
     type: galaxy
-    version: 1.1.0
+    version: 1.1.2
 #  - name: community.sap_operations
 #    type: galaxy
 #    version: 0.9.1

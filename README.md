@@ -1,39 +1,26 @@
 # Ansible Playbooks for SAP
 
-Use Ansible to deploy various SAP Software solution scenarios onto different Hyperscaler Cloud Service Providers and Hypervisors platforms.
+## Description
+This repository contains Ansible Playbooks for deployment of various SAP Software solution scenarios onto different Hyperscaler Cloud Service Providers and Hypervisors platforms.
 
-These Ansible Playbooks for SAP are designed to be:
-- simple to understand,
-- highly reconfigurable and extendable,
-- self-enclosed for a specific scenario,
-- result in an equal installation performed to any Infrastructure Platform (Hyperscaler Cloud Service Providers and Hypervisor platforms),
-- use either Ansible or Terraform to provision Infrastructure,
-- use Ansible for configuration of OS and installation of SAP Software,
-- and `licensed for corporate usage` by SAP Customers, SAP Service Partners and SAP Technology Partners
 
-> <sub>Note: Ansible Playbooks for SAP optionally use Ansible > Terraform. To instead use Terraform > Ansible, see [Terraform Templates for SAP](https://github.com/sap-linuxlab/terraform.templates_for_sap)</sub>
+## Benefits of Ansible Playbooks for SAP
+The Ansible Playbooks for SAP offer several key benefits:
+- **Ease of Use:** The playbooks are designed with simplicity in mind, making them accessible for users with varying levels of Ansible experience.
+- **Highly Adaptable:** They are easily reconfigurable and extendable, allowing you to tailor deployments to your specific needs.
+   - For example, you can customize them for specific SAP versions, integrate with monitoring tools, or adapt them to different network topologies.
+- **Scenario-Specific and Self-Contained:** Each playbook encapsulates a complete deployment scenario, ensuring consistency and reducing complexity.
+- **Consistent Across Platforms:** Deploy the same SAP solution across diverse infrastructure platforms (Hyperscaler Cloud Service Providers and Hypervisor platforms) with predictable results.
+- **Infrastructure Flexibility:** Choose between Ansible or Terraform for infrastructure provisioning, providing flexibility in your deployment approach.
+- **Corporate-Ready:** Licensed for corporate use by SAP Customers, SAP Service Partners, and SAP Technology Partners.
 
-**Please read the [full documentation](/docs#readme) for how-to guidance, requirements, and all other details. Summary documentation is below:**
-- [Ansible Playbooks for SAP - execution workflow summary diagram](#ansible-playbooks-for-sap---execution-workflow-summary-diagram)
-- [Ansible Playbooks for SAP - available scenarios summary](#ansible-playbooks-for-sap---available-scenarios-summary)
-- [Ansible Playbooks for SAP - deployments choice summary](#ansible-playbooks-for-sap---deployments-choice-summary)
-- [Disclaimer](#disclaimer)
 
----
-
-## Ansible Playbooks for SAP - execution workflow summary diagram
-
-![Ansible Playbooks for SAP execution flow](./docs/images/ansible_playbooks_sap_summary.svg)
-
----
-
-## Ansible Playbooks for SAP - available scenarios summary
-
-**Ansible Playbooks are available for Operating Systems:**
-- SUSE Linux Enterprise Server for SAP (SLES4SAP)
+## Supported Configurations
+### Supported Operating Systems
+- SUSE Linux Enterprise Server for SAP Applications (SLES4SAP)
 - Red Hat Enterprise Linux for SAP (RHEL4SAP)
 
-**Ansible Playbooks are available for Infrastructure Platforms:**
+### Supported Infrastructure Platforms
 - AWS EC2 Virtual Server instances
 - Google Cloud Compute Engine Virtual Machines
 - IBM Cloud, Intel Virtual Servers
@@ -43,101 +30,139 @@ These Ansible Playbooks for SAP are designed to be:
 - OVirt (e.g. Red Hat Enterprise Linux KVM)
 - KubeVirt (e.g. Red Hat OpenShift Virtualization, SUSE Rancher with Harvester HCI) `[Experimental]`
 - VMware vSphere Virtual Machines `[Beta]`
+- Existing hosts without provisioning
 
-**Ansible Playbooks are available for SAP Software Solution Scenarios:**
+### Supported Deployment Scenarios
+| SAP Product | Versions | Deployment Topology | Database |
+| --- | --- | --- | --- |
+| SAP HANA | 2.0 SPS 07<br> 2.0 SPS 06 | Sandbox<br> Scale-Out <br> Scale-Up High Availability | SAP HANA |
+| SAP BW/4HANA | 2023<br> 2021 | Sandbox<br> Scale-Out | SAP HANA |
+| SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | Sandbox*<br> Standard*<br> Distributed*<br> Distributed with High Availability* | SAP HANA |
+| SAP S/4HANA Foundation | 2023<br> 2022<br> 2021 | Sandbox<br> Standard | SAP HANA |
+| SAP Landscape for SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | 3-System Standard* | SAP HANA |
+| SAP Business Suite (ECC) | EHP 8<br> EHP 7 | Sandbox | SAP HANA |
+| SAP Business Suite (ECC) | EHP 8 | Sandbox<br> Distributed (IBM Db2) | IBM Db2<br> Oracle DB<br> SAP ASE<br> SAP MaxDB |
+| SAP IDES for ECC | EHP 8 | Sandbox | SAP HANA, IBM Db2 |
+| SAP NetWeaver ABAP | 7.52 SP00<br> 7.50 SP00 | Sandbox | SAP HANA<br> IBM Db2<br> Oracle DB<br> SAP ASE<br> SAP MaxDB |
+| SAP NetWeaver JAVA | 7.50 SP22 | Sandbox | IBM Db2<br> SAP ASE |
+| SAP Solution Manager ABAP/JAVA | 7.2 SR2 | Sandbox | SAP HANA<br> SAP ASE |
 
-- SAP HANA (2.0 SPSx)
-    - Standard (Scale-Up)
-    - High Availability (performance optimized)
-    - Scale-Out
-- SAP S/4HANA (2023, 2022, 2021, 2020, 1909)
-    - Sandbox
-    - Sandbox via Maintenance Planner
-    - Standard
-    - Standard via Maintenance Planner
-    - Distributed
-    - Distributed via Maintenance Planner
-    - Distributed High Availability
-    - Distributed High Availability via Maintenance Planner
-- SAP Landscape for SAP S/4HANA (2023, 2022, 2021, 2020, 1909)
-    - 3-System Standard
-    - 3-System Standard via Maintenance Planner
-- SAP S/4HANA Foundation (2023, 2022, 2021), for SAP HANA-only Add-Ons and Custom Apps
-    - Sandbox
-    - Standard
-- SAP ECC on HANA (EhP8, EhP7)
-    - Sandbox
-- SAP ECC (EhP8)
-    - with IBM Db2, Sandbox
-    - with IBM Db2, Distributed
-    - with Oracle DB, Sandbox
-    - with SAP ASE, Sandbox
-    - with SAP MaxDB, Sandbox
-- SAP BW/4HANA (2023, 2021)
-    - Sandbox
-    - Standard (Scale-Out)
-- SAP IDES for ECC on HANA (EhP8)
-    - Sandbox
-- SAP IDES for ECC (EhP8, EhP7)
-    - with IBM Db2, Sandbox
-- SAP NetWeaver (ABAP)
-    - with SAP HANA, Sandbox
-    - with IBM Db2, Sandbox
-    - with Oracle DB, Sandbox
-    - with SAP ASE, Sandbox
-    - with SAP MaxDB, Sandbox
-- SAP NetWeaver (JAVA)
-    - with IBM Db2, Sandbox
-    - with SAP ASE, Sandbox
-- SAP SolMan (ABAP/JAVA)
-    - with SAP HANA, Sandbox
-    - with SAP ASE, Sandbox
+> <sub>Note: Scenarios marked with an asterisk (*) also support download of SAP Installation Media using Maintenance Planner transaction.</sub>  
+
+> <sub>Note: Additional SAP Product versions can be added by customizing extra vars file.</sub>  
+
+The explanation of Deployment Topologies:
+| Deployment Topology | Definition |
+| --- | --- |
+| Sandbox | A single-host system, that consolidates all SAP Database and SAP ABAP Platform instances onto a single host |
+| Standard | A standard system, that consists of the SAP Application running on a dedicated host, and an SAP Database server running on another dedicated host |
+| Distributed | A distributed SAP system, that separates the SAP Application components from the database server, placing them on distinct hosts |
+| Distributed with High Availability | A distributed SAP system with High Availability (HA), that separates the SAP Application components from the database server, placing them on distinct hosts |
+| Scale-Out | An Scale-Out system, that consists of an SAP Application instances running on a dedicated host, and an SAP HANA database server running as a scale-out cluster across multiple hosts. |
 
 
-**Ansible Playbooks available with Special Actions for SAP Software:**
-
+### Supported Special Playbooks
 - SAP Web Dispatcher, Standalone (with SAP Kernel Part II for SAP HANA)
 - SAP SolMan Diagnostics Agent (SDA) `[Experimental]`
 - Download SAP Software installation media
 - System Copy Export, IBM Db2 `[Experimental]`
 - System Copy Restore (SAP ECC on HANA or SAP S/4HANA), Sandbox  `[Experimental]`
+- SAP ASCS/ERS Cluster Installation
 
----
 
-## Ansible Playbooks for SAP - deployments choice summary
+## How to get started
+**Before running the playbook, please read the [full documentation](/docs#readme) for how-to guidance, requirements, and all other details.**  
 
-> **Get Started:** See full documentation section [Example execution of Ansible Playbooks for SAP](/docs##example-execution-of-ansible-playbooks-for-sap)
+The playbooks can be executed with one of following methods.
 
-Below is a summary of the execution method and deployment options:
+### Ansible with existing host(s)
+This method is used to install the SAP system on an existing host(s).  
+- **Interactive Prompts:** Yes :white_check_mark:
+- **Provisioning:**: No :x:
+- **SAP Installation:** Yes :white_check_mark:
+- **Required Variables:**
+   - `sap_vm_provision_iac_type: ansible`
+   - `sap_vm_provision_iac_platform: existing_hosts`
+- **Host definition:** The existing hosts are defined using:
+   - Ansible inventory file (e.g. `optional/ansible_inventory_noninteractive.yml`).
+   - The `sap_vm_provision_existing_hosts_host_specifications_dictionary` variable defined in `optional/ansible_extravars_existing_hosts.yml` file.
 
-| Execution Method | Ansible with existing host/s | Ansible provisions host/s | Ansible uses Terraform to provision minimal landing zone and host/s<br/>`[Beta]` |
-| --- | --- | --- | --- |
-| Interactive variable prompts<br/>`[Coming Soon]` | Not Available | Enter `ansible` <br/>when prompted to<br/>`Please choose Infrastructure-as-Code automation from list` | Enter `ansible_to_terraform` <br/>when prompted to<br/>`Please choose Infrastructure-as-Code automation from list` |
-| Standard (non-interactive) | In Extra Vars file, set <br/><sub>`sap_vm_provision_iac_type: existing_hosts`</sub> | In Extra Vars file, set <br/><sub>`sap_vm_provision_iac_type: ansible`</sub> | In Extra Vars file, set <br/><sub>`sap_vm_provision_iac_type: ansible_to_terraform`</sub> |
-| | | |
-| | **Summary:**</br>SAP installation :white_check_mark:<br/>Provisions hosts :x:<br/>Infrastructure setup :x:<br/> | **Summary:**</br>SAP installation :white_check_mark:<br/>Provisions hosts :white_check_mark:<br/>Infrastructure setup :x:<br/> | **Summary:**</br>SAP installation :white_check_mark:<br/>Provisions hosts :white_check_mark:<br/>Infrastructure setup :white_check_mark:<br/> |
-| | **Intended usage:**<br/>SAP installation to existing host/s, using an existing setup on an Infrastructure Platform.<br/><br/>Target hosts are defined using an Ansible Inventory file.<br/><br/><br/> | **Intended usage:**<br/>SAP installation to host/s provisioned by Ansible, using an existing setup on an Infrastructure Platform.<br/><br/>Target hosts are defined using a dynamically generated Ansible Inventory created during runtime (after hosts are provisioned). | **Intended usage:**<br/>SAP installation to host/s provisioned by executing Terraform to create a minimal setup on an Infrastructure Platform.<br/><br/>Target hosts are defined using a dynamically generated Ansible Inventory created during runtime (after hosts are provisioned). |
 
----
+### Ansible provisions host(s)
+This method provisions a new host(s) and installs the SAP system. 
+- **Interactive Prompts:** Yes :white_check_mark:
+- **Provisioning:**: Yes :white_check_mark:
+- **SAP Installation:** Yes :white_check_mark:
+- **Required Variables:**
+   - `sap_vm_provision_iac_type: ansible`
+   - `sap_vm_provision_iac_platform` for your selected Infrastructure Platform (e.g. `aws_ec2_vs` for AWS).
+- **Host definition:** The provisioned hosts are defined using:
+   - `host_specifications_dictionary` variable defined in extra vars file.
+   - Example for AWS: `sap_vm_provision_aws_ec2_vs_host_specifications_dictionary` variable in `ansible_extravars_aws_ec2_vs.yml` file.
+
+
+### Ansible uses Terraform to provision minimal landing zone and host(s)
+This method provisions a minimal landing zone and a new host(s) using Terraform and installs the SAP system using Ansible. 
+- **Interactive Prompts:** Yes :white_check_mark: `[Experimental]` (Limited support for Terraform variables)
+- **Provisioning:**: Yes :white_check_mark:
+- **SAP Installation:** Yes :white_check_mark:
+- **Required Variables:**
+   - `sap_vm_provision_iac_type: ansible_to_terraform`
+   - `sap_vm_provision_iac_platform` for your selected Infrastructure Platform (e.g. `aws_ec2_vs` for AWS).
+- **Host definition:** The provisioned hosts are defined using:
+   - The `host_specifications_dictionary` variable defined in extra vars file.
+   - Example for AWS: `sap_vm_provision_aws_ec2_vs_host_specifications_dictionary` variable in `ansible_extravars_aws_ec2_vs.yml` file.
+> <sub>Note: Ansible Playbooks for SAP optionally use Ansible > Terraform. To instead use Terraform > Ansible, see [Terraform Templates for SAP](https://github.com/sap-linuxlab/terraform.templates_for_sap)</sub>
+
+
+
+## Interactive Prompts
+Interactive prompts are available for most of the deployment playbooks.  
+
+Exceptions include: S4/HANA Landscape and Solution Manager.
+
+This mode is recommended if you need help entering all required variables in extra vars files.
+- It will prompt for all undefined variables.
+- It will validate all defined variables and those obtained from prompts.
+
+How to execute Interactive Prompts mode:
+1.  **Prepare the `optional/ansible_extravars_interactive.yml` file:** This file contains the essential set of variables for initiating Interactive Prompts.
+2.  **Execute the playbook:** Run the following command `ansible-playbook ansible_playbook.yml --extra-vars "@./optional/ansible_extravars_interactive.yml"`
+
+
+## Workflow diagram of playbook execution
+![Ansible Playbooks for SAP execution flow](./docs/images/ansible_playbooks_sap_summary.svg)
+
 
 ## Disclaimer
+These Ansible Playbooks for SAP provide Infrastructure-as-Code (IaC) and Configuration-as-Code (CaC) automation for common SAP software solution scenarios. They offer a codified approach to streamline and standardize deployments, which can be extended to meet specific requirements.  
 
-These are common SAP Software Solution Scenarios which are codified using Ansible to provide for Infrastructure-as-Code (IaC) Automation for SAP and Configuration-as-Code (CaC) Automation for SAP. These can be extended as needed for bespoke requirements.
+These playbooks are not intended to replicate every possible SAP software deployment scenario, nor do they replace existing SAP installation procedures detailed in the [SAP Help Portal](https://help.sap.com) or [SAP Notes on SAP ONE Support](https://launchpad.support.sap.com). While the Ansible Role for SAP SWPM enables the installation of any SAP software supported by SAP Software Provisioning Manager (SWPM 1.0/2.0), always refer to official SAP documentation for the most accurate and up-to-date guidance.  
 
-This does not intend (and can not) replicate every SAP software deployment scenario, and does not replace any existing SAP installation procedures detailed in the [SAP Help Portal](https://help.sap.com) or [SAP Notes on SAP ONE Support](https://launchpad.support.sap.com). However, with the Ansible Role for SAP SWPM it is possible to install any SAP Software which is supported by SAP Software Provisioning Manager (SWPM 1.0/2.0).
+These playbooks are valuable for accelerating tasks such as rapid provisioning and testing (e.g., evaluating the latest software releases, applying patches, or performing system copy restores in cloud environments). They can be adapted to suit these needs.  
 
-For move-fast activities, such as rapid provisioning and administration testing tasks (latest software releases and revision/patch levels, system copy restore to Cloud etc.), these Ansible Playbooks for SAP can be amended to suit these requirements.
+For comprehensive lifecycle management of SAP systems, consider [SAP Landscape Management Enterprise Edition](https://www.sap.com/uk/products/landscape-management.html).  
 
-For greater support in automating the lifecycle of SAP Systems themselves, it is recommended to consider [SAP Landscape Management Enterprise Edition](https://www.sap.com/uk/products/landscape-management.html).
+For evaluating SAP software business functionality, [SAP Cloud Appliance Library](https://www.sap.com/products/cloud-appliance-library.html) offers a convenient platform.
 
-For greater demo and evaluation of SAP Software business functionality, it is recommended to consider [SAP Cloud Appliance Library](https://www.sap.com/products/cloud-appliance-library.html).
+### Pseudo-Idempotency
+Idempotency ensures that applying the playbook multiple times results in the same system state as applying it once.  
+While these playbooks strive for idempotency, certain limitations exist.
 
----
+Potential issues:
+1. **NFS Mounts:**
+   - The playbooks mount NFS shares but do not currently validate or purge existing mounts.
+   - Re-running the playbook without cleaning up previous NFS mounts may lead to SAP Software Provisioning Manager (SWPM) failures or unexpected behavior due to the presence of existing SAP directories.
+2. **SAP System Detection:**
+   - The `community.sap_swpm` Ansible role, used for SAP software installation, may fail or produce inconsistent results if it detects an existing SAP system on the target host.
+   - To avoid issues, use the playbooks on fresh systems or ensure thorough cleanup of any previous SAP installations.
+
 
 ## License
-
-- [Apache 2.0](./LICENSE)
+[Apache 2.0](./LICENSE)
 
 ## Contributors
-
 Key contributors are shown within the [contributors](./docs/CONTRIBUTORS.md) file.
+
+## Contributing
+You can find more information about ways you can contribute at [How to contribute](./docs/CONTRIBUTING.md).

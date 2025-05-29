@@ -1,0 +1,257 @@
+---
+# Interactive prompts - Scenario - SWPM - HA
+
+# Following variables are defined and validated:
+# - sap_vm_provision_ha_vip_nwas_abap_ascs
+# - sap_vm_provision_ha_vip_nwas_abap_ers
+# - sap_system_ascs_ers_cluster_name
+# - sap_system_ascs_ers_hacluster_user_password
+# - sap_swpm_ascs_instance_hostname
+# - sap_swpm_scs_instance_hostname
+# - sap_swpm_ers_instance_hostname
+
+
+# Mandatory inputs for SAP High Availability
+- name: Block for sap_vm_provision_ha_vip_nwas_abap_ascs
+  when: sap_playbook_host_nwas_ascs | d(false)
+  block:
+    - name: Prompt for Virtual IP of SAP ASCS Instance
+      ansible.builtin.pause:
+        prompt: |
+          Enter the Virtual IP (VIP) address for the SAP ASCS instance.
+          Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_nwas_abap_ascs_register
+      when: sap_vm_provision_ha_vip_nwas_abap_ascs is not defined
+
+    - name: Set fact for sap_vm_provision_ha_vip_nwas_abap_ascs
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_nwas_abap_ascs: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs_register.user_input }}"
+      when: sap_vm_provision_ha_vip_nwas_abap_ascs is not defined
+
+    - name: Fail if sap_vm_provision_ha_vip_nwas_abap_ascs is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ha_vip_nwas_abap_ascs': '{{ sap_vm_provision_ha_vip_nwas_abap_ascs }}'
+          {% if sap_vm_provision_ha_vip_nwas_abap_ascs_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ha_vip_nwas_abap_ascs | length == 0
+          or sap_vm_provision_ha_vip_nwas_abap_ascs == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ha_vip_nwas_abap_ers
+  when: sap_playbook_host_nwas_ers | d(false)
+  block:
+    - name: Prompt for Virtual IP of SAP ERS Instance
+      ansible.builtin.pause:
+        prompt: |
+          Enter the Virtual IP (VIP) address for the SAP ERS instance.
+          Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_nwas_abap_ers_register
+      when: sap_vm_provision_ha_vip_nwas_abap_ers is not defined
+
+    - name: Set fact for sap_vm_provision_ha_vip_nwas_abap_ers
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_nwas_abap_ers: "{{ sap_vm_provision_ha_vip_nwas_abap_ers_register.user_input }}"
+      when: sap_vm_provision_ha_vip_nwas_abap_ers is not defined
+
+    - name: Fail if sap_vm_provision_ha_vip_nwas_abap_ers is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ha_vip_nwas_abap_ers': '{{ sap_vm_provision_ha_vip_nwas_abap_ers }}'
+          {% if sap_vm_provision_ha_vip_nwas_abap_ers_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ha_vip_nwas_abap_ers | length == 0
+          or sap_vm_provision_ha_vip_nwas_abap_ers == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_system_ascs_ers_cluster_name
+  when: sap_playbook_host_nwas_ascs | d(false) and sap_playbook_host_nwas_ers | d(false)
+  block:
+    - name: Prompt for SAP ASCS/ERS pacemaker cluster name
+      ansible.builtin.pause:
+        prompt: |
+          Enter the name of the SAP ASCS/ERS Pacemaker cluster.
+          Press enter to skip and use the default value ('clusterascs').
+      register: sap_system_ascs_ers_cluster_name_register
+      when: sap_system_ascs_ers_cluster_name is not defined
+
+    - name: Set fact for sap_system_ascs_ers_cluster_name
+      ansible.builtin.set_fact:
+        sap_system_ascs_ers_cluster_name:
+          "{{ sap_system_ascs_ers_cluster_name_register.user_input
+            if sap_system_ascs_ers_cluster_name_register.user_input | length > 0
+            else 'clusterascs' }}"
+      when: sap_system_ascs_ers_cluster_name is not defined
+
+    - name: Fail if sap_system_ascs_ers_cluster_name is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_ascs_ers_cluster_name': '{{ sap_system_ascs_ers_cluster_name }}'
+          {% if sap_system_ascs_ers_cluster_name_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_system_ascs_ers_cluster_name | length == 0
+
+
+- name: Block for sap_system_ascs_ers_hacluster_user_password
+  when: sap_playbook_host_nwas_ascs | d(false) and sap_playbook_host_nwas_ers | d(false)
+  no_log: true
+  block:
+    - name: Prompt for SAP ASCS/ERS pacemaker cluster password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password of hacluster user in the SAP ASCS/ERS Pacemaker cluster.
+          Press enter to skip and use the default value ('clusterpass').
+      register: sap_system_ascs_ers_hacluster_user_password_register
+      when: sap_system_ascs_ers_hacluster_user_password is not defined
+
+    - name: Set fact for sap_system_ascs_ers_hacluster_user_password
+      ansible.builtin.set_fact:
+        sap_system_ascs_ers_hacluster_user_password:
+          "{{ sap_system_ascs_ers_hacluster_user_password_register.user_input
+            if sap_system_ascs_ers_hacluster_user_password_register.user_input | length > 0
+            else 'clusterpass' }}"
+      when: sap_system_ascs_ers_hacluster_user_password is not defined
+
+    - name: Fail if sap_system_ascs_ers_hacluster_user_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_ascs_ers_hacluster_user_password': '{{
+            sap_system_ascs_ers_hacluster_user_password }}'
+          {% if sap_system_ascs_ers_hacluster_user_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_system_ascs_ers_hacluster_user_password | length == 0
+
+
+- name: Block for sap_swpm_ascs_instance_hostname
+  when: sap_playbook_host_nwas_ascs | d(false)
+  block:
+    - name: Prompt for virtual hostname for SAP ASCS instance
+      ansible.builtin.pause:
+        prompt: |
+          Enter the virtual hostname for the SAP ASCS instance.
+          See virtual hostname information in SAP Note 2279110 and 962955.
+          Ensure that this does not contain the local hostname.
+          {% if sap_playbook_host_nwas_ascs_hostname | d('') | length > 0 -%}
+            Press enter to skip and use the default value ('{{ sap_playbook_host_nwas_ascs_hostname }}-ha').
+          {% endif %}
+      register: sap_swpm_ascs_instance_hostname_register
+      when: sap_swpm_ascs_instance_hostname is not defined
+
+    - name: Set fact for sap_swpm_ascs_instance_hostname
+      ansible.builtin.set_fact:
+        sap_swpm_ascs_instance_hostname: "{{ sap_swpm_ascs_instance_hostname_register.user_input
+          if sap_swpm_ascs_instance_hostname_register.user_input | length > 0
+          else (sap_playbook_host_nwas_ascs_hostname ~ '-ha'
+            if sap_playbook_host_nwas_ascs_hostname | d('') | length > 0 else '') }}"
+      when: sap_swpm_ascs_instance_hostname is not defined
+
+    - name: Fail if sap_swpm_ascs_instance_hostname is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_ascs_instance_hostname': '{{ sap_swpm_ascs_instance_hostname }}'
+          {% if sap_swpm_ascs_instance_hostname_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_ascs_instance_hostname | length == 0
+
+
+- name: Block for sap_swpm_scs_instance_hostname
+  when: sap_playbook_host_nwas_scs | d(false)
+  block:
+    - name: Prompt for virtual hostname for SAP SCS instance
+      ansible.builtin.pause:
+        prompt: |
+         Enter the virtual hostname for the SAP SCS instance.
+          See virtual hostname information in SAP Note 2279110 and 962955.
+          Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
+          {% if sap_playbook_host_nwas_scs_hostname | d('') | length > 0 -%}
+            Press enter to skip and use the default value ('{{ sap_playbook_host_nwas_scs_hostname }}-ha').
+          {% endif %}
+      register: sap_swpm_scs_instance_hostname_register
+      when: sap_swpm_scs_instance_hostname is not defined
+
+    - name: Set fact for sap_swpm_scs_instance_hostname
+      ansible.builtin.set_fact:
+        sap_swpm_scs_instance_hostname: "{{ sap_swpm_scs_instance_hostname_register.user_input
+          if sap_swpm_scs_instance_hostname_register.user_input | length > 0
+          else (sap_playbook_host_nwas_scs_hostname ~ '-ha'
+            if sap_playbook_host_nwas_scs_hostname | d('') | length > 0 else '') }}"
+      when: sap_swpm_scs_instance_hostname is not defined
+
+    - name: Fail if sap_swpm_scs_instance_hostname is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_scs_instance_hostname': '{{ sap_swpm_scs_instance_hostname }}'
+          {% if sap_swpm_scs_instance_hostname_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_scs_instance_hostname | length == 0
+
+
+- name: Block for sap_swpm_ers_instance_hostname
+  when: sap_playbook_host_nwas_ers | d(false)
+  block:
+    - name: Prompt for virtual hostname for SAP ERS instance
+      ansible.builtin.pause:
+        prompt: |
+         Enter the virtual hostname for the SAP ERS instance.
+          See virtual hostname information in SAP Note 2279110 and 962955.
+          Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
+          {% if sap_playbook_host_nwas_ers_hostname | d('') | length > 0 -%}
+            Press enter to skip and use the default value ('{{ sap_playbook_host_nwas_ers_hostname }}-ha').
+          {% endif %}
+      register: sap_swpm_ers_instance_hostname_register
+      when: sap_swpm_ers_instance_hostname is not defined
+
+    - name: Set fact for sap_swpm_ers_instance_hostname
+      ansible.builtin.set_fact:
+        sap_swpm_ers_instance_hostname: "{{ sap_swpm_ers_instance_hostname_register.user_input
+          if sap_swpm_ers_instance_hostname_register.user_input | length > 0
+          else (sap_playbook_host_nwas_ers_hostname ~ '-ha'
+            if sap_playbook_host_nwas_ers_hostname | d('') | length > 0 else '') }}"
+      when: sap_swpm_ers_instance_hostname is not defined
+
+    - name: Fail if sap_swpm_ers_instance_hostname is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_ers_instance_hostname': '{{ sap_swpm_ers_instance_hostname }}'
+          {% if sap_swpm_ers_instance_hostname_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_ers_instance_hostname | length == 0

@@ -1,0 +1,1542 @@
+---
+#### Instructions for Interactive Prompts ####
+# This file defines the essential set of variables required for initial interactive execution.
+# All other required variables will be dynamically gathered through interactive prompts.
+# Pre-defining a variable in this file will skip the associated interactive prompt.
+
+
+#### Preconfigure OS for SAP Software ####
+sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
+sap_general_preconfigure_reboot_ok: true  # Whether it's okay to reboot the system (Boolean).
+sap_general_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_reboot_ok: true  # SAP HANA hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_hana_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_hana_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_hana_preconfigure_saptune_solution: 'S4HANA-DBSERVER'  # SUSE saptune solution to apply for SAP HANA (String).
+sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Whether to fail if not enough swap space is configured (Boolean).
+sap_netweaver_preconfigure_reboot_ok: true  # SAP Netweaver hosts will reboot twice if sap_general_preconfigure_reboot_ok is true (Boolean).
+sap_netweaver_preconfigure_fail_if_reboot_required: false  # Whether to fail if a reboot is required (Boolean).
+sap_netweaver_preconfigure_update: true  # Whether to update the system during pre-configuration (Boolean).
+sap_netweaver_preconfigure_saptune_solution: 'S4HANA-APPSERVER'  # SUSE saptune solution to apply for SAP NetWeaver (String).
+
+
+#### SAP SWPM Installation ####
+# Dynamic assignment of SAP SWPM variables
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}" # Must be SAP HANA primary node
+sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
+
+
+#### Shared Ansible Facts ####
+sap_hostname: "{{ ansible_hostname }}"
+sap_domain: "{{ ansible_domain }}"
+sap_ip: "{{ ansible_default_ipv4.address }}"
+
+
+#### Ansible dictionary for SAP Installation Media ####
+sap_software_install_dictionary:
+
+  sap_s4hana_fndn_2023_standard:
+
+    # SWPM product catalog ID for the installation (String).
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.FNDN.HDB.ABAP
+
+    # List of INI file sections to generate using sap_install.sap_swpm role (List).
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_077_0-80002031.SAR'
+      - 'IMDB_LCAPPS_2077_3-20010426.SAR'
+      - 'IMDB_AFL20_077_0-80001894.SAR'
+      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003424.SAR'
+      - 'igsexe_4-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent
+      - 'S4FND108_INST_EXPORT_1.zip'
+      - 'S4FND108_INST_EXPORT_2.zip'
+      - 'S4FND108_INST_EXPORT_3.zip'
+      - 'S4FND108_INST_EXPORT_4.zip'
+      - 'S4FND108_INST_EXPORT_5.zip'
+      - 'S4FND108_INST_EXPORT_6.zip'
+      - 'S4FND108_INST_EXPORT_7.zip'
+      - 'S4FND108_INST_EXPORT_8.zip'
+      - 'S4FND108_INST_EXPORT_9.zip'
+      - 'S4FND108_NW_LANG_EN.SAR'
+      # - 'KD75886.SAR' # SPAM/SAINT Update - Version 758/0086
+      # - 'SUM20SP22_3-80002456.SAR' # SUM 2.0
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_077_0-80002046.SAR'
+      - 'IMDB_LCAPPS_2077_3-80002183.SAR'
+      - 'IMDB_AFL20_077_0-80002045.SAR'
+      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003426.SAR'
+      - 'igsexe_4-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
+      - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (793)
+      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent
+      - 'S4FND108_INST_EXPORT_1.zip'
+      - 'S4FND108_INST_EXPORT_2.zip'
+      - 'S4FND108_INST_EXPORT_3.zip'
+      - 'S4FND108_INST_EXPORT_4.zip'
+      - 'S4FND108_INST_EXPORT_5.zip'
+      - 'S4FND108_INST_EXPORT_6.zip'
+      - 'S4FND108_INST_EXPORT_7.zip'
+      - 'S4FND108_INST_EXPORT_8.zip'
+      - 'S4FND108_INST_EXPORT_9.zip'
+      - 'S4FND108_NW_LANG_EN.SAR'
+      # - 'KD75886.SAR' # SPAM/SAINT Update - Version 757/0083
+      # - 'SUM20SP22_3-80002470.SAR' # SUM 2.0
+
+    software_files_hana_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_fndn_2022_standard:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.FNDN.HDB.ABAP
+
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_AFL20_067P_400-80001894.SAR'
+      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003424.SAR'
+      - 'igsexe_4-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70006642.SAR' # Kernel Part I (789)
+      - 'SAPEXEDB_51-70006641.SAR' # Kernel Part II (789)
+      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
+      - 'S4FND107_INST_EXPORT_1.zip'
+      - 'S4FND107_INST_EXPORT_2.zip'
+      - 'S4FND107_INST_EXPORT_3.zip'
+      - 'S4FND107_INST_EXPORT_4.zip'
+      - 'S4FND107_INST_EXPORT_5.zip'
+      - 'S4FND107_INST_EXPORT_6.zip'
+      - 'S4FND107_INST_EXPORT_7.zip'
+      - 'S4FND107_INST_EXPORT_8.zip'
+      - 'S4FND107_INST_EXPORT_9.zip'
+      # - 'S4FND107_NW_LANG_EN.SAR'
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_067_4-80002046.SAR'
+      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
+      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003426.SAR'
+      - 'igsexe_4-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_51-70006667.SAR' # Kernel Part I (789)
+      - 'SAPEXEDB_51-70006666.SAR' # Kernel Part II (789)
+      - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
+      - 'S4FND107_INST_EXPORT_1.zip'
+      - 'S4FND107_INST_EXPORT_2.zip'
+      - 'S4FND107_INST_EXPORT_3.zip'
+      - 'S4FND107_INST_EXPORT_4.zip'
+      - 'S4FND107_INST_EXPORT_5.zip'
+      - 'S4FND107_INST_EXPORT_6.zip'
+      - 'S4FND107_INST_EXPORT_7.zip'
+      - 'S4FND107_INST_EXPORT_8.zip'
+      - 'S4FND107_INST_EXPORT_9.zip'
+      # - 'S4FND107_NW_LANG_EN.SAR'
+
+    software_files_hana_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
+  sap_s4hana_fndn_2021_standard:
+
+    # Product ID for New Installation
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2021.FNDN.HDB.ABAP
+
+    sap_swpm_inifile_sections_list:
+      - swpm_installation_media
+      - swpm_installation_media_swpm2_hana
+      - credentials
+      - credentials_hana
+      - db_config_hana
+      - db_connection_nw_hana
+      - nw_config_other
+      - nw_config_central_services_abap
+      - nw_config_primary_application_server_instance
+      - nw_config_ports
+      - nw_config_host_agent
+      - sap_os_linux_user
+
+    softwarecenter_search_list_x86_64:
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'IMDB_LCAPPS_2067P_400-20010426.SAR'
+      - 'IMDB_AFL20_067P_400-80001894.SAR'
+      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003424.SAR'
+      - 'igsexe_4-70005417.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_100-80005374.SAR' # Kernel Part I (785)
+      - 'SAPEXEDB_100-80005373.SAR' # Kernel Part II (785)
+      - 'SAPHOSTAGENT61_61-80004822.SAR'
+      - 'S4FND106_INST_EXPORT_1.zip'
+      - 'S4FND106_INST_EXPORT_2.zip'
+      - 'S4FND106_INST_EXPORT_3.zip'
+      - 'S4FND106_INST_EXPORT_4.zip'
+      - 'S4FND106_INST_EXPORT_5.zip'
+      - 'S4FND106_INST_EXPORT_6.zip'
+      - 'S4FND106_INST_EXPORT_7.zip'
+      - 'S4FND106_INST_EXPORT_8.zip'
+      # - 'S4FND106_NW_LANG_EN.SAR'
+
+    softwarecenter_search_list_ppc64le:
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'IMDB_SERVER20_067_4-80002046.SAR'
+      - 'IMDB_LCAPPS_2067P_400-80002183.SAR'
+      - 'IMDB_AFL20_067P_400-80002045.SAR'
+      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
+      - 'SWPM20SP20_1-80003426.SAR'
+      - 'igsexe_4-70005446.sar' # IGS 7.81
+      - 'igshelper_17-10010245.sar'
+      - 'SAPEXE_100-80005509.SAR' # Kernel Part I (785)
+      - 'SAPEXEDB_100-80005508.SAR' # Kernel Part II (785)
+      - 'SAPHOSTAGENT61_61-80004831.SAR'
+      - 'S4FND106_INST_EXPORT_1.zip'
+      - 'S4FND106_INST_EXPORT_2.zip'
+      - 'S4FND106_INST_EXPORT_3.zip'
+      - 'S4FND106_INST_EXPORT_4.zip'
+      - 'S4FND106_INST_EXPORT_5.zip'
+      - 'S4FND106_INST_EXPORT_6.zip'
+      - 'S4FND106_INST_EXPORT_7.zip'
+      - 'S4FND106_INST_EXPORT_8.zip'
+      # - 'S4FND106_NW_LANG_EN.SAR'
+
+    software_files_hana_wildcard_list:
+      - 'SAPCAR*'
+      - 'IMDB_*'
+      - 'SAPHOSTAGENT*'
+
+
+#### Interactive Prompt Control Variables ####
+# Do not change these variables unless you intend to modify the interactive prompt behavior!
+sap_playbook_interactive_product: s4hana
+sap_playbook_interactive_database: hana
+sap_playbook_interactive_layout: standard
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "r7i.8xlarge" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          # disk_count: 1                 # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          # disk_type: gp3                # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "c6id.4xlarge" # 16 vCPU x 32GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
+  rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
+  # rhel-8-2: "*RHEL-8.2*_HVM*x86_64*" # removed
+  rhel-8-4: "*RHEL-8.4*_HVM*x86_64*"
+  rhel-8-6: "*RHEL-8.6*_HVM*x86_64*"
+  rhel-8-8: "*RHEL-8.8*_HVM*x86_64*"
+  rhel-8-10: "*RHEL-8.10*_HVM*x86_64*"
+  rhel-9-0: "*RHEL-9.0*_HVM*x86_64*"
+  rhel-9-1: "*RHEL-9.1*_HVM*x86_64*"
+  rhel-9-2: "*RHEL-9.2*_HVM*x86_64*"
+  rhel-9-3: "*RHEL-9.3*_HVM*x86_64*"
+  rhel-9-4: "*RHEL-9.4*_HVM*x86_64*"
+  sles-12-5: "*suse-sles-12-sp5-v202*-hvm-ssd-x86_64*"
+  # sles-15-2: "*suse-sles-15-sp2-v202*-hvm-ssd-x86_64*" # removed
+  # sles-15-3: "*suse-sles-15-sp3-v202*-hvm-ssd-x86_64*" # removed
+  # sles-15-4: "*suse-sles-15-sp4-v202*-hvm-ssd-x86_64*" # removed
+  sles-15-5: "*suse-sles-15-sp5-v202*-hvm-ssd-x86_64*"
+  sles-15-6: "*suse-sles-15-sp6-v202*-hvm-ssd-x86_64*"
+  # rhel-7-7-sap-ha: "*RHEL-SAP-8.1.0*" # removed
+  # rhel-7-9-sap-ha: "*RHEL-SAP-8.1.0*" # removed
+  rhel-8-1-sap-ha: "*RHEL-SAP-8.1.0*"
+  rhel-8-2-sap-ha: "*RHEL-SAP-8.2.0*"
+  rhel-8-4-sap-ha: "*RHEL-SAP-8.4.0*"
+  rhel-8-6-sap-ha: "*RHEL-SAP-8.6.0*"
+  rhel-8-8-sap-ha: "*RHEL-SAP-8.8.0*"
+  rhel-8-10-sap-ha: "*RHEL-SAP-8.10.0*"
+  rhel-9-0-sap-ha: "*RHEL-SAP-9.0.0*"
+  rhel-9-2-sap-ha: "*RHEL-SAP-9.2.0*"
+  rhel-9-4-sap-ha: "*RHEL-SAP-9.4.0*"
+  sles-12-5-sap-ha: "*suse-sles-sap-12-sp5-v202*-hvm-ssd-x86_64*"
+  sles-15-1-sap-ha: "*suse-sles-sap-15-sp1-v202*-hvm-ssd-x86_64*"
+  sles-15-2-sap-ha: "*suse-sles-sap-15-sp2-v202*-hvm-ssd-x86_64*"
+  sles-15-3-sap-ha: "*suse-sles-sap-15-sp3-v202*-hvm-ssd-x86_64*"
+  sles-15-4-sap-ha: "*suse-sles-sap-15-sp4-v202*-hvm-ssd-x86_64*"
+  sles-15-5-sap-ha: "*suse-sles-sap-15-sp5-v202*-hvm-ssd-x86_64*"
+  sles-15-6-sap-ha: "*suse-sles-sap-15-sp6-v202*-hvm-ssd-x86_64*"
+  sles-15-4-sap-ha-byos: "*suse-sles-sap-15-sp4-byos-v202*-hvm-ssd-x86_64*"
+  sles-15-5-sap-ha-byos: "*suse-sles-sap-15-sp5-byos-v202*-hvm-ssd-x86_64*"
+  sles-15-6-sap-ha-byos: "*suse-sles-sap-15-sp6-byos-v202*-hvm-ssd-x86_64*"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: pd-ssd              # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 128                 # size in GB, integer
+          disk_type: pd-ssd
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-standard-16" # 16 vCPU x 64GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          disk_type: pd-balanced
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
+  rhel-8-latest:
+    project: "rhel-cloud"
+    family: "rhel-8"
+  rhel-9-latest:
+    project: "rhel-cloud"
+    family: "rhel-9"
+  sles-12-latest:
+    project: "suse-cloud"
+    family: "sles-12"
+  sles-15-latest:
+    project: "suse-cloud"
+    family: "sles-15"
+  # rhel-7-7-sap-ha: # removed
+  #   project: "rhel-sap-cloud"
+  #   family: "rhel-7-7-sap-ha"
+  rhel-7-9-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-7-9-sap-ha"
+  # rhel-8-1-sap-ha: # removed
+  #   project: "rhel-sap-cloud"
+  #   family: "rhel-8-1-sap-ha"
+  rhel-8-2-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-2-sap-ha"
+  rhel-8-4-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-4-sap-ha"
+  rhel-8-6-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-6-sap-ha"
+  sles-12-5-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-12-sp5-sap"
+  # sles-15-1-sap-ha: # removed
+  #   project: "suse-sap-cloud"
+  #   family: "sles-15-sp1-sap"
+  sles-15-2-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp2-sap"
+  sles-15-3-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp3-sap"
+  sles-15-4-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp4-sap"
+  sles-15-5-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp5-sap"
+  sles-15-6-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp6-sap"
+  sles-12-5-sap-ha-byos:
+    project: "suse-byos-cloud"
+    family: "sles-12-sp5-sap-byos"
+  sles-15-2-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp2-sap-byos"
+  sles-15-3-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp3-sap-byos"
+  sles-15-4-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp4-sap-byos"
+  sles-15-5-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp5-sap-byos"
+  sles-15-6-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp6-sap-byos"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 144                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256
+          disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          disk_type: tier1
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier1
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cnp-2x32" # 16 vCPU x 32GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: tier3               # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
+  rhel-8-8: ".*RHEL.*8.*8"
+  rhel-9-2: ".*RHEL.*9.*2"
+  rhel-9-4: ".*RHEL.*9.*4"
+  sles-15-5: ".*SLES.*15.*5$"
+  rhel-8-4-sap-ha: "RHEL8-SP4-SAP"
+  rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
+  rhel-8-8-sap-ha: ".*RHEL.*8.*8.*SAP$" # ensure string suffix using $
+  rhel-9-2-sap-ha: ".*RHEL.*9.*2.*SAP$" # ensure string suffix using $
+  sles-15-2-sap-ha: ".*SLES.*15.*2.*SAP$" # ensure string suffix using $
+  sles-15-3-sap-ha: ".*SLES.*15.*3.*SAP$" # ensure string suffix using $
+  sles-15-4-sap-ha: ".*SLES.*15.*4.*SAP$" # ensure string suffix using $
+  sles-15-5-sap-ha: "SLES15-SP5-SAP"
+  # rhel-8-4-sap-ha-byol: "RHEL8-SP4-SAP-BYOL"
+  # rhel-8-6-sap-ha-byol: ".*RHEL.*8.*6.*SAP-BYOL$" # ensure string suffix using $
+  # rhel-8-8-sap-ha-byol: ".*RHEL.*8.*8.*SAP-BYOL$" # ensure string suffix using $
+  # rhel-9-2-sap-ha-byol: ".*RHEL.*9.*2.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-2-sap-ha-byol: ".*SLES.*15.*2.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-3-sap-ha-byol: ".*SLES.*15.*3.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-4-sap-ha-byol: ".*SLES.*15.*4.*SAP-BYOL$" # ensure string suffix using $
+  # sles-15-5-sap-ha-byol: "SLES15-SP5-SAP-BYOL"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "mx2-32x256" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 3                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 128                 # size in GB, integer
+          disk_type: 10iops-tier         # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 3
+          disk_size: 48                  # size in GB, integer
+          disk_type: 10iops-tier
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320
+          disk_type: 10iops-tier         # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: 5iops-tier
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "cx2-16x32" # 16 vCPU x 32GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: general-purpose     # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          disk_type: general-purpose     # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          disk_type: general-purpose     # Does NOT use Burst IOPS storage
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: general-purpose     # Does NOT use Burst IOPS storage
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_ibmcloud_vs_host_os_image_dictionary:
+  rhel-8-4: ".*redhat.*8-4.*minimal.*amd64.*"
+  rhel-8-6: ".*redhat.*8-6.*minimal.*amd64.*"
+  rhel-8-8: ".*redhat.*8-8.*minimal.*amd64.*"
+  rhel-8-10: ".*redhat.*8-10.*minimal.*amd64.*"
+  rhel-9-0: ".*redhat.*9-0.*minimal.*amd64.*"
+  rhel-9-2: ".*redhat.*9-2.*minimal.*amd64.*"
+  rhel-9-4: ".*redhat.*9-4.*minimal.*amd64.*"
+  sles-15-5: ".*sles.*15-5.*amd64-[0-9]"
+  sles-15-6: ".*sles.*15-6.*amd64-[0-9]"
+  # rhel-7-6-sap-ha: ".*redhat.*7-6.*amd64.*hana.*" # retrievable from deprecated list
+  # rhel-7-9-sap-ha: ".*redhat.*7-9.*amd64.*hana.*" # retrievable from deprecated list
+  # rhel-8-1-sap-ha: ".*redhat.*8-1.*amd64.*hana.*" # retrievable from deprecated list
+  # rhel-8-2-sap-ha: ".*redhat.*8-2.*amd64.*hana.*" # retrievable from deprecated list
+  rhel-8-4-sap-ha: ".*redhat.*8-4.*amd64.*hana.*"
+  rhel-8-6-sap-ha: ".*redhat.*8-6.*amd64.*hana.*"
+  rhel-8-8-sap-ha: ".*redhat.*8-8.*amd64.*hana.*"
+  rhel-8-10-sap-ha: ".*redhat.*8-10.*amd64.*hana.*"
+  rhel-9-0-sap-ha: ".*redhat.*9-0.*amd64.*hana.*"
+  rhel-9-2-sap-ha: ".*redhat.*9-2.*amd64.*hana.*"
+  rhel-9-4-sap-ha: ".*redhat.*9-4.*amd64.*hana.*"
+  # sles-12-4-sap-ha: ".*sles.*12-4.*amd64.*hana.*" # retrievable from deprecated list
+  # sles-12-5-sap-ha: ".*sles.*12-5.*amd64.*hana.*" # retrievable from deprecated list
+  # sles-15-1-sap-ha: ".*sles.*15-1.*amd64.*hana.*" # retrievable from deprecated list
+  sles-15-3-sap-ha: ".*sles.*15-3.*amd64.*hana.*"
+  sles-15-4-sap-ha: ".*sles.*15-4.*amd64.*hana.*"
+  sles-15-5-sap-ha: ".*sles.*15-5.*amd64.*hana.*"
+  sles-15-6-sap-ha: ".*sles.*15-6.*amd64.*hana.*"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 512                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2                   # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ibmpowervm_vm_cpu_threads: 32
+      ibmpowervm_vm_memory_gib: 256
+
+      # SMT-8 (i.e. 8 CPU Threads per CPU Core) is used for SAP Software, except for Production systems of SAP HANA on IBM Power10 which uses SMT-4
+      ibmpowervm_vm_cpu_smt: 8
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64                  # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_kubevirt_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      kubevirt_vm_cpu_smt: 2
+      kubevirt_vm_cpu_threads: 32
+      kubevirt_vm_memory_gib: 256
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_size: 128                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 96                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 64                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2                   # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 52                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      kubevirt_vm_cpu_smt: 2
+      kubevirt_vm_cpu_threads: 32
+      kubevirt_vm_memory_gib: 64
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_msazure_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_hana_db_sid }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 4                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6                  # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 3
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          disk_type: P15
+          filesystem_type: xfs           # default: xfs
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        - name: swap # hdb
+          # swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 4                 # size in GB, integer
+          disk_type: P1
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_D16s_v5" # 16 vCPU x 64GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        - name: swap # nwas
+          disk_size: 64                  # size in GB, integer
+          disk_type: P10
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_msazure_vm_host_os_image_dictionary:
+  rhel-8-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "8-gen2"
+  rhel-8-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "81-gen2"
+  rhel-8-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "82-gen2"
+  rhel-8-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "83-gen2"
+  rhel-8-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "84-gen2"
+  rhel-8-5:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "85-gen2"
+  rhel-8-6:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "86-gen2"
+  rhel-8-7:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "87-gen2"
+  rhel-8-8:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "88-gen2"
+  rhel-8-9:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "89-gen2"
+  rhel-8-10:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "810-gen2"
+  rhel-9-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "90-gen2"
+  rhel-9-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "91-gen2"
+  rhel-9-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "92-gen2"
+  rhel-9-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "93-gen2"
+  rhel-9-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "94-gen2"
+  sles-12-5:
+    publisher: "SUSE"
+    offer: "sles-12-sp5"
+    sku: "gen2"
+  sles-15-1:
+    publisher: "SUSE"
+    offer: "sles-15-sp1"
+    sku: "gen2"
+  sles-15-2:
+    publisher: "SUSE"
+    offer: "sles-15-sp2"
+    sku: "gen2"
+  sles-15-3:
+    publisher: "SUSE"
+    offer: "sles-15-sp3"
+    sku: "gen2"
+  sles-15-4:
+    publisher: "SUSE"
+    offer: "sles-15-sp4"
+    sku: "gen2"
+  sles-15-5:
+    publisher: "SUSE"
+    offer: "sles-15-sp5"
+    sku: "gen2"
+  sles-15-6:
+    publisher: "SUSE"
+    offer: "sles-15-sp6"
+    sku: "gen2"
+  rhel-8-1-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "81sapha-gen2"
+  rhel-8-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "82sapha-gen2"
+  rhel-8-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "84sapha-gen2"
+  rhel-8-6-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "86sapha-gen2"
+  rhel-8-8-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "88sapha-gen2"
+  rhel-8-10-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "810sapha-gen2"
+  rhel-9-0-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "90sapha-gen2"
+  rhel-9-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "92sapha-gen2"
+  rhel-9-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "94sapha-gen2"
+  sles-12-5-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-12-sp5"
+    sku: "gen2"
+  sles-15-1-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1"
+    sku: "gen2"
+  sles-15-2-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2"
+    sku: "gen2"
+  sles-15-3-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3"
+    sku: "gen2"
+  sles-15-4-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4"
+    sku: "gen2"
+  sles-15-5-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5"
+    sku: "gen2"
+  sles-15-6-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6"
+    sku: "gen2"
+  sles-15-1-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1-byos"
+    sku: "gen2"
+  sles-15-2-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2-byos"
+    sku: "gen2"
+  sles-15-3-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3-byos"
+    sku: "gen2"
+  sles-15-4-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4-byos"
+    sku: "gen2"
+  sles-15-5-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5-byos"
+    sku: "gen2"
+  sles-15-6-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6-byos"
+    sku: "gen2"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_ovirt_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 256
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 512                 # size in GB, integer
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 384                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2                   # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      ovirt_vm_cpu_threads: 32
+      ovirt_vm_memory_gib: 64
+      ovirt_vm_type: high_performance
+      ovirt_vm_placement_policy: pinned
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: nas                 # KubeVirt Storage Class
+          filesystem_type: xfs           # default: xfs
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_vmware_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    hana01: # Hostname, must be 13 characters or less
+
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 256
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 512                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_size: 384                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # hdb
+          swap_path: /swapfile           # use swap file on root disk, instead of creating LVM LV for swap
+          disk_size: 2                   # size in GB, integer
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 128                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+    nwas01: # Hostname, must be 13 characters or less
+
+      sap_host_type: nwas_pas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+
+      # SMT-2 (i.e. 2 CPU Threads per CPU Core) is default for Intel CPU Hyper-Threading, optionally can be altered to SMT-1
+      vmware_vm_cpu_smt: 2
+      vmware_vm_cpu_threads: 32
+      vmware_vm_memory_gib: 64
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+        - name: usr_sap
+          mountpoint: /usr/sap
+          disk_size: 128                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        - name: sapmnt
+          mountpoint: /sapmnt
+          disk_size: 80                  # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # nwas
+          disk_size: 64
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 100                 # size in GB, integer
+          disk_type: scsi                # VMware Virtual Disk Node (scsi, ide, sata)
+          filesystem_type: xfs           # default: xfs

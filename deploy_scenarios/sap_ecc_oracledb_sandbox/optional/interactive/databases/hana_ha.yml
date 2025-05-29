@@ -1,0 +1,142 @@
+---
+# Interactive prompts - Scenario - hana_ha
+
+# Following variables are defined and validated:
+# - sap_swpm_db_host
+# - sap_vm_provision_ha_vip_hana_primary
+# - sap_system_hana_cluster_name
+# - sap_system_hana_hacluster_user_password
+
+
+# sap_vm_provision variables
+# sap_swpm_db_host is used by sap_vm_provision role for HANA HA
+- name: Block for sap_swpm_db_host
+  block:
+    - name: Prompt for Virtual SAP HANA hostname
+      ansible.builtin.pause:
+        prompt: |
+          Enter the virtual hostname for the SAP HANA.
+          See following SAP Notes for more information: 2279110 and 962955.
+          Ensure that this does not contain the local hostname.
+          {% if sap_playbook_host_hana_primary_hostname | d('') | length > 0 -%}
+            Press enter to skip and use the default value ('{{ sap_playbook_host_hana_primary_hostname }}-ha').
+          {% endif %}
+      register: sap_swpm_db_host_register
+      when: sap_swpm_db_host is not defined
+
+    - name: Set fact for sap_swpm_db_host
+      ansible.builtin.set_fact:
+        sap_swpm_db_host: "{{ sap_swpm_db_host_register.user_input
+          if sap_swpm_db_host_register.user_input | length > 0
+          else (sap_playbook_host_hana_primary_hostname ~ '-ha'
+            if sap_playbook_host_hana_primary_hostname | d('') | length > 0 else '') }}"
+      when: sap_swpm_db_host is not defined
+
+    - name: Fail if sap_swpm_db_host is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_db_host': '{{ sap_swpm_db_host }}'
+          {% if sap_swpm_db_host_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_db_host | length == 0
+
+
+- name: Block for sap_vm_provision_ha_vip_hana_primary
+  block:
+    - name: Prompt for Virtual IP of SAP HANA
+      ansible.builtin.pause:
+        prompt: |
+          Enter the Virtual IP (VIP) for HANA Primary server.
+          Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_hana_primary_register
+      when: sap_vm_provision_ha_vip_hana_primary is not defined
+
+    - name: Set fact for sap_vm_provision_ha_vip_hana_primary
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_hana_primary: "{{ sap_vm_provision_ha_vip_hana_primary_register.user_input }}"
+      when: sap_vm_provision_ha_vip_hana_primary is not defined
+
+    - name: Fail if sap_vm_provision_ha_vip_hana_primary is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ha_vip_hana_primary': '{{ sap_vm_provision_ha_vip_hana_primary }}'
+          {% if sap_vm_provision_ha_vip_hana_primary_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ha_vip_hana_primary | length == 0
+          or sap_vm_provision_ha_vip_hana_primary == 'ENTER_STRING_VALUE_HERE'
+
+
+# sap_ha_pacemaker_cluster variables
+- name: Block for sap_system_hana_cluster_name
+  block:
+    - name: Prompt for SAP HANA pacemaker cluster name
+      ansible.builtin.pause:
+        prompt: |
+          Enter the name of the SAP HANA Pacemaker cluster.
+          Press enter to skip and use the default value ('clusterhdb').
+      register: sap_system_hana_cluster_name_register
+      when: sap_system_hana_cluster_name is not defined
+
+    - name: Set fact for sap_system_hana_cluster_name
+      ansible.builtin.set_fact:
+        sap_system_hana_cluster_name: "{{ sap_system_hana_cluster_name_register.user_input
+          if sap_system_hana_cluster_name_register.user_input | length > 0
+          else 'clusterhdb' }}"
+      when: sap_system_hana_cluster_name is not defined
+
+    - name: Fail if sap_system_hana_cluster_name is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_hana_cluster_name': '{{ sap_system_hana_cluster_name }}'
+          {% if sap_system_hana_cluster_name_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_system_hana_cluster_name | length == 0
+
+
+- name: Block for sap_system_hana_hacluster_user_password
+  no_log: true
+  block:
+    - name: Prompt for SAP HANA pacemaker cluster password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password of hacluster user in the SAP HANA Pacemaker cluster.
+          Press enter to skip and use the default value ('clusterpass').
+      register: sap_system_hana_hacluster_user_password_register
+      when: sap_system_hana_hacluster_user_password is not defined
+
+    - name: Set fact for sap_system_hana_hacluster_user_password
+      ansible.builtin.set_fact:
+        sap_system_hana_hacluster_user_password: "{{ sap_system_hana_hacluster_user_password_register.user_input
+          if sap_system_hana_hacluster_user_password_register.user_input | length > 0
+          else 'clusterpass' }}"
+      when: sap_system_hana_hacluster_user_password is not defined
+
+    - name: Fail if sap_system_hana_hacluster_user_password is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_hana_hacluster_user_password': '{{
+            sap_system_hana_hacluster_user_password }}'
+          {% if sap_system_hana_hacluster_user_password_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_system_hana_hacluster_user_password | length == 0

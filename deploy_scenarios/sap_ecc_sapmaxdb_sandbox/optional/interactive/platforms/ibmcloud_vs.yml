@@ -1,0 +1,677 @@
+---
+# Interactive prompts - Platform - ibmcloud_vs
+
+# Following variables are defined and validated:
+# - sap_vm_provision_ibmcloud_api_key, sap_ha_pacemaker_cluster_ibmcloud_api_key
+# - sap_vm_provision_ibmcloud_resource_group_name
+# - sap_vm_provision_ibmcloud_availability_zone
+# - sap_vm_provision_ibmcloud_region, sap_ha_pacemaker_cluster_ibmcloud_region
+# - sap_vm_provision_ibmcloud_private_dns_instance_name
+# - sap_vm_provision_ibmcloud_vpc_name
+# - sap_vm_provision_ibmcloud_vpc_subnet_name
+# - sap_vm_provision_ibmcloud_vs_host_os_image
+# - sap_vm_provision_ssh_host_private_key_file_path
+# - sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key
+# - sap_vm_provision_ibmcloud_vpc_sg_names
+# - sap_vm_provision_ibmcloud_private_dns_resource_group_name
+# - sap_vm_provision_nfs_mount_point
+# - sap_vm_provision_nfs_mount_point_separate_sap_transport_dir
+# - sap_vm_provision_nfs_mount_point_hana_data
+# - sap_vm_provision_nfs_mount_point_hana_log
+# - sap_vm_provision_nfs_mount_point_hana_shared
+# - sap_vm_provision_nfs_mount_point_type
+# - sap_vm_provision_nfs_mount_point_opts
+
+
+# Credentials section
+- name: Block for sap_vm_provision_ibmcloud_api_key
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud API Key
+      ansible.builtin.pause:
+        prompt: |
+          Enter your IBM Cloud API Key.
+          This key is used to authenticate with IBM Cloud and manage resources.
+      register: sap_vm_provision_ibmcloud_api_key_register
+      when: sap_vm_provision_ibmcloud_api_key is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_api_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key_register.user_input }}"
+        sap_ha_pacemaker_cluster_ibmcloud_api_key: "{{ sap_vm_provision_ibmcloud_api_key_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_api_key is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_api_key is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_api_key': '{{ sap_vm_provision_ibmcloud_api_key }}'
+          {% if sap_vm_provision_ibmcloud_api_key_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ibmcloud_api_key | length == 0
+          or sap_vm_provision_ibmcloud_api_key == 'ENTER_STRING_VALUE_HERE'
+
+
+# Infrastructure details section
+- name: Block for sap_vm_provision_ibmcloud_resource_group_name
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud Resource Group name
+      ansible.builtin.pause:
+        prompt: |
+          Enter the name of the IBM Cloud Resource Group where the resources will be created.
+          {% if sap_vm_provision_iac_type == 'ansible_to_terraform' %}
+          Use 'new' for ansible_to_terraform.
+          {% endif %}
+      register: sap_vm_provision_ibmcloud_resource_group_name_register
+      when: sap_vm_provision_ibmcloud_resource_group_name is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_resource_group_name
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_resource_group_name:
+          "{{ sap_vm_provision_ibmcloud_resource_group_name_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_resource_group_name is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_resource_group_name is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_resource_group_name': '{{
+            sap_vm_provision_ibmcloud_resource_group_name }}'
+          {% if sap_vm_provision_ibmcloud_resource_group_name_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ibmcloud_resource_group_name | length == 0
+          or sap_vm_provision_ibmcloud_resource_group_name == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ibmcloud_availability_zone
+  block:
+    - name: Prompt for IBM Cloud Availability Zone
+      ansible.builtin.pause:
+        prompt: |
+          Enter IBM Cloud Availability Zone.
+          Example: eu-es-1
+      register: sap_vm_provision_ibmcloud_availability_zone_register
+      when: sap_vm_provision_ibmcloud_availability_zone is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_availability_zone
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_availability_zone:
+          "{{ sap_vm_provision_ibmcloud_availability_zone_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_availability_zone is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_availability_zone is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_availability_zone': '{{
+            sap_vm_provision_ibmcloud_availability_zone }}'
+          {% if sap_vm_provision_ibmcloud_availability_zone_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ibmcloud_availability_zone | length == 0
+          or sap_vm_provision_ibmcloud_availability_zone == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ibmcloud_region
+  vars:
+    __sap_vm_provision_ibmcloud_region_default: "{{ sap_vm_provision_ibmcloud_availability_zone | regex_replace('-[0-9]', '') }}"
+  block:
+    - name: Prompt for IBM Cloud Region
+      ansible.builtin.pause:
+        prompt: |
+          Enter the IBM Cloud Region.
+          Example: eu-es
+          Default: {{ __sap_vm_provision_ibmcloud_region_default }} based on availability zone.
+          Press enter to skip and use the default value ('{{ __sap_vm_provision_ibmcloud_region_default }}').
+      register: sap_vm_provision_ibmcloud_region_register
+      when: sap_vm_provision_ibmcloud_region is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_region
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_region_register.user_input
+          if sap_vm_provision_ibmcloud_region_register.user_input | length > 0
+          else __sap_vm_provision_ibmcloud_region_default }}"
+        sap_ha_pacemaker_cluster_ibmcloud_region: "{{ sap_vm_provision_ibmcloud_region_register.user_input
+          if sap_vm_provision_ibmcloud_region_register.user_input | length > 0
+          else __sap_vm_provision_ibmcloud_region_default }}"
+      when: sap_vm_provision_ibmcloud_region is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_region is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_region': '{{ sap_vm_provision_ibmcloud_region }}'
+          {% if sap_vm_provision_ibmcloud_region_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ibmcloud_region | length == 0
+          or sap_vm_provision_ibmcloud_region == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ibmcloud_private_dns_instance_name
+  when: sap_vm_provision_iac_type == 'ansible'
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud Private DNS Instance name
+      ansible.builtin.pause:
+        prompt: Enter the name of the IBM Cloud Private DNS Instance.
+      register: sap_vm_provision_ibmcloud_private_dns_instance_name_register
+      when: sap_vm_provision_ibmcloud_private_dns_instance_name is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_private_dns_instance_name
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_private_dns_instance_name:
+          "{{ sap_vm_provision_ibmcloud_private_dns_instance_name_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_private_dns_instance_name is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_private_dns_instance_name is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_private_dns_instance_name': '{{
+            sap_vm_provision_ibmcloud_private_dns_instance_name }}'
+          {% if sap_vm_provision_ibmcloud_private_dns_instance_name_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ibmcloud_private_dns_instance_name | length == 0
+          or sap_vm_provision_ibmcloud_private_dns_instance_name == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ibmcloud_vpc_name
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud VPC name
+      ansible.builtin.pause:
+        prompt: |
+          Enter the name of the IBM Cloud VPC where the virtual servers will be connected.
+          {% if sap_vm_provision_iac_type == 'ansible_to_terraform' %}
+          Use 'new' for ansible_to_terraform.
+          {% endif %}
+      register: sap_vm_provision_ibmcloud_vpc_name_register
+      when: sap_vm_provision_ibmcloud_vpc_name is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_vpc_name
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_vpc_name:
+          "{{ sap_vm_provision_ibmcloud_vpc_name_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_vpc_name is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_vpc_name is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_vpc_name': '{{ sap_vm_provision_ibmcloud_vpc_name }}'
+          {% if sap_vm_provision_ibmcloud_vpc_name_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}.
+      when:
+        - sap_vm_provision_ibmcloud_vpc_name | length == 0
+          or sap_vm_provision_ibmcloud_vpc_name == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ibmcloud_vpc_subnet_name
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud VPC Subnet name
+      ansible.builtin.pause:
+        prompt: |
+          Enter the name of the IBM Cloud VPC Subnet where the virtual servers will be connected.
+          {% if sap_vm_provision_iac_type == 'ansible_to_terraform' %}
+          Use 'new' for ansible_to_terraform.
+          {% endif %}
+      register: sap_vm_provision_ibmcloud_vpc_subnet_name_register
+      when: sap_vm_provision_ibmcloud_vpc_subnet_name is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_vpc_subnet_name
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_vpc_subnet_name:
+          "{{ sap_vm_provision_ibmcloud_vpc_subnet_name_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_vpc_subnet_name is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_vpc_subnet_name is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_vpc_subnet_name': '{{ sap_vm_provision_ibmcloud_vpc_subnet_name }}'
+          {% if sap_vm_provision_ibmcloud_vpc_subnet_name_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}.
+      when:
+        - sap_vm_provision_ibmcloud_vpc_subnet_name | length == 0
+          or sap_vm_provision_ibmcloud_vpc_subnet_name == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Ensure that sap_vm_provision_ibmcloud_vs_host_os_image_dictionary is defined
+  ansible.builtin.fail:
+    msg: |
+      Mandatory variable 'sap_vm_provision_ibmcloud_vs_host_os_image_dictionary' is not defined.
+      Ensure this dictionary variable is present in extra vars and re-run the playbook.
+  when:
+    - sap_vm_provision_ibmcloud_vs_host_os_image_dictionary is not defined
+      or sap_vm_provision_ibmcloud_vs_host_os_image_dictionary | length == 0
+
+- name: Block for sap_vm_provision_ibmcloud_vs_host_os_image
+  block:
+    - name: Prompt for OS image selection
+      ansible.builtin.pause:
+        prompt: |
+          Select an OS image from the sap_vm_provision_ibmcloud_vs_host_os_image_dictionary.
+          Available values: {{ sap_vm_provision_ibmcloud_vs_host_os_image_dictionary.keys() | list }}
+      register: sap_vm_provision_ibmcloud_vs_host_os_image_register
+      when: sap_vm_provision_ibmcloud_vs_host_os_image is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_vs_host_os_image
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_vs_host_os_image: "{{ sap_vm_provision_ibmcloud_vs_host_os_image_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_vs_host_os_image is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_vs_host_os_image is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_vs_host_os_image': '{{ sap_vm_provision_ibmcloud_vs_host_os_image }}'
+          Available options: {{ sap_vm_provision_ibmcloud_vs_host_os_image_dictionary.keys()
+           }} are defined in 'sap_vm_provision_ibmcloud_vs_host_os_image_dictionary'.
+          {% if sap_vm_provision_ibmcloud_vs_host_os_image_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}.
+      when: sap_vm_provision_ibmcloud_vs_host_os_image not in sap_vm_provision_ibmcloud_vs_host_os_image_dictionary.keys()
+
+
+# Bastion section
+- name: Block for interactive tasks - Bastion
+  when: sap_vm_provision_bastion_execution is not defined or sap_vm_provision_bastion_execution
+  block:
+    - name: Check if interactive task file is available - Bastion
+      ansible.builtin.stat:
+        path: "optional/interactive/platforms/bastion.yml"
+      register: sap_playbook_interactive_tasks_bastion_availability
+      ignore_errors: true
+
+    - name: Execute interactive task file - Bastion
+      ansible.builtin.include_tasks:
+        file: "optional/interactive/platforms/bastion.yml"
+      when: sap_playbook_interactive_tasks_bastion_availability.stat.exists
+
+    - name: Skip if interactive file was not found - Bastion
+      ansible.builtin.debug:
+        msg: Interactive task file 'optional/interactive/platforms/bastion.yml' was not found. Skipping.
+      when: not sap_playbook_interactive_tasks_bastion_availability.stat.exists
+
+
+- name: Block for sap_vm_provision_ssh_host_private_key_file_path
+  no_log: true
+  block:
+    - name: Prompt for path to target host user private key
+      ansible.builtin.pause:
+        prompt: |
+          Enter the path to the private key file that will be used to connect to the target hosts.
+          This file must be located on the execution server.
+      register: sap_vm_provision_ssh_host_private_key_file_path_register
+      when: sap_vm_provision_ssh_host_private_key_file_path is not defined
+
+    - name: Set fact for sap_vm_provision_ssh_host_private_key_file_path
+      ansible.builtin.set_fact:
+        sap_vm_provision_ssh_host_private_key_file_path:
+          "{{ sap_vm_provision_ssh_host_private_key_file_path_register.user_input }}"
+      when: sap_vm_provision_ssh_host_private_key_file_path is not defined
+
+    - name: Check if {{ sap_vm_provision_ssh_host_private_key_file_path }} is available
+      ansible.builtin.stat:
+        path: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
+      register: sap_vm_provision_ssh_host_private_key_file_path_availability
+      ignore_errors: true
+
+    - name: Fail if sap_vm_provision_ssh_host_private_key_file_path is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ssh_host_private_key_file_path': '{{
+            sap_vm_provision_ssh_host_private_key_file_path }}'
+          {% if sap_vm_provision_ssh_host_private_key_file_path_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ssh_host_private_key_file_path | length == 0
+          or sap_vm_provision_ssh_host_private_key_file_path == 'ENTER_STRING_VALUE_HERE'
+          or not sap_vm_provision_ssh_host_private_key_file_path_availability.stat.exists
+
+
+- name: Block for sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key
+  when: sap_vm_provision_iac_type == 'ansible'
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud Public SSH key name
+      ansible.builtin.pause:
+        prompt: Enter the name of the IBM Cloud Public SSH key that will be used for provisioning.
+      register: sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key_register
+      when: sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key:
+          "{{ sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key': '{{
+            sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key }}'
+          {% if sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}.
+      when:
+        - sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key | length == 0
+          or sap_vm_provision_ibmcloud_key_pair_name_ssh_host_public_key == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_ibmcloud_vpc_sg_names
+  when: sap_vm_provision_iac_type == 'ansible'
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud VPC Security Group names
+      ansible.builtin.pause:
+        prompt: Enter a comma-separated list of IBM Cloud VPC Security Group names.
+      register: sap_vm_provision_ibmcloud_vpc_sg_names_register
+      when: sap_vm_provision_ibmcloud_vpc_sg_names is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_vpc_sg_names
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_vpc_sg_names:
+          "{{ sap_vm_provision_ibmcloud_vpc_sg_names_register.user_input }}"
+      when: sap_vm_provision_ibmcloud_vpc_sg_names is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_vpc_sg_names is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_vpc_sg_names': '{{
+            sap_vm_provision_ibmcloud_vpc_sg_names }}'
+          {% if sap_vm_provision_ibmcloud_vpc_sg_names_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}.
+      when:
+        - sap_vm_provision_ibmcloud_vpc_sg_names | length == 0
+          or 'ENTER_STRING_VALUE_HERE' in sap_vm_provision_ibmcloud_vpc_sg_names
+
+
+- name: Block for sap_vm_provision_ibmcloud_private_dns_resource_group_name
+  when: sap_vm_provision_iac_type == 'ansible'
+  no_log: true
+  block:
+    - name: Prompt for IBM Cloud Private DNS Resource group name
+      ansible.builtin.pause:
+        prompt: |
+          (Optional) Enter the name of the IBM Cloud Resource Group that contains the Private DNS Zone.
+          Default: {{ sap_vm_provision_ibmcloud_resource_group_name }} based on 'sap_vm_provision_ibmcloud_resource_group_name'.
+          Press enter to skip and use the default value ('{{ sap_vm_provision_ibmcloud_resource_group_name }}').
+      register: sap_vm_provision_ibmcloud_private_dns_resource_group_name_register
+      when: sap_vm_provision_ibmcloud_private_dns_resource_group_name is not defined
+
+    - name: Set fact for sap_vm_provision_ibmcloud_private_dns_resource_group_name
+      ansible.builtin.set_fact:
+        sap_vm_provision_ibmcloud_private_dns_resource_group_name:
+          "{{ sap_vm_provision_ibmcloud_private_dns_resource_group_name_register.user_input
+            if sap_vm_provision_ibmcloud_private_dns_resource_group_name_register.user_input | length > 0
+            else sap_vm_provision_ibmcloud_resource_group_name }}"
+      when: sap_vm_provision_ibmcloud_private_dns_resource_group_name is not defined
+
+    - name: Fail if sap_vm_provision_ibmcloud_private_dns_resource_group_name is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ibmcloud_private_dns_resource_group_name': '{{
+            sap_vm_provision_ibmcloud_private_dns_resource_group_name }}'
+          {% if sap_vm_provision_ibmcloud_private_dns_resource_group_name_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ibmcloud_private_dns_resource_group_name | length == 0
+          or sap_vm_provision_ibmcloud_private_dns_resource_group_name == 'ENTER_STRING_VALUE_HERE'
+
+
+# NFS mount tasks
+- name: Block for sap_vm_provision_nfs_mount_point
+  when: sap_playbook_interactive_layout in ['distributed', 'distributed_ha']
+  block:
+    - name: Prompt for NFS mount points /sapmnt and /usr/sap
+      ansible.builtin.pause:
+        prompt: |
+          Enter the NFS mount point for shared storage: /sapmnt and /usr/sap
+          This variable is used in host_specifications_dictionary for distributed scenarios.
+          Example: 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+      register: sap_vm_provision_nfs_mount_point_register
+      when: sap_vm_provision_nfs_mount_point is not defined
+
+    - name: Set fact for sap_vm_provision_nfs_mount_point
+      ansible.builtin.set_fact:
+        sap_vm_provision_nfs_mount_point: "{{ sap_vm_provision_nfs_mount_point_register.user_input }}"
+      when: sap_vm_provision_nfs_mount_point is not defined
+
+    - name: Fail if sap_vm_provision_nfs_mount_point is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_nfs_mount_point': '{{ sap_vm_provision_nfs_mount_point }}'
+          {% if sap_vm_provision_nfs_mount_point_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_nfs_mount_point | length == 0
+          or sap_vm_provision_nfs_mount_point == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_nfs_mount_point_separate_sap_transport_dir
+  when: sap_playbook_interactive_layout in ['distributed', 'distributed_ha']
+  block:
+    - name: Prompt for NFS mount point /usr/sap/trans
+      ansible.builtin.pause:
+        prompt: |
+          Enter the NFS mount point for shared storage: /usr/sap/trans
+          This variable is used in host_specifications_dictionary for distributed scenarios.
+          Example: 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+          Press enter to skip and use the default value ('{{ sap_vm_provision_nfs_mount_point }}').
+      register: sap_vm_provision_nfs_mount_point_separate_sap_transport_dir_register
+      when: sap_vm_provision_nfs_mount_point_separate_sap_transport_dir is not defined
+
+    - name: Set fact for sap_vm_provision_nfs_mount_point_separate_sap_transport_dir
+      ansible.builtin.set_fact:
+        sap_vm_provision_nfs_mount_point_separate_sap_transport_dir:
+          "{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir_register.user_input
+            if sap_vm_provision_nfs_mount_point_separate_sap_transport_dir_register.user_input | length > 0
+            else sap_vm_provision_nfs_mount_point }}"
+      when: sap_vm_provision_nfs_mount_point_separate_sap_transport_dir is not defined
+
+    - name: Fail if sap_vm_provision_nfs_mount_point_separate_sap_transport_dir is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_nfs_mount_point_separate_sap_transport_dir': '{{ sap_vm_provision_nfs_mount_point_separate_sap_transport_dir }}'
+          {% if sap_vm_provision_nfs_mount_point_separate_sap_transport_dir_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_nfs_mount_point_separate_sap_transport_dir | length == 0
+          or sap_vm_provision_nfs_mount_point_separate_sap_transport_dir == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_nfs_mount_point_hana_data
+  when: sap_playbook_interactive_layout in ['hana_scaleout', 'standard_scaleout']
+  block:
+    - name: Prompt for NFS mount point /hana/data
+      ansible.builtin.pause:
+        prompt: |
+          Enter the NFS mount point for shared storage: /hana/data
+          This variable is used in host_specifications_dictionary for scaleout scenarios.
+          Example: 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+      register: sap_vm_provision_nfs_mount_point_hana_data_register
+      when: sap_vm_provision_nfs_mount_point_hana_data is not defined
+
+    - name: Set fact for sap_vm_provision_nfs_mount_point_hana_data
+      ansible.builtin.set_fact:
+        sap_vm_provision_nfs_mount_point_hana_data:
+          "{{ sap_vm_provision_nfs_mount_point_hana_data_register.user_input }}"
+      when: sap_vm_provision_nfs_mount_point_hana_data is not defined
+
+    - name: Fail if sap_vm_provision_nfs_mount_point_hana_data is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_nfs_mount_point_hana_data': '{{ sap_vm_provision_nfs_mount_point_hana_data }}'
+          {% if sap_vm_provision_nfs_mount_point_hana_data_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_nfs_mount_point_hana_data | length == 0
+          or sap_vm_provision_nfs_mount_point_hana_data == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_nfs_mount_point_hana_log
+  when: sap_playbook_interactive_layout in ['hana_scaleout', 'standard_scaleout']
+  block:
+    - name: Prompt for NFS mount point /hana/log
+      ansible.builtin.pause:
+        prompt: |
+          Enter the NFS mount point for shared storage: /hana/log
+          This variable is used in host_specifications_dictionary for scaleout scenarios.
+          Example: 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+      register: sap_vm_provision_nfs_mount_point_hana_log_register
+      when: sap_vm_provision_nfs_mount_point_hana_log is not defined
+
+    - name: Set fact for sap_vm_provision_nfs_mount_point_hana_log
+      ansible.builtin.set_fact:
+        sap_vm_provision_nfs_mount_point_hana_log:
+          "{{ sap_vm_provision_nfs_mount_point_hana_log_register.user_input }}"
+      when: sap_vm_provision_nfs_mount_point_hana_log is not defined
+
+    - name: Fail if sap_vm_provision_nfs_mount_point_hana_log is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_nfs_mount_point_hana_log': '{{ sap_vm_provision_nfs_mount_point_hana_log }}'
+          {% if sap_vm_provision_nfs_mount_point_hana_log_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_nfs_mount_point_hana_log | length == 0
+          or sap_vm_provision_nfs_mount_point_hana_log == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_nfs_mount_point_hana_shared
+  when: sap_playbook_interactive_layout in ['hana_scaleout', 'standard_scaleout']
+  block:
+    - name: Prompt for NFS mount point /hana/shared
+      ansible.builtin.pause:
+        prompt: |
+          Enter the NFS mount point for shared storage: /hana/shared
+          This variable is used in host_specifications_dictionary for scaleout scenarios.
+          Example: 10.x.x.x:/ibmcloud_file_storage_share_mouth_target_path_hash
+      register: sap_vm_provision_nfs_mount_point_hana_shared_register
+      when: sap_vm_provision_nfs_mount_point_hana_shared is not defined
+
+    - name: Set fact for sap_vm_provision_nfs_mount_point_hana_shared
+      ansible.builtin.set_fact:
+        sap_vm_provision_nfs_mount_point_hana_shared:
+          "{{ sap_vm_provision_nfs_mount_point_hana_shared_register.user_input }}"
+      when: sap_vm_provision_nfs_mount_point_hana_shared is not defined
+
+    - name: Fail if sap_vm_provision_nfs_mount_point_hana_shared is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_nfs_mount_point_hana_shared': '{{ sap_vm_provision_nfs_mount_point_hana_shared }}'
+          {% if sap_vm_provision_nfs_mount_point_hana_shared_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_nfs_mount_point_hana_shared | length == 0
+          or sap_vm_provision_nfs_mount_point_hana_shared == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_nfs_mount_point_type
+  when: sap_playbook_interactive_layout in ['distributed', 'distributed_ha', 'hana_scaleout', 'standard_scaleout']
+  block:
+    - name: Prompt for NFS mount version
+      ansible.builtin.pause:
+        prompt: |
+          Enter the NFS mount version.
+          Example: nfs4
+      register: sap_vm_provision_nfs_mount_point_type_register
+      when: sap_vm_provision_nfs_mount_point_type is not defined
+
+    - name: Set fact for sap_vm_provision_nfs_mount_point_type
+      ansible.builtin.set_fact:
+        sap_vm_provision_nfs_mount_point_type:
+          "{{ sap_vm_provision_nfs_mount_point_type_register.user_input }}"
+      when: sap_vm_provision_nfs_mount_point_type is not defined
+
+    - name: Fail if sap_vm_provision_nfs_mount_point_type is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_nfs_mount_point_type': '{{ sap_vm_provision_nfs_mount_point_type }}'
+          {% if sap_vm_provision_nfs_mount_point_type_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_nfs_mount_point_type | length == 0
+          or sap_vm_provision_nfs_mount_point_type == 'ENTER_STRING_VALUE_HERE'
+
+
+- name: Block for sap_vm_provision_nfs_mount_point_opts
+  when: sap_playbook_interactive_layout in ['distributed', 'distributed_ha', 'hana_scaleout', 'standard_scaleout']
+  block:
+    - name: Prompt for NFS mount options
+      ansible.builtin.pause:
+        prompt: |
+          Enter the NFS mount options.
+          Example: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl
+      register: sap_vm_provision_nfs_mount_point_opts_register
+      when: sap_vm_provision_nfs_mount_point_opts is not defined
+
+    - name: Set fact for sap_vm_provision_nfs_mount_point_opts
+      ansible.builtin.set_fact:
+        sap_vm_provision_nfs_mount_point_opts:
+          "{{ sap_vm_provision_nfs_mount_point_opts_register.user_input }}"
+      when: sap_vm_provision_nfs_mount_point_opts is not defined
+
+    - name: Fail if sap_vm_provision_nfs_mount_point_opts is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_nfs_mount_point_opts': '{{ sap_vm_provision_nfs_mount_point_opts }}'
+          {% if sap_vm_provision_nfs_mount_point_opts_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_nfs_mount_point_opts | length == 0
+          or sap_vm_provision_nfs_mount_point_opts == 'ENTER_STRING_VALUE_HERE'

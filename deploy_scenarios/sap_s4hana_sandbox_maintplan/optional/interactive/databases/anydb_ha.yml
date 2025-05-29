@@ -1,0 +1,79 @@
+---
+# Interactive prompts - Scenario - AnyDB HA - sapase, sapmaxdb, ibmdb2, oracledb
+
+# Following variables are defined and validated:
+# - sap_swpm_db_host
+# - sap_vm_provision_ha_vip_anydb_primary
+
+
+# sap_vm_provision variables
+# sap_swpm_db_host is used by sap_vm_provision role for AnyDB HA
+- name: Block for sap_swpm_db_host
+  block:
+    - name: Prompt for Virtual AnyDB hostname
+      ansible.builtin.pause:
+        prompt: |
+          Enter the virtual hostname for the SAP AnyDB database.
+          See following SAP Notes for more information: 2279110 and 962955.
+          Ensure that this does not contain the local hostname.
+          {% if sap_playbook_host_anydb_primary_hostname | d('') | length > 0 -%}
+            Press enter to skip and use the default value ('{{ sap_playbook_host_anydb_primary_hostname }}-ha').
+          {% endif %}
+      register: sap_swpm_db_host_register
+      when: sap_swpm_db_host is not defined
+
+    - name: Set fact for sap_swpm_db_host
+      ansible.builtin.set_fact:
+        sap_swpm_db_host: "{{ sap_swpm_db_host_register.user_input
+          if sap_swpm_db_host_register.user_input | length > 0
+          else (sap_playbook_host_anydb_primary_hostname ~ '-ha'
+            if sap_playbook_host_anydb_primary_hostname | d('') | length > 0 else '') }}"
+      when: sap_swpm_db_host is not defined
+
+    - name: Fail if sap_swpm_db_host is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_swpm_db_host': '{{ sap_swpm_db_host }}'
+          {% if sap_swpm_db_host_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_swpm_db_host | length == 0
+
+
+- name: Block for sap_vm_provision_ha_vip_anydb_primary
+  block:
+    - name: Prompt for Virtual IP of AnyDB
+      ansible.builtin.pause:
+        prompt: |
+          Enter the Virtual IP (VIP) for AnyDB Primary server.
+          Platform specific recommendations:
+          AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
+          GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+          IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+          IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
+          MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
+          IBM PowerVM:          the VIP must be within the VLAN Subnet range
+          OVirt KVM:            the VIP must be within the VLAN Subnet range
+          KubeVirt:             the VIP must be within the VLAN Subnet range
+      register: sap_vm_provision_ha_vip_anydb_primary_register
+      when: sap_vm_provision_ha_vip_anydb_primary is not defined
+
+    - name: Set fact for sap_vm_provision_ha_vip_anydb_primary
+      ansible.builtin.set_fact:
+        sap_vm_provision_ha_vip_anydb_primary: "{{ sap_vm_provision_ha_vip_anydb_primary_register.user_input }}"
+      when: sap_vm_provision_ha_vip_anydb_primary is not defined
+
+    - name: Fail if sap_vm_provision_ha_vip_anydb_primary is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_vm_provision_ha_vip_anydb_primary': '{{ sap_vm_provision_ha_vip_anydb_primary }}'
+          {% if sap_vm_provision_ha_vip_anydb_primary_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_vm_provision_ha_vip_anydb_primary | length == 0
+          or sap_vm_provision_ha_vip_anydb_primary == 'ENTER_STRING_VALUE_HERE'

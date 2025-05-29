@@ -1,7 +1,4 @@
 ---
-
-# ---- Mandatory parameters : Ansible Dictionary for SAP software install media ---- #
-
 # SAP Note 2253383 - Diagnostics Agent - SWPM Archive-Based Installation
 # SAP Note 1858920 - Diagnostics Agent installation with Software Provisioning Manager
 
@@ -17,7 +14,35 @@
 # SAP Kernel 7.54 64-BIT, UNICODE, DATABASE INDEPENDENT (SUPPORT PACKAGES AND PATCHES)
 # https://me.sap.com/softwarecenter/template/products/EVENT=TREE&NE=NAVIGATE&ENR=73554900100200019168&V=MAINT
 
-sap_software_templates_dictionary:
+
+# The following variables can be defined to skip prompts:
+
+# Enter SAP S-User ID (String).
+# sap_id_user:
+
+# Enter SAP S-User Password (String).
+# sap_id_user_password:
+
+# Enter key from sap_software_install_dictionary as String
+# sap_software_product: sap_diag_agent_753_for_solman72_sp12
+
+# Enter download directory path on target host (String).
+# sap_install_media_detect_source_directory: /software
+
+# Enter SAP SAP System ID (String).
+# sap_sda_system_id: DAA
+
+# Enter SAP SAP System Instance Number (String).
+# sap_sda_instance_nr: 98
+
+# Enter the password for the sidadm user (String).
+# sap_sda_adm_password: ''
+
+# Enter Virtual Host Name (short) of the target SAP System (String).
+# sap_sda_virtual_hostname: ''
+
+
+sap_software_install_dictionary:
 
   sap_diag_agent_753_for_solman72_sp12:
 

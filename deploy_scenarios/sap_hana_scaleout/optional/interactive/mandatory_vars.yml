@@ -1,0 +1,287 @@
+---
+# This file will gather all mandatory variables that are used in host spec dictionary.
+# These variables have to be defined before running 'process_host_spec_dictionary.yml'.
+# This could be prevented by using default(None), but it could cause issues.
+
+# Following variables are defined and validated:
+# - sap_system_sid, sap_swpm_sid
+# - sap_system_hana_db_sid, sap_swpm_db_sid, sap_hana_sid, sap_ha_install_hana_hsr_sid
+# - sap_system_anydb_sid, sap_swpm_db_sid, sap_anydb_install_oracle_sid
+# - sap_system_nwas_abap_ascs_instance_nr, sap_swpm_ascs_instance_nr, sap_ha_pacemaker_cluster_nwas_ascs_instance_nr
+# - sap_system_nwas_java_scs_instance_nr, sap_swpm_java_scs_instance_nr, sap_ha_pacemaker_cluster_nwas_scs_instance_nr
+# - sap_system_nwas_abap_ers_instance_nr, sap_swpm_ers_instance_nr, sap_ha_pacemaker_cluster_nwas_ers_instance_nr
+# - sap_system_nwas_abap_pas_instance_nr, sap_swpm_pas_instance_nr
+# - sap_system_nwas_abap_aas_instance_nr, sap_swpm_aas_instance_nr
+
+# Following variables are not included, because they use default('').
+# - sap_vm_provision_nfs_mount_point
+# - sap_vm_provision_nfs_mount_point_type
+# - sap_vm_provision_nfs_mount_point_opts
+# - sap_vm_provision_nfs_mount_point_separate_sap_transport_dir
+
+
+# Used for all scenarios except dedicated HANA scenarios
+- name: Block for sap_system_sid
+  when: sap_playbook_interactive_product not in ['hana']
+  block:
+    - name: Prompt for SAP System ID
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP System ID (SID).
+          Example: S01
+      register: sap_system_sid_register
+      when: sap_system_sid is not defined
+
+    - name: Set fact for sap_system_sid
+      ansible.builtin.set_fact:
+        sap_system_sid: "{{ sap_system_sid_register.user_input }}"
+        sap_swpm_sid: "{{ sap_system_sid_register.user_input }}"
+      when: sap_system_sid is not defined
+
+    - name: Fail if sap_system_sid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_sid': '{{ sap_system_sid }}'
+          Required length of SAP System ID is 3 letters.
+          {% if sap_system_sid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_system_sid | length != 3
+
+# Used by all scenarios with dedicated HANA host
+- name: Block for sap_system_hana_db_sid
+  when:
+    - sap_playbook_interactive_database == 'hana'
+    - sap_playbook_interactive_product == 'hana'
+      or sap_playbook_interactive_layout in ['standard', 'distributed', 'distributed_ha', 'standard_scaleout']
+  block:
+    - name: Prompt for SAP HANA System ID
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP HANA System ID (SID).
+          Example: H01
+      register: sap_system_hana_db_sid_register
+      when: sap_system_hana_db_sid is not defined
+
+    - name: Set fact for sap_system_hana_db_sid
+      ansible.builtin.set_fact:
+        sap_system_hana_db_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
+        sap_swpm_db_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
+        sap_hana_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
+        sap_ha_install_hana_hsr_sid: "{{ sap_system_hana_db_sid_register.user_input }}"
+      when: sap_system_hana_db_sid is not defined
+
+    - name: Fail if sap_system_hana_db_sid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_hana_db_sid': '{{ sap_system_hana_db_sid }}'
+          Required length of SAP HANA System ID is 3 letters.
+          {% if sap_system_hana_db_sid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_system_hana_db_sid | length != 3
+
+
+# Used for all scenarios with dedicated AnyDB host
+- name: Block for sap_system_anydb_sid
+  when:
+    - sap_playbook_interactive_database != 'hana'
+    # - sap_playbook_interactive_layout in ['standard', 'distributed', 'distributed_ha']
+  block:
+    - name: Prompt for AnyDB System ID
+      ansible.builtin.pause:
+        prompt: |
+          Enter AnyDB System ID (SID).
+          Example: E01
+      register: sap_system_anydb_sid_register
+      when: sap_system_anydb_sid is not defined
+
+    - name: Set fact for sap_system_anydb_sid
+      ansible.builtin.set_fact:
+        sap_system_anydb_sid: "{{ sap_system_anydb_sid_register.user_input }}"
+        sap_swpm_db_sid: "{{ sap_system_anydb_sid_register.user_input }}"
+        sap_anydb_install_oracle_sid: "{{ sap_system_anydb_sid_register.user_input }}"
+      when: sap_system_anydb_sid is not defined
+
+    - name: Fail if sap_system_anydb_sid is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_anydb_sid': '{{ sap_system_anydb_sid }}'
+          Required length of AnyDB System ID is 3 letters.
+          {% if sap_system_anydb_sid_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when: sap_system_anydb_sid | length != 3
+
+
+# Used for all scenarios except nwas_java and dedicated HANA scenarios
+- name: Block for sap_system_nwas_abap_ascs_instance_nr
+  when: sap_playbook_interactive_product not in ['hana', 'nwas_java']
+  block:
+    - name: Prompt for SAP ABAP System Central Service Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP ABAP System Central Service Instance Number (ASCS).
+          Example: 00
+      register: sap_system_nwas_abap_ascs_instance_nr_register
+      when: sap_system_nwas_abap_ascs_instance_nr is not defined
+
+    - name: Set fact for sap_system_nwas_abap_ascs_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
+        sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
+        sap_ha_pacemaker_cluster_nwas_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
+      when: sap_system_nwas_abap_ascs_instance_nr is not defined or sap_swpm_ascs_instance_nr is not defined
+
+    - name: Fail if sap_system_nwas_abap_ascs_instance_nr is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_nwas_abap_ascs_instance_nr': '{{ sap_system_nwas_abap_ascs_instance_nr }}'
+          Required length of SAP ABAP System Central Service Instance Number is 2 letters.
+          {% if sap_system_nwas_abap_ascs_instance_nr_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_system_nwas_abap_ascs_instance_nr | string | length != 2
+          or sap_system_nwas_abap_ascs_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+
+
+- name: Block for sap_system_nwas_java_scs_instance_nr
+  when: sap_playbook_interactive_product == 'nwas_java'
+  block:
+    - name: Prompt for SAP JAVA System Central Service Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP JAVA System Central Service Instance Number (SCS).
+          Example: 00
+      register: sap_system_nwas_java_scs_instance_nr_register
+      when: sap_system_nwas_java_scs_instance_nr is not defined
+
+    - name: Set fact for sap_system_nwas_java_scs_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
+        sap_swpm_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
+        sap_ha_pacemaker_cluster_nwas_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
+      when: sap_system_nwas_java_scs_instance_nr is not defined or sap_swpm_ascs_instance_nr is not defined
+
+    - name: Fail if sap_system_nwas_java_scs_instance_nr is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_nwas_java_scs_instance_nr': '{{ sap_system_nwas_java_scs_instance_nr }}'
+          Required length of SAP JAVA System Central Service Instance Number is 2 letters.
+          {% if sap_system_nwas_java_scs_instance_nr_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_system_nwas_java_scs_instance_nr | string | length != 2
+          or sap_system_nwas_java_scs_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+
+
+# Used for all distributed_ha scenarios
+- name: Block for sap_system_nwas_abap_ers_instance_nr
+  when: sap_playbook_interactive_layout == 'distributed_ha'
+  block:
+    - name: Prompt for SAP Enqueue Replication Service Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP Enqueue Replication Service Instance Number (ERS).
+          Example: 01
+      register: sap_system_nwas_abap_ers_instance_nr_register
+      when: sap_system_nwas_abap_ers_instance_nr is not defined
+
+    - name: Set fact for sap_system_nwas_abap_ers_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
+        sap_swpm_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
+        sap_ha_pacemaker_cluster_nwas_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
+      when: sap_system_nwas_abap_ers_instance_nr is not defined or sap_swpm_ers_instance_nr is not defined
+
+    - name: Fail if sap_system_nwas_abap_ers_instance_nr is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_nwas_abap_ers_instance_nr': '{{ sap_system_nwas_abap_ers_instance_nr }}'
+          Required length of SAP Enqueue Replication Service Instance Number is 2 letters.
+          {% if sap_system_nwas_abap_ers_instance_nr_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_system_nwas_abap_ers_instance_nr | string | length != 2
+          or sap_system_nwas_abap_ers_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+
+
+# Used for all scenarios except dedicated HANA scenarios
+- name: Block for sap_system_nwas_abap_pas_instance_nr
+  when: sap_playbook_interactive_product not in ['hana']
+  block:
+    - name: Prompt for SAP Primary Application Server Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP Primary Application Server Instance Number (PAS).
+          Example: 02
+      register: sap_system_nwas_abap_pas_instance_nr_register
+      when: sap_system_nwas_abap_pas_instance_nr is not defined
+
+    - name: Set fact for sap_system_nwas_abap_pas_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr_register.user_input }}"
+        sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr_register.user_input }}"
+      when: sap_system_nwas_abap_pas_instance_nr is not defined or sap_swpm_pas_instance_nr is not defined
+
+    - name: Fail if sap_system_nwas_abap_pas_instance_nr is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_nwas_abap_pas_instance_nr': '{{ sap_system_nwas_abap_pas_instance_nr }}'
+          Required length of SAP Primary Application Server Instance Number is 2 letters.
+          {% if sap_system_nwas_abap_pas_instance_nr_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_system_nwas_abap_pas_instance_nr | string | length != 2
+          or sap_system_nwas_abap_pas_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+
+
+# Used for all distributed scenarios
+- name: Block for sap_system_nwas_abap_aas_instance_nr
+  when: sap_playbook_interactive_layout in ['distributed', 'distributed_ha']
+  block:
+    - name: Prompt for SAP Additional Application Server Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP Additional Application Server Instance Number (AAS).
+          Example: 03
+      register: sap_system_nwas_abap_aas_instance_nr_register
+      when: sap_system_nwas_abap_aas_instance_nr is not defined
+
+    - name: Set fact for sap_system_nwas_abap_aas_instance_nr
+      ansible.builtin.set_fact:
+        sap_system_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr_register.user_input }}"
+        sap_swpm_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr_register.user_input }}"
+      when: sap_system_nwas_abap_aas_instance_nr is not defined or sap_swpm_aas_instance_nr is not defined
+
+    - name: Fail if sap_system_nwas_abap_aas_instance_nr is invalid
+      ansible.builtin.fail:
+        msg: |
+          Invalid value for variable 'sap_system_nwas_abap_aas_instance_nr': '{{ sap_system_nwas_abap_aas_instance_nr }}'
+          Required length of SAP Additional Application Server Instance Number is 2 letters.
+          {% if sap_system_nwas_abap_aas_instance_nr_register.user_input is not defined -%}
+            Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
+          {% else -%}
+            Re-run the playbook and provide a valid input.
+          {% endif %}
+      when:
+        - sap_system_nwas_abap_aas_instance_nr | string | length != 2
+          or sap_system_nwas_abap_aas_instance_nr is not match('^[0-9]+$')  # Accepts only numbers

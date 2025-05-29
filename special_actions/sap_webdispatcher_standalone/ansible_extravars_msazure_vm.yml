@@ -1,32 +1,36 @@
 ---
+#### Scenario specific infrastructure platform variables ####
 
-####
-# Infrastructure Provisioning selection
-# MS Azure
-#
-# Only for use when 'msazure_vm' is value provided for variable sap_vm_provision_iac_platform
-####
 
-sap_vm_provision_msazure_subscription_id: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_tenant_id: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_app_client_id: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_app_client_secret: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_resource_group_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_location_availability_zone_no: 1
-sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private SSH key on execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "msazure_vm"  # Name of the provisioning platform (String).
+sap_vm_provision_msazure_subscription_id: "ENTER_STRING_VALUE_HERE"  # MS Azure Subscription ID (String).
+sap_vm_provision_msazure_tenant_id: "ENTER_STRING_VALUE_HERE"  # Tenant ID (String).
+sap_vm_provision_msazure_app_client_id: "ENTER_STRING_VALUE_HERE"  # Application Client ID (String).
+sap_vm_provision_msazure_app_client_secret: "ENTER_STRING_VALUE_HERE"  # Application Client Secret (String).
+sap_vm_provision_msazure_resource_group_name: "ENTER_STRING_VALUE_HERE" # Resource group name (String). if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"  # Location region (String).
+sap_vm_provision_msazure_location_availability_zone_no: 1  # ansible_to_terraform
+sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE" # Virtual Network name (String). if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE" # Virtual Network Subnet name (String). if ansible_to_terraform, use "new"
+
+# Enter image name from dictionary sap_vm_provision_msazure_vm_host_os_image_dictionary keys (String).
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)
 sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
 
-# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
-####
-sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_msazure_key_pair_name_ssh_host_public_key: ""
-# sap_vm_provision_msazure_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_msazure_resource_group_name
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_msazure_key_pair_name_ssh_host_public_key: ""  # SSH key pair name (String).
+sap_vm_provision_msazure_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_msazure_resource_group_name
 
 # Variables required for sap_vm_provision_iac_type=ansible_to_terraform
 # sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
@@ -79,7 +83,7 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
 
-#### Dictionary of operating system images ####
+#### Ansible dictionary for operating system images ####
 sap_vm_provision_msazure_vm_host_os_image_dictionary:
   rhel-8-0:
     publisher: "RedHat"

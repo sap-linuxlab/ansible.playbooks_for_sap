@@ -1,35 +1,59 @@
 ---
+#### Scenario specific infrastructure platform variables ####
 
-####
-# Infrastructure Provisioning selection
-# AWS
-#
-# Only for use when 'aws_ec2_vs' is value provided for variable sap_vm_provision_iac_platform
-####
-
-sap_vm_provision_aws_access_key: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_aws_secret_access_key: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
-sap_vm_provision_aws_vpc_availability_zone: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_aws_vpc_subnet_create_boolean: "{{ true | default(false) if aws_vpc_subnet_id == 'new' else false }}"
-sap_vm_provision_aws_vpc_subnet_id: "ENTER_STRING_VALUE_HERE" # if ansible_to_terraform, use "new"
-sap_vm_provision_aws_ec2_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"
-
-# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
-####
-sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_aws_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_aws_vpc_sg_names: "ENTER_STRING_VALUE_HERE"
-# sap_vm_provision_aws_dns_overwrite: 'true'  # enable to allow overwrite of existing DNS entries
-
+# Define the NFS mount point (String).
 sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE" # e.g. fs-0000.efs.eu-west-2.amazonaws.com:/
 sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE" # e.g. fs-0000.efs.eu-west-2.amazonaws.com:/
-sap_vm_provision_nfs_mount_point_type: nfs4
-sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl
+sap_vm_provision_nfs_mount_point_type: nfs4  # NFS version (String).
+sap_vm_provision_nfs_mount_point_opts:
+  nfsvers=4.1,rsize=1048576,wsize=1048576,hard,timeo=600,retrans=2,noresvport,acl  # NFS Mount options (String).
+
+### High Availability variables ###
+# Variables for Ansible Role sap_ha_pacemaker_cluster
+sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
+sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
+sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
+sap_ha_pacemaker_cluster_aws_vip_update_rt: "ENTER_STRING_VALUE_HERE"  # AWS Routing Table ID (String).
+
+# Variables for Ansible Role sap_ha_install_anydb_ibmdb2
+sap_ha_install_anydb_ibmdb2_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
+sap_ha_install_anydb_ibmdb2_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
+sap_ha_install_anydb_ibmdb2_aws_vip_update_rt: "{{ sap_ha_pacemaker_cluster_aws_vip_update_rt }}"
+
+# Override of AWS IAM HA roles is required if 'HA-Role-Pacemaker' already exists
+# sap_vm_provision_aws_ha_iam_role: "HA-Role-Pacemaker-{{ sap_system_sid }}"
+# sap_vm_provision_aws_ha_iam_instance_profile: "HA-Role-Pacemaker-{{ sap_system_sid }}-profile"
+
+
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private SSH key on execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "aws_ec2_vs"  # Name of the provisioning platform (String).
+sap_vm_provision_aws_access_key: "ENTER_STRING_VALUE_HERE"  # Access key ID (String).
+sap_vm_provision_aws_secret_access_key: "ENTER_STRING_VALUE_HERE"  # Secret access key (String).
+sap_vm_provision_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"  # Region (String).
+sap_vm_provision_aws_vpc_availability_zone: "ENTER_STRING_VALUE_HERE"  # Availability zone (String).
+sap_vm_provision_aws_vpc_subnet_id: "ENTER_STRING_VALUE_HERE" # VPC Subnet ID (String). if ansible_to_terraform, use "new"
+sap_vm_provision_aws_vpc_subnet_create_boolean:
+  "{{ true | default(false) if sap_vm_provision_aws_vpc_subnet_id == 'new' else false }}"
+
+
+# Enter image name from dictionary sap_vm_provision_aws_ec2_vs_host_os_image_dictionary keys (String).
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)
+sap_vm_provision_aws_ec2_vs_host_os_image: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_aws_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"  # SSH Key name in AWS Console (String).
+sap_vm_provision_aws_vpc_sg_names: "ENTER_STRING_VALUE_HERE"  # Comma separated list of AWS VPC Service Group names (String).
+# sap_vm_provision_aws_dns_overwrite: 'true'  # Enable to allow overwrite of existing DNS entries (String).
 
 # Variables required for sap_vm_provision_iac_type=ansible_to_terraform
 # sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
@@ -38,29 +62,7 @@ sap_vm_provision_nfs_mount_point_opts: nfsvers=4.1,rsize=1048576,wsize=1048576,h
 # sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 
-####
-# Linux Pacemaker cluster setup for IBM Db2 - variables for AWS
-####
-
-sap_ha_install_anydb_ibmdb2_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
-sap_ha_install_anydb_ibmdb2_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
-sap_ha_install_anydb_ibmdb2_aws_vip_update_rt: "ENTER_STRING_VALUE_HERE"
-
-
-####
-# Linux Pacemaker cluster setup for SAP - variables for AWS
-####
-
-sap_ha_pacemaker_cluster_aws_region: "{{ sap_vm_provision_aws_vpc_availability_zone[:-1] }}"
-sap_ha_pacemaker_cluster_aws_access_key_id: "{{ sap_vm_provision_aws_access_key }}"
-sap_ha_pacemaker_cluster_aws_secret_access_key: "{{ sap_vm_provision_aws_secret_access_key }}"
-
-## Override of AWS IAM HA roles is required if 'HA-Role-Pacemaker' already exists
-sap_vm_provision_aws_ha_iam_role: "HA-Role-Pacemaker-{{ sap_system_hana_db_sid }}"
-sap_vm_provision_aws_ha_iam_instance_profile: "HA-Role-Pacemaker-{{ sap_system_hana_db_sid }}-profile"
-
-
-#### Mandatory parameters : Ansible Dictionary for host specifications ####
+#### Ansible Dictionary for host specifications ####
 sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
 
   xsmall_anydb_32vcpu:
@@ -75,30 +77,30 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
       sap_storage_setup_host_type:
         - all # workaround for generic AnyDB instance setup via SAP SWPM which require /sapmnt and /usr/sap access
-        #- anydb_primary
+        # - anydb_primary
 
       storage_definition:
 
       # Commented out variables are the same for each filesystem, only shown once below to ease readability
         - name: db2
           mountpoint: /db2
-          #disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          # disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
           disk_size: 640                 # size in GB, integer
-          #disk_type: gp3                # default: gp3, for AWS EBS disk type
-          #disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          # disk_type: gp3                # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
           filesystem_type: xfs           # default: xfs
-          #lvm_lv_name:                  # default: lv_<element_name>
-          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
-          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
-          #lvm_vg_name:                  # default: vg_<element name>
-          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
-          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
-          #nfs_path:                     # subdirectory path on the NFS server
-          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
-          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
-          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
 
         - name: usr_sap
           mountpoint: /usr/sap
@@ -135,30 +137,30 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
       sap_storage_setup_host_type:
         - all # workaround for generic AnyDB instance setup via SAP SWPM which require /sapmnt and /usr/sap access
-        #- anydb_secondary
+        # - anydb_secondary
 
       storage_definition:
 
       # Commented out variables are the same for each filesystem, only shown once below to ease readability
         - name: db2
           mountpoint: /db2
-          #disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          # disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
           disk_size: 640                 # size in GB, integer
-          #disk_type: gp3                # default: gp3, for AWS EBS disk type
-          #disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          # disk_type: gp3                # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
           filesystem_type: xfs           # default: xfs
-          #lvm_lv_name:                  # default: lv_<element_name>
-          #lvm_lv_stripes: 2             # default: null, number of disks to stripe over
-          #lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
-          #lvm_vg_name:                  # default: vg_<element name>
-          #lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
-          #lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          #lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          #lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
-          #nfs_path:                     # subdirectory path on the NFS server
-          #nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
-          #nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
-          #nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
 
         - name: usr_sap
           mountpoint: /usr/sap
@@ -191,11 +193,14 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
-      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
 
-      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      # ASCS and ERS have to be present for Simple Mount cluster.
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+      sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
+
       sap_storage_setup_host_type:
         - nwas_abap_ascs
+        - nwas_abap_ers
 
       storage_definition:
 
@@ -237,10 +242,13 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
       disable_ip_anti_spoofing: true
 
       sap_storage_setup_sid: "{{ sap_system_sid }}"
+
+      # ASCS and ERS have to be present for Simple Mount cluster.
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
       sap_storage_setup_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
 
-      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
       sap_storage_setup_host_type:
+        - nwas_abap_ascs
         - nwas_abap_ers
 
       storage_definition:
@@ -322,6 +330,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           disk_size: 100                 # size in GB, integer
           filesystem_type: xfs           # default: xfs
 
+
     nwas-aas: # Hostname, must be 13 characters or less
       sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
       virtual_machine_profile: "c6id.4xlarge" # 16 vCPU x 32GB DRAM
@@ -368,7 +377,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           filesystem_type: xfs           # default: xfs
 
 
-#### Dictionary of operating system images ####
+#### Ansible dictionary for operating system images ####
 sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   rhel-8-1: "*RHEL-8.1*_HVM*x86_64*"
   # rhel-8-2: "*RHEL-8.2*_HVM*x86_64*" # removed

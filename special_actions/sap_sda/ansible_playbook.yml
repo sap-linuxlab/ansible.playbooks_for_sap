@@ -2,103 +2,126 @@
 
 - name: Ansible Play for SAP SolMan Diagnostics Agent (SDA) installation
   hosts: all
-  gather_facts: true
   become: true
-  any_errors_fatal: true # https://docs.ansible.com/ansible/latest/user_guide/playbooks_error_handling.html#aborting-a-play-on-all-hosts
+  any_errors_fatal: true
   max_fail_percentage: 0
 
-  vars_prompt:
+  pre_tasks:
+    - name: Prompt for SAP S-User ID
+      ansible.builtin.pause:
+        prompt: |
+          Enter your SAP S-User ID.
+          Example: S0001234567
+      register: sap_id_user_register
+      when: sap_id_user is not defined
 
-    - name: ansible_prompt_sap_id_user
-      prompt: Please enter your SAP ID user (e.g. S-User)
-      private: false
+    - name: Prompt for SAP S-User Password
+      ansible.builtin.pause:
+        prompt: |
+          Enter your SAP S-User password.
+      register: sap_id_user_password_register
+      when: sap_id_user_password is not defined
+      no_log: true
 
-    - name: ansible_prompt_sap_id_user_password
-      prompt: Please enter your SAP ID password
-      private: true
-      unsafe: true
+    - name: Prompt for SAP software product
+      ansible.builtin.pause:
+        prompt: |
+          Please enter which SAP Software installation media to download, select from options:
+          sap_diag_agent_753_for_solman72_sp12 (for SAP SolMan 7.2 SP12)
+          sap_diag_agent_753_for_solman72_sp0_sp11 (for SAP SolMan >= 7.2 SP0 and <= 7.2 SP11)
 
-    - name: ansible_prompt_sap_sda_version_selected
-      private: false
-      prompt: |
-        Please enter which SAP Software installation media to download, select from options (separate with comma - for example sap_s4hana_2022,sap_ecc6_ehp6_hana)...
+          Products are defined in the 'sap_software_install_dictionary' variable.
+      register: sap_software_product_register
+      when: sap_software_product is not defined
 
-        sap_diag_agent_753_for_solman72_sp12 (for SAP SolMan 7.2 SP12)
-        sap_diag_agent_753_for_solman72_sp0_sp11 (for SAP SolMan >= 7.2 SP0 and <= 7.2 SP11)
+    - name: Prompt for SAP installation media path
+      ansible.builtin.pause:
+        prompt: |
+          Enter the path to the directory containing the SAP installation media files.
+          This path will be used to download the SAP installation media files
+          if they are not already present and the 'community.sap_launchpad' collection is available.
+          Press enter to skip and use the default value ('/software').
+      register: sap_install_media_detect_source_directory_register
+      when: sap_install_media_detect_source_directory is not defined
 
-    - name: ansible_prompt_sap_install_media_detect_directory
-      prompt: Please enter the directory path (on target) to download install media to and scan for SAP Software (e.g. /software)
-      private: false
+    - name: Prompt for SAP SDA System ID
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP SAP System ID.
+          Example: DAA
+      register: sap_sda_system_id_register
+      when: sap_sda_system_id is not defined
 
-    - name: ansible_prompt_sap_sda_system_id
-      prompt: Please enter desired SAP Diagnostics Agent System ID (e.g. DAA)
-      private: false
+    - name: Prompt for SAP SDA System Instance Number
+      ansible.builtin.pause:
+        prompt: |
+          Enter SAP SAP System Instance Number.
+          Example: 98
+      register: sap_sda_instance_nr_register
+      when: sap_sda_instance_nr is not defined
 
-    - name: ansible_prompt_sap_sda_instance_nr
-      prompt: Please enter desired SAP Diagnostics Agent System Number (e.g. 98)
-      private: false
+    - name: Prompt for sidadm user password
+      ansible.builtin.pause:
+        prompt: |
+          Enter the password for the sidadm user.
+      register: sap_sda_adm_password_register
+      when: sap_sda_adm_password is not defined
+      no_log: true
 
-    - name: ansible_prompt_sap_sda_adm_password
-      prompt: Please enter desired SAP Diagnostics Agent <sid>adm Password
-      private: true
-      unsafe: true
-
-    - name: ansible_prompt_sap_system_virtual_hostname
-      prompt: Please enter the Virtual Host Name (short) of the target SAP System (e.g. s4h01)
-      private: false
+    - name: Prompt for SAP SDA Virtual Host Name
+      ansible.builtin.pause:
+        prompt: |
+          Enter Virtual Host Name (short) of the target SAP System.
+          Example: s4h01
+      register: sap_sda_virtual_hostname_register
+      when: sap_sda_virtual_hostname is not defined
 
 
 # Use include_role inside Task block, instead of using roles declaration or Task block with import_roles.
-# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialisation
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization
   tasks:
 
     - name: Set facts for all hosts
       ansible.builtin.set_fact:
-        sap_id_user: "{{ ansible_prompt_sap_id_user }}"
-        sap_id_user_password: "{{ ansible_prompt_sap_id_user_password }}"
-        sap_sda_version_selected: "{{ ansible_prompt_sap_sda_version_selected }}"
-        sap_install_media_detect_directory: "{{ ansible_prompt_sap_install_media_detect_directory }}"
-        sap_sda_system_id: "{{ ansible_prompt_sap_sda_system_id }}"
-        sap_sda_instance_nr: "{{ ansible_prompt_sap_sda_instance_nr }}"
-        sap_sda_adm_password: "{{ ansible_prompt_sap_sda_adm_password }}"
-        sap_system_virtual_hostname: "{{ ansible_prompt_sap_system_virtual_hostname }}"
+        sap_id_user: "{{ sap_id_user | d(sap_id_user_register.user_input) }}"
+        sap_id_user_password: "{{ sap_id_user_password | d(sap_id_user_password_register.user_input) }}"
+        sap_software_product: "{{ sap_software_product | d(sap_software_product_register.user_input) }}"
+        sap_install_media_detect_directory: "{{ sap_install_media_detect_source_directory |
+          d(sap_install_media_detect_source_directory.user_input
+          if sap_install_media_detect_source_directory.user_input | length > 0
+          else '/software') }}"
+        sap_sda_system_id: "{{ sap_sda_system_id | d(sap_sda_system_id_register.user_input) }}"
+        sap_sda_instance_nr: "{{ sap_sda_instance_nr | d(sap_sda_instance_nr_register.user_input) }}"
+        sap_sda_adm_password: "{{ sap_sda_adm_password | d(sap_sda_adm_password_register.user_input) }}"
+        sap_system_virtual_hostname: "{{ sap_sda_virtual_hostname | d(sap_sda_virtual_hostname_register.user_input) }}"
 
-    # Set facts based on the install dictionary and the default template selected
-    - name: Set fact x86_64 softwarecenter_search_list
-      ansible.builtin.set_fact:
-        softwarecenter_search_list: "{{ sap_software_templates_dictionary[sap_sda_version_selected].softwarecenter_search_list_x86_64 }}"
-      when: ansible_architecture == "x86_64"
+    # SAP software download will only occur if the 'community.sap_launchpad' collection is installed.
+    # Playbook will continue without the collection, assuming SAP software is already available.
+    - name: Check availability of sap_launchpad collection on execution node
+      delegate_to: localhost
+      become: false  # Enables usage of Python VENV
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection list
+      register: sap_playbook_collection_list_output
 
-    # Set facts based on the install dictionary and the default template selected
-    - name: Set fact ppc64le softwarecenter_search_list
-      ansible.builtin.set_fact:
-        softwarecenter_search_list: "{{ sap_software_templates_dictionary[sap_sda_version_selected].softwarecenter_search_list_ppc64le }}"
-      when: ansible_architecture == "ppc64le"
+    - name: Execute Ansible Role sap_software_download
+      ansible.builtin.include_role:
+        name: community.sap_launchpad.sap_software_download
+      vars:
+        sap_software_download_suser_id: "{{ sap_id_user }}"
+        sap_software_download_suser_password: "{{ sap_id_user_password }}"
+        sap_software_download_directory: "{{ sap_install_media_detect_directory }}"
+        sap_software_download_deduplicate: first
+        sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
+          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
+      when:
+        - sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
-    - name: Create directories if does not exist
-      ansible.builtin.file:
-        path: "{{ item }}"
-        state: directory
-        mode: '0755'
-      loop:
-        - "/software"
-
-    - name: Execute Ansible Module with system Python to download installation media for SAP Diagnostics Agent on Linux
-      community.sap_launchpad.software_center_download:
-        suser_id: "{{ sap_id_user }}"
-        suser_password: "{{ sap_id_user_password }}"
-        softwarecenter_search_query: "{{ item }}"
-        dest: "/software"
-      loop: "{{ softwarecenter_search_list }}"
-      loop_control:
-        label: "{{ item }} : {{ download_task.msg }}"
-      register: download_task
 
     - name: Execute Ansible Role sap_install_media_detect
       ansible.builtin.include_role:
         name: community.sap_install.sap_install_media_detect
       vars:
-        sap_install_media_detect_source_directory: "/software"
         sap_install_media_detect_swpm: true
         sap_install_media_detect_hostagent: true
         sap_install_media_detect_kernel: true

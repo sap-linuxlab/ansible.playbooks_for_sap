@@ -1,28 +1,44 @@
 ---
+# EXPERIMENTAL
 
-####
-# Infrastructure Provisioning selection
-# OVirt
-#
-# Only for use when 'ovirt_vm' is value provided for variable sap_vm_provision_iac_platform
-####
+#### Scenario specific infrastructure platform variables ####
 
-sap_vm_provision_ovirt_engine_insecure_bool: true
-sap_vm_provision_ovirt_engine_url: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ovirt_engine_fqdn: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ovirt_engine_user: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ovirt_engine_password: "ENTER_STRING_VALUE_HERE"
-#sap_vm_provision_ovirt_engine_cafile: "ENTER_STRING_VALUE_HERE"
+# Define the NFS mount points for HANA data, log, and shared directories (String).
+sap_vm_provision_nfs_mount_point_hana_data: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_hana_log: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_hana_shared: "ENTER_STRING_VALUE_HERE"
+sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"  # NFS version (String).
+sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"  # NFS Mount options (String).
 
-sap_vm_provision_ovirt_hypervisor_cluster_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ovirt_hypervisor_cluster_host_node_name: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ovirt_hypervisor_cluster_storage_domain_name: "ENTER_STRING_VALUE_HERE"
 
-sap_vm_provision_ovirt_vm_boot_menu: false
-sap_vm_provision_ovirt_vm_clone_independent: false
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private SSH key on execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion private host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "ovirt_vm"  # Name of the provisioning platform (String).
+sap_vm_provision_ovirt_engine_insecure_bool: true  # Enables insecure authentication (String).
+sap_vm_provision_ovirt_engine_url: "ENTER_STRING_VALUE_HERE"  # URL (String).
+sap_vm_provision_ovirt_engine_fqdn: "ENTER_STRING_VALUE_HERE"  # FQDN (String).
+sap_vm_provision_ovirt_engine_user: "ENTER_STRING_VALUE_HERE"  # User name (String).
+sap_vm_provision_ovirt_engine_password: "ENTER_STRING_VALUE_HERE"  # User password (String).
+sap_vm_provision_ovirt_engine_cafile: "ENTER_STRING_VALUE_HERE"  # CA file path (String).
+
+sap_vm_provision_ovirt_hypervisor_cluster_name: "ENTER_STRING_VALUE_HERE"  # Hypervisor cluster name (String).
+sap_vm_provision_ovirt_hypervisor_cluster_host_node_name: "ENTER_STRING_VALUE_HERE"  # Hypervisor cluster host node name (String).
+sap_vm_provision_ovirt_hypervisor_cluster_storage_domain_name: "ENTER_STRING_VALUE_HERE"  # Hypervisor cluster storage domain name (String).
+
+sap_vm_provision_ovirt_vm_boot_menu: false  # Disable VM boot menu (Boolean).
+sap_vm_provision_ovirt_vm_clone_independent: false  # Independent VM clone (Boolean).
 sap_vm_provision_ovirt_vm_disk_type: "raw" # default is 'cow' = thin provisioning
 sap_vm_provision_ovirt_vm_timezone: "Etc/GMT"
-#sap_vm_provision_ovirt_vm_operating_system: "other_linux"
+sap_vm_provision_ovirt_vm_operating_system: "other_linux"
 
 # OVirt VM option 1 - create from VM Template Name
 sap_vm_provision_ovirt_vm_template_name: "ENTER_STRING_VALUE_HERE"
@@ -43,13 +59,13 @@ sap_vm_provision_ovirt_vm_template_name: "ENTER_STRING_VALUE_HERE"
 #     format: "cow"
 
 # OVirt VM - vNIC definitions when not using DHCP
-#sap_vm_provision_ovirt_vm_nics:
+# sap_vm_provision_ovirt_vm_nics:
 #  - interface: virtio
 #    name: nic1
 #    profile_name: vm_nic_profile_name
 
 # OVirt VM - cloud-init
-#sap_vm_provision_ovirt_vm_cloud_init:
+# sap_vm_provision_ovirt_vm_cloud_init:
 #    authorized_ssh_keys: "{{ lookup('file', ( sap_vm_provision_ssh_host_public_key_file_path | default(sap_vm_provision_ssh_host_private_key_file_path + '.pub') ) ) }}"
 #    regenerate_ssh_keys: false
 #    host_name: "{{ host_node }}" # Must use short name for SAP Systems, not FQDN
@@ -60,28 +76,7 @@ sap_vm_provision_ovirt_vm_template_name: "ENTER_STRING_VALUE_HERE"
 #       path: /tmp/greeting.txt
 #       permissions: '0644'
 
-# Only for use when 'ansible' is value provided for variable sap_vm_provision_iac_type
-####
-sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"
-
-sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_nfs_mount_point_separate_sap_transport_dir: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"
-sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"
-
-# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
-# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
-# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
-# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
-# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
-
-
-####
-# Infrastructure Provisioning selection,
-# additional configuration when provisioning On-Premise hosts
-####
-
+#### additional configuration when provisioning On-Premise hosts ####
 # Only for use when environment does not contain an SNAT for Outbound Internet activity
 # sap_vm_provision_proxy_web_forward_proxy_ip: "ENTER_STRING_VALUE_HERE" # IP:Port only, no http:// prefix
 # sap_vm_provision_proxy_web_forward_exclusions: "localhost,127.0.0.1,{{ sap_vm_provision_dns_root_domain }},{{ sap_ha_pacemaker_cluster_ibmpower_vm_hmc_host }},{{ ibmpower_vc_auth_endpoint.rpartition('//')[-1].partition('/')[0].partition(':')[0] }}"
@@ -94,11 +89,17 @@ sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"
 # sap_vm_provision_os_registration_script_command: "ENTER_STRING_VALUE_HERE"
 
 # OS Package Repo Direct - Cannot be used in conjunction with OS Package Repository Mirrors
-#sap_vm_provision_os_online_registration_user: "ENTER_STRING_VALUE_HERE"
-#sap_vm_provision_os_online_registration_passcode: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_os_online_registration_user: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_os_online_registration_passcode: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
 
 
-#### Mandatory parameters : Ansible Dictionary for host specifications ####
+#### Ansible Dictionary for host specifications ####
 sap_vm_provision_ovirt_vm_host_specifications_dictionary:
 
   xsmall_256gb:
@@ -193,4 +194,3 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           disk_size: 100                 # size in GB, integer
           disk_type: nas                 # KubeVirt Storage Class
           filesystem_type: xfs           # default: xfs
-
