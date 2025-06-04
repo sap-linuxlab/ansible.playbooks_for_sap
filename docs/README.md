@@ -143,17 +143,18 @@ bin_ansible_callbacks = True
 ```
 
 ### Preparations - SAP User ID credentials (Optional)
-The download of the SAP Installation Media Software from SAP will be executed if `community.sap_launchpad` Ansible Collection is available on Execution Node. 
+The download of the SAP Installation Media Software from SAP to the target host, will be executed if the `community.sap_launchpad` Ansible Collection is installed on Ansible Control Node (i.e. where Ansible is executed from, such as a laptop or AWX etc).  
 
-The software must be obtained from SAP directly, and requires valid license agreements with SAP in order to access these files.
+The SAP software files must be obtained from SAP directly, and requires valid license agreements with SAP in order to access these files.  
 
-An SAP Company Number (SCN) contains one or more Installation Number/s, providing licenses for specified SAP Software. When an SAP User ID is created within the SAP Customer Number (SCN), the administrator must provide SAP Download authorizations for the SAP User ID.
+An SAP Company Number (SCN) contains one or more Installation Number/s, providing licenses for specified SAP Software. When an SAP User ID is created within the SAP Customer Number (SCN), the administrator must provide SAP Download authorizations for the SAP User ID.  
 
-When an SAP User ID (e.g. S-User) is enabled with and part of an SAP Universal ID, then the `sap_launchpad` Ansible Collection **must** use:
-- the SAP User ID
-- the password for login with the SAP Universal ID
+Login credentials for the SAP User ID (e.g. S-User) have two login approaches:  
+- **SAP Universal ID**: an email address is assigned many SAP User IDs. Select the SAP User ID, and use the password of the SAP Universal ID.
+   - Do **NOT** use the SAP User ID legacy `Account Password` from the [SAP Universal ID Account Manager](https://account.sap.com/manage/accounts).
+- **Legacy**: an SAP User ID is isolated. Use the SAP User ID and the associated password.
 
-In addition, if a SAP Universal ID is used then the recommendation is to check and reset the SAP User ID ‘Account Password’ in the [SAP Universal ID Account Manager](https://account.sap.com/manage/accounts), which will help to avoid any potential conflicts.
+For further information regarding connection errors, please see the FAQ section [Errors with prefix 'SAP SSO authentication failed - '](./docs/FAQ.md#errors-with-prefix-sap-sso-authentication-failed---).
 
 **NOTE: The `community.sap_launchpad` Ansible Collection supports only S-Users without Multi Factor Authentication.**
 
