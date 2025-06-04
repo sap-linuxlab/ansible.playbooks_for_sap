@@ -35,19 +35,19 @@ The Ansible Playbooks for SAP offer several key benefits:
 ### Supported Deployment Scenarios
 | SAP Product | Versions | Deployment Topology | Database |
 | --- | --- | --- | --- |
-| SAP HANA | 2.0 SPS 07<br> 2.0 SPS 06 | Sandbox<br> Scale-Out <br> Scale-Up High Availability | SAP HANA |
+| SAP HANA | 2.0 SPS 08<br> 2.0 SPS 07<br> 2.0 SPS 06 | Sandbox<br> Scale-Out <br> Scale-Up High Availability | SAP HANA |
 | SAP BW/4HANA | 2023<br> 2021 | Sandbox<br> Scale-Out | SAP HANA |
-| SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | Sandbox*<br> Standard*<br> Distributed*<br> Distributed with High Availability* | SAP HANA |
+| SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | Sandbox<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
+| SAP S/4HANA<br> Maintenance Plan | Any version - Defined by Maintenance Plan</br> Includes latest FPS and security patches | Sandbox<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
 | SAP S/4HANA Foundation | 2023<br> 2022<br> 2021 | Sandbox<br> Standard | SAP HANA |
-| SAP Landscape for SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | 3-System Standard* | SAP HANA |
+| SAP Landscape for SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | 3-System Standard | SAP HANA |
+| SAP Landscape for SAP S/4HANA<br> Maintenance Plan | Any version - Defined by Maintenance Plan</br> Includes latest FPS and security patches | 3-System Standard | SAP HANA |
 | SAP Business Suite (ECC) | EHP 8<br> EHP 7 | Sandbox | SAP HANA |
 | SAP Business Suite (ECC) | EHP 8 | Sandbox<br> Distributed (IBM Db2) | IBM Db2<br> Oracle DB<br> SAP ASE<br> SAP MaxDB |
 | SAP IDES for ECC | EHP 8 | Sandbox | SAP HANA, IBM Db2 |
 | SAP NetWeaver ABAP | 7.52 SP00<br> 7.50 SP00 | Sandbox | SAP HANA<br> IBM Db2<br> Oracle DB<br> SAP ASE<br> SAP MaxDB |
 | SAP NetWeaver JAVA | 7.50 SP22 | Sandbox | IBM Db2<br> SAP ASE |
 | SAP Solution Manager ABAP/JAVA | 7.2 SR2 | Sandbox | SAP HANA<br> SAP ASE |
-
-> <sub>Note: Scenarios marked with an asterisk (*) also support download of SAP Installation Media using Maintenance Planner transaction.</sub>  
 
 > <sub>Note: Additional SAP Product versions can be added by customizing extra vars file.</sub>  
 
@@ -78,7 +78,7 @@ The playbooks can be executed with one of following methods.
 ### Ansible with existing host(s)
 This method is used to install the SAP system on an existing host(s).  
 - **Interactive Prompts:** Yes :white_check_mark:
-- **Provisioning:**: No :x:
+- **Provisioning:** No :x:
 - **SAP Installation:** Yes :white_check_mark:
 - **Required Variables:**
    - `sap_vm_provision_iac_type: ansible`
@@ -91,7 +91,7 @@ This method is used to install the SAP system on an existing host(s).
 ### Ansible provisions host(s)
 This method provisions a new host(s) and installs the SAP system. 
 - **Interactive Prompts:** Yes :white_check_mark:
-- **Provisioning:**: Yes :white_check_mark:
+- **Provisioning:** Yes :white_check_mark:
 - **SAP Installation:** Yes :white_check_mark:
 - **Required Variables:**
    - `sap_vm_provision_iac_type: ansible`
@@ -104,7 +104,7 @@ This method provisions a new host(s) and installs the SAP system.
 ### Ansible uses Terraform to provision minimal landing zone and host(s)
 This method provisions a minimal landing zone and a new host(s) using Terraform and installs the SAP system using Ansible. 
 - **Interactive Prompts:** Yes :white_check_mark: `[Experimental]` (Limited support for Terraform variables)
-- **Provisioning:**: Yes :white_check_mark:
+- **Provisioning:** Yes :white_check_mark:
 - **SAP Installation:** Yes :white_check_mark:
 - **Required Variables:**
    - `sap_vm_provision_iac_type: ansible_to_terraform`
