@@ -52,7 +52,7 @@ sap_hana_preconfigure_update: true  # Whether to update the system during pre-co
 #### SAP HANA Database Server installation ####
 # SAP HANA Master password
 sap_hana_install_use_master_password: "y"  # Use a master password for SAP HANA installation (y/n) (String).
-sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"  # The master password for SAP HANA (String).
+sap_hana_install_master_password: "NewPass$321"  # The master password for SAP HANA (String).
 
 # Dynamic assignment of SAP HANA variables
 sap_hana_sid: "{{ sap_system_hana_db_sid }}"
