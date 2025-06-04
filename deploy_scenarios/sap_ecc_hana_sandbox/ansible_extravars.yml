@@ -49,7 +49,7 @@ sap_netweaver_preconfigure_fail_if_not_enough_swap_space_configured: false  # Wh
 #### SAP HANA Database Server installation ####
 # SAP HANA Master password
 sap_hana_install_use_master_password: "y"  # Use a master password for SAP HANA installation (y/n) (String).
-sap_hana_install_master_password: "ENTER_STRING_VALUE_HERE"  # The master password for SAP HANA (String).
+sap_hana_install_master_password: "NewPass$321"  # The master password for SAP HANA (String).
 
 # Dynamic assignment of SAP HANA variables
 sap_hana_sid: "{{ sap_system_hana_db_sid }}"
@@ -123,6 +123,10 @@ sap_software_install_dictionary:
 
   # SAP Business Suite 7i 2016 > EHP8 for SAP ERP 6.0 ABAP
   # uses SAP NetWeaver 7.5
+
+  # Product Availability Matrix for SAP ECC 6.0 EhP8, SAP HANA, x86_64
+  # SAP HANA DATABASE 2.0 [>= SP059] and SAP KERNEL 7.54 64-BIT UNICODE
+  # https://userapps.support.sap.com/sap/support/pam?hash=s%3DSAP%2520ERP%25206.0%26pvnr%3D73555000100900000247%26pt=t%7CPLTFRM%26fclfilter=G1%7CSAP%20HANA%20DATABASE%3BG2%7CLINUX%20ON%20X86_64
   sap_ecc6_ehp8_hana_sandbox:
 
     # SWPM product catalog ID for the installation (String).

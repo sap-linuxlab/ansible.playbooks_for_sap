@@ -106,19 +106,6 @@
       when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
 
-- name: Ansible Play for ensuring rsync on all hosts
-  hosts: hana_primary
-  become: true
-  any_errors_fatal: true
-  max_fail_percentage: 0
-  tasks:
-
-    - name: Install rsync
-      ansible.builtin.package:
-        name: rsync
-        state: present
-
-
 #### Begin downloading SAP software installation media to hosts ####
 - name: Ansible Play for downloading SAP HANA installation media
   hosts: hana_primary
