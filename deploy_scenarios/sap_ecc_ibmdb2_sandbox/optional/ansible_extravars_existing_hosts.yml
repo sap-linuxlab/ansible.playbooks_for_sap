@@ -15,18 +15,6 @@ sap_general_preconfigure_domain: "{{ ansible_domain }}"
 
 
 # sap_storage role variable assignment per host
-sap_host_type:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].sap_host_type }}"
-
-sap_storage_setup_sid:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].sap_storage_setup_sid }}"
-
-sap_storage_setup_host_type:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].sap_storage_setup_host_type }}"
-
 sap_storage_setup_definition:
   "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
     [inventory_hostname_short].storage_definition }}"
