@@ -360,11 +360,18 @@ export AZ_CLIENT_ID=$(az ad app create --display-name ansible-terraform | jq .ap
 # Create Azure Service Principal, instantiation of Azure Application
 export AZ_SERVICE_PRINCIPAL_ID=$(az ad sp create --id $AZ_CLIENT_ID | jq .objectId --raw-output)
 
+# ALT: Obtain existing Azure Application (Client ID) and the Azure Application's instantiation (Service Principal)
+# See Azure AAD 'App Registrations' blade
+# See Azure AAD IAM 'Enterprise Application' blade
+export AZ_CLIENT_ID=$(az ad app list --display-name "NAME" | jq .[].appId --raw-output)
+export AZ_SERVICE_PRINCIPAL_ID=$(az ad sp show --id "$AZ_CLIENT_ID" | jq .id --raw-output)
+
 # Assign default Azure AD Role with privileges for creating Azure Virtual Machines
 az role assignment create --assignee "$AZ_SERVICE_PRINCIPAL_ID" \
---subscription "$AZ_SUBSCRIPTION_ID" \
 --role "Virtual Machine Contributor" \
---role "Contributor"
+--role "Contributor" \
+--scope "/subscriptions/$AZ_SUBSCRIPTION_ID" \
+--subscription "$AZ_SUBSCRIPTION_ID"
 
 # Reset Azure Application, to provide the Client ID and Client Secret to use the Azure Service Principal
 az ad sp credential reset --name $AZ_CLIENT_ID
