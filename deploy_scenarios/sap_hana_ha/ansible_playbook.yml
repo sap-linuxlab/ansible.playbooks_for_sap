@@ -178,10 +178,6 @@
   max_fail_percentage: 0
   tasks:
 
-    - name: Set var of files list from SAP HANA primary, using lookup from Ansible hostvars with key as SAP HANA primary
-      ansible.builtin.set_fact:
-        sap_hana_install_media_files_list: "{{ hostvars[sap_vm_provision_dynamic_inventory_hana_primary_hostname].sap_hana_install_media_files.files | map(attribute='path') | list }}"
-
     - name: Transfer SAP HANA installation media to SAP HANA Primary and SAP HANA Secondary
       delegate_to: "{{ software_source_ip }}"
       remote_user: "root"

@@ -14,19 +14,11 @@ sap_general_preconfigure_modify_etc_hosts: true
 sap_general_preconfigure_domain: "{{ ansible_domain }}"
 
 
+# Path to target host's SSH private key on the execution node (String).
+# This SSH key has to be added to authorized_keys on managed node.
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
+
 # sap_storage role variable assignment per host
-sap_host_type:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].sap_host_type }}"
-
-sap_storage_setup_sid:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].sap_storage_setup_sid }}"
-
-sap_storage_setup_host_type:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].sap_storage_setup_host_type }}"
-
 sap_storage_setup_definition:
   "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
     [inventory_hostname_short].storage_definition }}"
@@ -35,6 +27,12 @@ sap_storage_setup_definition:
 sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_nfs_mount_point_type: "ENTER_STRING_VALUE_HERE"  # NFS version (String).
 sap_vm_provision_nfs_mount_point_opts: "ENTER_STRING_VALUE_HERE"  # NFS Mount options (String).
+
+### High Availability variables ###
+sap_vm_temp_vip_nwas_abap_ascs: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs }}"
+sap_ha_pacemaker_cluster_vip_nwas_abap_ascs_ip_address: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs }}"
+sap_vm_temp_vip_nwas_abap_ers: "{{ sap_vm_provision_ha_vip_nwas_abap_ers }}"
+sap_ha_pacemaker_cluster_vip_nwas_abap_ers_ip_address: "{{ sap_vm_provision_ha_vip_nwas_abap_ers }}"
 
 
 #### Ansible Dictionary for host specifications ####

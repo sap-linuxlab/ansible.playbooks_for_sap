@@ -14,11 +14,11 @@ sap_general_preconfigure_modify_etc_hosts: true
 sap_general_preconfigure_domain: "{{ ansible_domain }}"
 
 
-# sap_storage role variable assignment per host
-sap_host_type:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].sap_host_type }}"
+# Path to target host's SSH private key on the execution node (String).
+# This SSH key has to be added to authorized_keys on managed node.
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
 
+# sap_storage role variable assignment per host
 sap_storage_setup_definition:
   "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
     [inventory_hostname_short].storage_definition }}"

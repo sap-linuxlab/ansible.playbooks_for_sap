@@ -1,6 +1,6 @@
 ---
 
-# Ansible Inventory Group names must match sap_host_type variable - hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+# Ansible Inventory Group names must match sap_host_type variable - hana_primary, hana_secondary, anydb_primary, anydb_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
 
 nwas_pas:
   hosts:
