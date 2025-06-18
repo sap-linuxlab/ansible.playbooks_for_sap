@@ -62,6 +62,13 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
 
         - name: software
           mountpoint: /software
-          disk_size: 100                 # size in GB, integer
+          disk_size: 250                 # size in GB, integer
           disk_type: pd-balanced
           filesystem_type: xfs           # default: xfs
+
+        - name: "{{ sap_playbook_backup_files_directory | regex_replace('^/', '') }}"
+          mountpoint: "{{ sap_playbook_backup_files_directory }}"
+          nfs_path: ""
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_backup_files | default('') }}"  # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
