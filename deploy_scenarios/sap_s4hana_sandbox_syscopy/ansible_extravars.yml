@@ -124,7 +124,7 @@ sap_software_install_dictionary:
   sap_s4hana_2023_sandbox:
 
     # SWPM product catalog ID for the installation (String).
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.CORE.HDB.ABAP
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.CORE.HDB.CP
 
     # List of INI file sections to generate using sap_install.sap_swpm role (List).
     sap_swpm_inifile_sections_list:
@@ -239,7 +239,7 @@ sap_software_install_dictionary:
   sap_s4hana_2022_sandbox:
 
     # Product ID for New Installation
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.CORE.HDB.ABAP
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
       - swpm_installation_media
@@ -357,7 +357,7 @@ sap_software_install_dictionary:
   sap_s4hana_2021_sandbox:
 
     # Product ID for New Installation
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2021.CORE.HDB.ABAP
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2021.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
       - swpm_installation_media
@@ -463,7 +463,7 @@ sap_software_install_dictionary:
   sap_s4hana_2020_sandbox:
 
     # Product ID for New Installation
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2020.CORE.HDB.ABAP
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2020.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
       - swpm_installation_media
