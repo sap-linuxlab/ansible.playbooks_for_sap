@@ -1,4 +1,4 @@
-# Ansible Playbook for SAP S/4HANA - Sandbox Installation
+# Ansible Playbook for SAP S/4HANA - Sandbox System Copy Restore installation using SAP HANA complete data backup
 
 ## Overview
 This Ansible Playbook automates the deployment of an SAP S/4HANA in a single-host environment.  
@@ -6,6 +6,8 @@ This Ansible Playbook automates the deployment of an SAP S/4HANA in a single-hos
 A single-host system, as defined by SAP, consolidates all SAP Database and SAP ABAP Platform instances onto a single host.  
 
 This configuration, often referred to as a Two-Tier Architecture, OneHost, or Central System, is ideal for development, testing, and demonstration purposes.
+
+Installation with restore of a System Copy using SAP HANA complete data backup, further extends the usefulness for iterative testing (such as migration preparation) activities.
 
 
 ## Supported Infrastructure Platforms
@@ -40,6 +42,8 @@ Upon successful execution, this Ansible Playbook will provision the following ho
 
 ## Playbook Execution
 Before running the playbook, please read the main [README](https://github.com/sap-linuxlab/ansible.playbooks_for_sap/blob/main/README.md) for detailed instructions, prerequisites, and best practices.
+
+In addition, this playbook requires an existing NFS with the SAP HANA complete data backup files.
 
 ### Provisioning and Installation
 This method provisions a new host(s) and installs the SAP system.
@@ -111,4 +115,4 @@ The playbook executes the following sequence of tasks:
    - **Detect Installation Media:** The `sap_install.sap_install_media_detect` Ansible Role is used to detect the provided SAP installation media.
    - **Install Application:** The `sap_install.sap_swpm` Ansible Role is used to install the application.
    - **SAP SWPM Product ID Prefix:** `NW_ABAP_OneHost`
-   - Includes Database Load using Installation Export files.
+   - Includes Database Load using SAP HANA complete data backup files.
