@@ -132,8 +132,10 @@ sap_software_install_dictionary:
       - swpm_installation_media_swpm2_hana
       - credentials
       - credentials_hana
+      - credentials_syscopy
       - db_config_hana
       - db_connection_nw_hana
+      - db_restore_hana
       - nw_config_other
       - nw_config_central_services_abap
       - nw_config_primary_application_server_instance
@@ -244,8 +246,10 @@ sap_software_install_dictionary:
       - swpm_installation_media_swpm2_hana
       - credentials
       - credentials_hana
+      - credentials_syscopy
       - db_config_hana
       - db_connection_nw_hana
+      - db_restore_hana
       - nw_config_other
       - nw_config_central_services_abap
       - nw_config_primary_application_server_instance
@@ -360,8 +364,10 @@ sap_software_install_dictionary:
       - swpm_installation_media_swpm2_hana
       - credentials
       - credentials_hana
+      - credentials_syscopy
       - db_config_hana
       - db_connection_nw_hana
+      - db_restore_hana
       - nw_config_other
       - nw_config_central_services_abap
       - nw_config_primary_application_server_instance
@@ -464,8 +470,10 @@ sap_software_install_dictionary:
       - swpm_installation_media_swpm2_hana
       - credentials
       - credentials_hana
+      - credentials_syscopy
       - db_config_hana
       - db_connection_nw_hana
+      - db_restore_hana
       - nw_config_other
       - nw_config_central_services_abap
       - nw_config_primary_application_server_instance
