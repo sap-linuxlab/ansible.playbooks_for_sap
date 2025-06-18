@@ -1,5 +1,5 @@
 ---
-# Ansible Playbook for SAP S/4HANA Sandbox installation
+# Ansible Playbook for SAP S/4HANA Sandbox System Copy Restore installation using SAP HANA complete data backup
 
 # Use include_role / include_tasks inside Ansible Task block, instead of using roles declaration or Task block with import_roles.
 # This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
@@ -138,6 +138,72 @@
       when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
 
+#### Begin downloading SAP HANA complete data backup
+- name: Ansible Play for downloading SAP HANA complete data backup
+  hosts: hana_primary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    - name: Install rsync
+      ansible.builtin.package:
+        name: rsync
+        state: present
+
+    - name: Find SAP HANA complete data backup files
+      ansible.builtin.find:
+        paths: "{{ sap_playbook_backup_files_directory }}"
+        patterns: "COMPLETE_DATA_BACKUP*"
+        recurse: true
+      register: sap_hana_backup_files
+
+    - name: Prepare for file transfers, copy Private SSH Key from local
+      ansible.builtin.copy:
+        src: "{{ sap_vm_provision_ssh_host_private_key_file_path
+          if sap_vm_provision_ssh_host_private_key_file_path is defined
+          else sap_vm_provision_terraform_work_dir_path ~ '/ssh/hosts_rsa' }}"
+        dest: "/tmp/hosts_rsa"
+        mode: "0400"
+
+    - name: Prepare for file transfers, create directory for SAP HANA complete data backup
+      ansible.builtin.file:
+        path: "{{ sap_install_media_detect_source_directory + '/backup/' }}"
+        state: directory
+
+    # synchronize Ansible Module does not natively provide a remote host folder to folder copy
+    # it is expected to use the copy Ansible Module instead, but as this copy is from an NFS
+    # with large backup files to ensure file integrity use synchronize Ansible Module (for rsync) with delegate_to.
+    # Therefore, use push from delegated remote host as source, to the remote host - i.e. same host from NFS mount to local directory
+    - name: Transfer SAP HANA complete data backup to host
+      delegate_to: "{{ software_source_ip }}"
+      remote_user: "root"
+      ansible.posix.synchronize:
+        src: "{{ item }}"
+        dest: "{{ (sap_install_media_detect_source_directory + '/backup/' + (item | basename)) | regex_replace('//', '/') }}"
+        mode: "push"
+        dest_port: 22
+        use_ssh_args: false
+        verify_host: false
+        private_key: "/tmp/hosts_rsa"
+        owner: false        # Effectively chown to root user
+        group: false        # Effectively chown to root group
+        compress: false     # SAP HANA backup files are already compressed, this will waste time
+        rsync_timeout: 3600 # 60 minute timeout for rsync before trying to resume from partial
+        rsync_opts:
+          - "--partial"     # Resume from partial if timeout/failed, in combination with retries
+        # set_remote_user: false
+      loop: "{{ sap_hana_backup_files.files | map(attribute='path') | list }}"
+      retries: 2
+      vars:
+        software_source_ip: "{{ ansible_host | default(none) }}" # Current host IP Address
+
+    - name: Remove temporary file, if it exists
+      ansible.builtin.file:
+        path: "/tmp/hosts_rsa"
+        state: absent
+
+
 #### Begin SAP software hosts preparation ####
 - name: Ansible Play for preparing all SAP software hosts
   hosts: hana_primary
@@ -183,7 +249,7 @@
         name: community.sap_install.sap_hana_install
 
 
-- name: Ansible Play for SAP NetWeaver Application Server installation - ABAP Central Services (ASCS), Database Load, Primary Application Server (PAS)
+- name: Ansible Play for SAP System Copy Restore with SAP NetWeaver Application Server installation - ABAP Central Services (ASCS), Database Load, Primary Application Server (PAS)
   hosts: hana_primary
   become: true
   any_errors_fatal: true
@@ -200,8 +266,9 @@
         sap_install_media_detect_kernel: true
         sap_install_media_detect_webdisp: false
         sap_install_media_detect_db_client: "saphana"
-        sap_install_media_detect_export: "saps4hana"
 
+    # Monitor System Copy Restore using SAP HANA backup recovery process for complete data backup
+    # using /hana/shared/$SAP_HANA_SID/HDB$SAP_HANA_INSTANCE_NO/$SAP_SYSTEM_SID/trace/DB_$SAP_HANA_SID/backup.log
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
