@@ -33,6 +33,9 @@ sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (Str
 # Directory with SAP installation media (e.g. /software) (String)
 sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
 
+# NFS mounted directory with SAP HANA Complete Data Backup files (e.g. /software_backup) (String).
+sap_playbook_backup_files_directory: "ENTER_STRING_VALUE_HERE"
+
 
 #### Preconfigure OS for SAP Software ####
 sap_general_preconfigure_modify_etc_hosts: false  # Whether to modify /etc/hosts file (Boolean).
