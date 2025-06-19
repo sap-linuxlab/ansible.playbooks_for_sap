@@ -22,7 +22,7 @@ sap_system_nwas_abap_pas_instance_nr: "01"  # SAP NetWeaver ABAP PAS instance nu
 
 ## SAP Product selection ##
 # Name of the SAP product to install (String).
-# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_2023_distributed).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_2023_sandbox).
 sap_software_product: "ENTER_STRING_VALUE_HERE"
 
 
