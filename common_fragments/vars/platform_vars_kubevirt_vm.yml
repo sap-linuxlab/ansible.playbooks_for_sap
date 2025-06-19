@@ -19,6 +19,8 @@ sap_vm_provision_kubevirt_vm_host_os_image_url: "ENTER_STRING_VALUE_HERE" # Imag
 sap_vm_provision_kubevirt_os_user: "ENTER_STRING_VALUE_HERE"  # Optional OS user name (String).
 sap_vm_provision_kubevirt_os_user_password: "ENTER_STRING_VALUE_HERE"  # Optional OS user password (String).
 
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
+
 # Variables required for sap_vm_provision_iac_type=ansible_to_terraform
 sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
 sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"

@@ -12,12 +12,14 @@ sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
 # Options: Defined in host_specifications_dictionary.
 sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
 
-# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
-sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
-
 
 #### Key SAP System variables ####
 # Key variables are defined directly in host_specifications_dictionary
+
+## SAP Product selection ##
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_2023_standard).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
 
 
 #### SAP Software installation media downloads ####
@@ -101,11 +103,6 @@ sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
 
-
-#### SAP Product selection ####
-# Name of the SAP product to install (String).
-# Options: Defined in sap_software_install_dictionary (e.g. sap_ides_ecc6_ehp8_ibmdb2_onehost).
-sap_software_product: "ENTER_STRING_VALUE_HERE"
 
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
