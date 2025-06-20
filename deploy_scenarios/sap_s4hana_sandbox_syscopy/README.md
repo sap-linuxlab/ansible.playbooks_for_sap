@@ -116,3 +116,10 @@ The playbook executes the following sequence of tasks:
    - **Install Application:** The `sap_install.sap_swpm` Ansible Role is used to install the application.
    - **SAP SWPM Product ID Prefix:** `NW_ABAP_OneHost`
    - Includes Database Load using SAP HANA complete data backup files.
+
+
+## Guidelines for SAP HANA COMPLETE Backup files
+- The backup files should have at minimum `0666` file permissions to begin with. This will allow sap_swpm Ansible Role to change ownership to OS User SIDadm and group sapsys.
+- The backup files cannot not be on a mounted NFS, they must be copied to a local drive for SAP SWPM to unpack during DB Restore.
+- The backup files cannot be from a later version of SAP HANA, than the version of SAP HANA that is the target.
+- The backup files from different CPU Architecture (e.g. backup from x86_64 > target is ppc64le) will require `SGEN` execution after SAP System is installed.
