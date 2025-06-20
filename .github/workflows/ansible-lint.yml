@@ -7,6 +7,12 @@ on:
   schedule:
     - cron: '10 10 * * 1'
 
+  # Validate open pull requests
+  pull_request:
+    branches:
+      - stage
+      - dev
+
   # Runs on push to dev and main branches
   push:
     branches:

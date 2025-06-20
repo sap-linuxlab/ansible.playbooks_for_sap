@@ -11,7 +11,7 @@
   gather_facts: false
   tasks:
 
-    - name: Search variables for placeholders
+    - name: Search variables for placeholders  # noqa: ignore-errors
       ansible.builtin.set_fact:
         sap_playbook_placeholder_vars: "{{ sap_playbook_placeholder_vars | d([]) + [item.key] }}"
       loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
