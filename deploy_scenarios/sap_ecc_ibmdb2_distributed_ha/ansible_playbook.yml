@@ -36,6 +36,21 @@
   gather_facts: false
   tasks:
 
+    - name: Search variables for placeholders  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        sap_playbook_placeholder_vars: "{{ sap_playbook_placeholder_vars | d([]) + [item.key] }}"
+      loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
+      when: item.value == 'ENTER_STRING_VALUE_HERE'
+
+    - name: Warning if placeholder variable was found
+      ansible.builtin.fail:
+        msg: |
+          Ensure that the variables do not contain placeholder values before executing playbook again.
+          Variables: {{ sap_playbook_placeholder_vars | join(', ') }}
+      when: sap_playbook_placeholder_vars is defined and sap_playbook_placeholder_vars | length > 0
+
     - name: Set fact with selected host dictionary
       ansible.builtin.set_fact:
         sap_playbook_host_dictionary:
@@ -198,7 +213,7 @@
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ sap_install_media_detect_source_directory }}/" # trailing slash to copy items in the directory, not the directory itself
-        dest: "{{ sap_install_media_detect_source_directory }}"
+        dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
         use_ssh_args: false
@@ -222,7 +237,7 @@
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ item }}"
-        dest: "{{ sap_install_media_detect_source_directory }}"
+        dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
         use_ssh_args: false
@@ -247,7 +262,7 @@
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ item }}"
-        dest: "{{ sap_install_media_detect_source_directory }}"
+        dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
         use_ssh_args: false
@@ -272,7 +287,7 @@
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ item }}"
-        dest: "{{ sap_install_media_detect_source_directory }}"
+        dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
         use_ssh_args: false
@@ -547,7 +562,7 @@
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ sap_install_media_detect_source_directory }}/db2_db_backup_anydb_primary_node" # no trailing slash to copy directory and the contents
-        dest: "{{ sap_install_media_detect_source_directory }}"
+        dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
         use_ssh_args: false

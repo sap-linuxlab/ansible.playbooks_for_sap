@@ -1,12 +1,13 @@
 ---
 #### Bastion server details ####
 # Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
-sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
-sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+sap_vm_provision_bastion_execution: false
+# sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+# sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
 
 # Variables required for sap_vm_provision_iac_type=ansible
-sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
-sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion server's SSH private key on the execution node (String).
+# sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+# sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion server's SSH private key on the execution node (String).
 sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to target host's SSH private key on the execution node (String).
 
 #### Infrastructure platform variables ####
@@ -27,6 +28,8 @@ sap_vm_provision_ovirt_vm_clone_independent: false  # Independent VM clone (Bool
 sap_vm_provision_ovirt_vm_disk_type: "raw" # default is 'cow' = thin provisioning
 sap_vm_provision_ovirt_vm_timezone: "Etc/GMT"
 sap_vm_provision_ovirt_vm_operating_system: "other_linux"
+
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
 
 # OVirt VM option 1 - create from VM Template Name
 sap_vm_provision_ovirt_vm_template_name: "ENTER_STRING_VALUE_HERE"
