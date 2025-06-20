@@ -19,6 +19,7 @@ sap_vm_provision_aws_vpc_subnet_id: "ENTER_STRING_VALUE_HERE" # VPC Subnet ID (S
 sap_vm_provision_aws_vpc_subnet_create_boolean:
   "{{ true | default(false) if sap_vm_provision_aws_vpc_subnet_id == 'new' else false }}"
 
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
 
 # Enter image name from dictionary sap_vm_provision_aws_ec2_vs_host_os_image_dictionary keys (String).
 # Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)

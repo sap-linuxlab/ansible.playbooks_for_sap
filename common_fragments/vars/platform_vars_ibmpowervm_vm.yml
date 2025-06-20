@@ -22,6 +22,8 @@ sap_vm_provision_ibmpowervm_network_name: "ENTER_STRING_VALUE_HERE"  # Network n
 sap_vm_provision_ibmpowervm_network_vnic_type: "normal" # Virtual NIC Type (String). 'direct' == SR-IOV, 'normal' == Shared Ethernet Adapter (SEA)
 sap_vm_provision_ibmpowervm_storage_template_name: "ENTER_STRING_VALUE_HERE" # Storage template name (String). aka. Openstack Cinder Volume Type
 
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
+
 # IBM PowerVM Virtual Machine OS Image (see IBM PowerVC Web GUI for list) (String).
 sap_vm_provision_ibmpowervm_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
 
