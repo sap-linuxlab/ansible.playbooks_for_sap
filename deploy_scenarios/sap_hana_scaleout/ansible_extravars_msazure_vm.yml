@@ -33,6 +33,8 @@ sap_vm_provision_msazure_location_availability_zone_no: 1  # ansible_to_terrafor
 sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE" # Virtual Network name (String). if ansible_to_terraform, use "new"
 sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE" # Virtual Network Subnet name (String). if ansible_to_terraform, use "new"
 
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
+
 # Enter image name from dictionary sap_vm_provision_msazure_vm_host_os_image_dictionary keys (String).
 # Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)
 sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"

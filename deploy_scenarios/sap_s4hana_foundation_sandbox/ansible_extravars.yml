@@ -12,9 +12,6 @@ sap_vm_provision_iac_platform: "ENTER_STRING_VALUE_HERE"
 # Options: Defined in host_specifications_dictionary.
 sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
 
-# Root domain for DNS entries (e.g., example.com) (String). Not required for existing_hosts.
-sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"
-
 
 #### Key SAP System variables ####
 sap_system_sid: "S01"  # SAP System ID (SID) (String)
@@ -22,6 +19,11 @@ sap_system_hana_db_sid: "H01"  # SAP HANA Database ID (SID) (String).
 sap_system_hana_db_instance_nr: "90"  # SAP HANA Database instance number (String).
 sap_system_nwas_abap_ascs_instance_nr: "00"  # SAP NetWeaver ABAP ASCS instance number (String).
 sap_system_nwas_abap_pas_instance_nr: "01"  # SAP NetWeaver ABAP PAS instance number (String).
+
+## SAP Product selection ##
+# Name of the SAP product to install (String).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_fndn_2023_sandbox).
+sap_software_product: "ENTER_STRING_VALUE_HERE"
 
 
 #### SAP Software installation media downloads ####
@@ -112,11 +114,6 @@ sap_hostname: "{{ ansible_hostname }}"
 sap_domain: "{{ ansible_domain }}"
 sap_ip: "{{ ansible_default_ipv4.address }}"
 
-
-#### SAP Product selection ####
-# Name of the SAP product to install (String).
-# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_fndn_2023_sandbox).
-sap_software_product: "ENTER_STRING_VALUE_HERE"
 
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:

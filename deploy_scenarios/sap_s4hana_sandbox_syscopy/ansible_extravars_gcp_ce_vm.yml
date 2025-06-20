@@ -1,0 +1,189 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount point (String).
+sap_vm_provision_nfs_mount_point_backup_files: "ENTER_STRING_VALUE_HERE" # e.g. 10.x.x.x:/gcp_filestore_share_name
+sap_vm_provision_nfs_mount_point_type: nfs  # NFS version (String).
+sap_vm_provision_nfs_mount_point_opts:
+  vers=3,mountvers=3,rw,relatime,hard,proto=tcp,timeo=600,retrans=2,mountport=2050,mountproto=tcp  # NFS Mount options (String).
+
+
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion server's SSH private key on the execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to target host's SSH private key on the execution node (String).
+sap_vm_provision_ssh_host_public_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion public host key on execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "gcp_ce_vm"  # Name of the provisioning platform (String).
+sap_vm_provision_gcp_credentials_json: "ENTER_STRING_VALUE_HERE"  # Path to JSON credentials file (String).
+sap_vm_provision_gcp_project: "ENTER_STRING_VALUE_HERE"  # Project name (String).
+sap_vm_provision_gcp_region: "{{ sap_vm_provision_gcp_region_zone[:-2] }}"  # Region (String).
+sap_vm_provision_gcp_region_zone: "ENTER_STRING_VALUE_HERE"  # Region zone (String).
+sap_vm_provision_gcp_vpc_name: "ENTER_STRING_VALUE_HERE"  # VPC name (String).
+sap_vm_provision_gcp_vpc_subnet_name: "ENTER_STRING_VALUE_HERE"  # VPC Subnet name (String).
+
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
+
+# Enter image name from dictionary sap_vm_provision_gcp_ce_vm_host_os_image_dictionary keys (String)..
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-latest (Red Hat)
+sap_vm_provision_gcp_ce_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    s4h01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "n2-highmem-32" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 1                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 384                 # size in GB, integer
+          disk_type: pd-ssd              # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 1
+          disk_size: 128                 # size in GB, integer
+          disk_type: pd-ssd
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 320                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 96
+          disk_type: pd-balanced
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 250                 # size in GB, integer
+          disk_type: pd-balanced
+          filesystem_type: xfs           # default: xfs
+
+        - name: "{{ sap_playbook_backup_files_directory | regex_replace('^/', '') }}"
+          mountpoint: "{{ sap_playbook_backup_files_directory }}"
+          nfs_path: ""
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_backup_files | default('') }}"  # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
+  rhel-8-latest:
+    project: "rhel-cloud"
+    family: "rhel-8"
+  rhel-9-latest:
+    project: "rhel-cloud"
+    family: "rhel-9"
+  sles-12-latest:
+    project: "suse-cloud"
+    family: "sles-12"
+  sles-15-latest:
+    project: "suse-cloud"
+    family: "sles-15"
+  # rhel-7-7-sap-ha: # removed
+  #   project: "rhel-sap-cloud"
+  #   family: "rhel-7-7-sap-ha"
+  rhel-7-9-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-7-9-sap-ha"
+  # rhel-8-1-sap-ha: # removed
+  #   project: "rhel-sap-cloud"
+  #   family: "rhel-8-1-sap-ha"
+  rhel-8-2-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-2-sap-ha"
+  rhel-8-4-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-4-sap-ha"
+  rhel-8-6-sap-ha:
+    project: "rhel-sap-cloud"
+    family: "rhel-8-6-sap-ha"
+  sles-12-5-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-12-sp5-sap"
+  # sles-15-1-sap-ha: # removed
+  #   project: "suse-sap-cloud"
+  #   family: "sles-15-sp1-sap"
+  sles-15-2-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp2-sap"
+  sles-15-3-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp3-sap"
+  sles-15-4-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp4-sap"
+  sles-15-5-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp5-sap"
+  sles-15-6-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-15-sp6-sap"
+  sles-12-5-sap-ha-byos:
+    project: "suse-byos-cloud"
+    family: "sles-12-sp5-sap-byos"
+  sles-15-2-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp2-sap-byos"
+  sles-15-3-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp3-sap-byos"
+  sles-15-4-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp4-sap-byos"
+  sles-15-5-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp5-sap-byos"
+  sles-15-6-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-15-sp6-sap-byos"

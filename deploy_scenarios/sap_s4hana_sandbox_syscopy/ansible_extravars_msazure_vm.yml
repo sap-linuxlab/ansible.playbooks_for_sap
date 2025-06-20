@@ -1,0 +1,309 @@
+---
+#### Scenario specific infrastructure platform variables ####
+
+# Define the NFS mount point (String).
+sap_vm_provision_nfs_mount_point_backup_files: "ENTER_STRING_VALUE_HERE" # e.g. stor-acc-name0.file.core.windows.net:/stor-acc-name0/file-share-name0
+sap_vm_provision_nfs_mount_point_type: nfs4  # NFS version (String).
+# defining sec=sys can conflict and files not written to NFS with subsequent SAP SWPM missing file errors 'Could not start instance service of instance'
+sap_vm_provision_nfs_mount_point_opts:
+  nfsvers=4.1,timeo=600,retrans=2,hard   # NFS Mount options (String).
+
+
+#### Bastion server details ####
+# Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
+sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion server's SSH private key on the execution node (String).
+sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to target host's SSH private key on the execution node (String).
+
+#### Infrastructure platform variables ####
+sap_vm_provision_iac_platform: "msazure_vm"  # Name of the provisioning platform (String).
+sap_vm_provision_msazure_subscription_id: "ENTER_STRING_VALUE_HERE"  # MS Azure Subscription ID (String).
+sap_vm_provision_msazure_tenant_id: "ENTER_STRING_VALUE_HERE"  # Tenant ID (String).
+sap_vm_provision_msazure_app_client_id: "ENTER_STRING_VALUE_HERE"  # Application Client ID (String).
+sap_vm_provision_msazure_app_client_secret: "ENTER_STRING_VALUE_HERE"  # Application Client Secret (String).
+sap_vm_provision_msazure_resource_group_name: "ENTER_STRING_VALUE_HERE" # Resource group name (String). if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_location_region: "ENTER_STRING_VALUE_HERE"  # Location region (String).
+sap_vm_provision_msazure_location_availability_zone_no: 1  # ansible_to_terraform
+sap_vm_provision_msazure_vnet_name: "ENTER_STRING_VALUE_HERE" # Virtual Network name (String). if ansible_to_terraform, use "new"
+sap_vm_provision_msazure_vnet_subnet_name: "ENTER_STRING_VALUE_HERE" # Virtual Network Subnet name (String). if ansible_to_terraform, use "new"
+
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
+
+# Enter image name from dictionary sap_vm_provision_msazure_vm_host_os_image_dictionary keys (String).
+# Example: sles-15-6-sap-ha (SUSE), rhel-9-4-sap-ha (Red Hat)
+sap_vm_provision_msazure_vm_host_os_image: "ENTER_STRING_VALUE_HERE"
+
+# Variables required for sap_vm_provision_iac_type=ansible
+sap_vm_provision_msazure_key_pair_name_ssh_host_public_key: "ENTER_STRING_VALUE_HERE"  # SSH key pair name (String).
+sap_vm_provision_msazure_private_dns_resource_group_name: "" # optional, default use of sap_vm_provision_msazure_resource_group_name
+
+# Variables required for sap_vm_provision_iac_type=ansible_to_terraform
+# sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent
+# sap_vm_provision_resource_prefix: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_bastion_os_image: "ENTER_STRING_VALUE_HERE"
+# sap_vm_provision_terraform_work_dir_path: "/tmp/tf1"
+
+
+#### Ansible Dictionary for host specifications ####
+sap_vm_provision_msazure_vm_host_specifications_dictionary:
+
+  xsmall_256gb:
+
+    s4h01: # Hostname, must be 13 characters or less
+      sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
+      virtual_machine_profile: "Standard_M32ls" # 32 vCPU x 256GB DRAM
+      disable_ip_anti_spoofing: true
+
+      sap_storage_setup_sid: "{{ sap_system_sid }}"
+      sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
+
+      # hana_primary, hana_secondary, nwas_abap_ascs, nwas_abap_ers, nwas_abap_pas, nwas_abap_aas, nwas_java_scs, nwas_java_ers
+      sap_storage_setup_host_type:
+        - hana_primary
+        - nwas_abap_ascs
+        - nwas_abap_pas
+
+      storage_definition:
+
+      # Commented out variables are the same for each filesystem, only shown once below to ease readability
+        - name: hana_data
+          mountpoint: /hana/data
+          disk_count: 4                  # default: 1, if more then then LVM logical volume will be striped across the defined disks
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6                  # default: gp3, for AWS EBS disk type
+          # disk_iops:                    # default: null, for AWS EBS with custom IOPS
+          filesystem_type: xfs           # default: xfs
+          # lvm_lv_name:                  # default: lv_<element_name>
+          # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
+          # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
+          # lvm_vg_name:                  # default: vg_<element name>
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
+          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # nfs_path:                     # subdirectory path on the NFS server
+          # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          # nfs_mount_options:            # default: {{ sap_storage_setup_nfs_mount_options }}
+
+        - name: hana_log
+          mountpoint: /hana/log
+          disk_count: 3
+          disk_size: 128                 # size in GB, integer
+          disk_type: P10
+          filesystem_type: xfs           # default: xfs
+
+        - name: hana_shared
+          mountpoint: /hana/shared
+          disk_size: 256                 # size in GB, integer
+          disk_type: P15
+          filesystem_type: xfs           # default: xfs
+
+        # MS Azure rootvg-rootlv / has only 2GB, therefore create virtual disk to avoid failures
+        # Use closest Azure Managed Disk Premium SSD type to 96GB
+        # See SAP Note 1597355 - Swap-space recommendation for Linux
+        - name: swap # sbx
+          disk_size: 64                  # size in GB, integer
+          disk_type: P6
+          filesystem_type: swap          # must be swap filesystem
+
+        - name: software
+          mountpoint: /software
+          disk_size: 256                 # size in GB, integer
+          disk_type: P15
+          filesystem_type: xfs           # default: xfs
+
+        - name: "{{ sap_playbook_backup_files_directory | regex_replace('^/', '') }}"
+          mountpoint: "{{ sap_playbook_backup_files_directory }}"
+          nfs_path: ""
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_backup_files | default('') }}"  # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+
+
+#### Ansible dictionary for operating system images ####
+sap_vm_provision_msazure_vm_host_os_image_dictionary:
+  rhel-8-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "8-gen2"
+  rhel-8-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "81-gen2"
+  rhel-8-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "82-gen2"
+  rhel-8-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "83-gen2"
+  rhel-8-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "84-gen2"
+  rhel-8-5:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "85-gen2"
+  rhel-8-6:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "86-gen2"
+  rhel-8-7:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "87-gen2"
+  rhel-8-8:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "88-gen2"
+  rhel-8-9:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "89-gen2"
+  rhel-8-10:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "810-gen2"
+  rhel-9-0:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "90-gen2"
+  rhel-9-1:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "91-gen2"
+  rhel-9-2:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "92-gen2"
+  rhel-9-3:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "93-gen2"
+  rhel-9-4:
+    publisher: "RedHat"
+    offer: "RHEL"
+    sku: "94-gen2"
+  sles-12-5:
+    publisher: "SUSE"
+    offer: "sles-12-sp5"
+    sku: "gen2"
+  sles-15-1:
+    publisher: "SUSE"
+    offer: "sles-15-sp1"
+    sku: "gen2"
+  sles-15-2:
+    publisher: "SUSE"
+    offer: "sles-15-sp2"
+    sku: "gen2"
+  sles-15-3:
+    publisher: "SUSE"
+    offer: "sles-15-sp3"
+    sku: "gen2"
+  sles-15-4:
+    publisher: "SUSE"
+    offer: "sles-15-sp4"
+    sku: "gen2"
+  sles-15-5:
+    publisher: "SUSE"
+    offer: "sles-15-sp5"
+    sku: "gen2"
+  sles-15-6:
+    publisher: "SUSE"
+    offer: "sles-15-sp6"
+    sku: "gen2"
+  rhel-8-1-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "81sapha-gen2"
+  rhel-8-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "82sapha-gen2"
+  rhel-8-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "84sapha-gen2"
+  rhel-8-6-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "86sapha-gen2"
+  rhel-8-8-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "88sapha-gen2"
+  rhel-8-10-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "810sapha-gen2"
+  rhel-9-0-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "90sapha-gen2"
+  rhel-9-2-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "92sapha-gen2"
+  rhel-9-4-sap-ha:
+    publisher: "RedHat"
+    offer: "RHEL-SAP-HA"
+    sku: "94sapha-gen2"
+  sles-12-5-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-12-sp5"
+    sku: "gen2"
+  sles-15-1-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1"
+    sku: "gen2"
+  sles-15-2-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2"
+    sku: "gen2"
+  sles-15-3-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3"
+    sku: "gen2"
+  sles-15-4-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4"
+    sku: "gen2"
+  sles-15-5-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5"
+    sku: "gen2"
+  sles-15-6-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6"
+    sku: "gen2"
+  sles-15-1-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp1-byos"
+    sku: "gen2"
+  sles-15-2-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp2-byos"
+    sku: "gen2"
+  sles-15-3-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp3-byos"
+    sku: "gen2"
+  sles-15-4-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp4-byos"
+    sku: "gen2"
+  sles-15-5-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp5-byos"
+    sku: "gen2"
+  sles-15-6-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-15-sp6-byos"
+    sku: "gen2"

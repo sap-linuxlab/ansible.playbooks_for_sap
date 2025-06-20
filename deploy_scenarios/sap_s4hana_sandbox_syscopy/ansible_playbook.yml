@@ -1,0 +1,295 @@
+---
+# Ansible Playbook for SAP S/4HANA Sandbox System Copy Restore installation using SAP HANA complete data backup
+
+# Use include_role / include_tasks inside Ansible Task block, instead of using roles declaration or Task block with import_roles.
+# This ensures Ansible Roles, and the tasks within, will be parsed in sequence instead of parsing at Playbook initialization.
+
+
+#### Interactive Mode ####
+# Interactive mode section can be safely removed without impact if all mandatory variables are provided.
+- name: Ansible Play to Interactively gather all mandatory variables
+  hosts: localhost
+  gather_facts: false
+  pre_tasks:
+
+    - name: Block for collection for interactive prompts
+      when:
+        - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
+        - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
+        - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
+      block:
+        - name: Check if interactive tasks are available
+          ansible.builtin.stat:
+            path: optional/interactive/main.yml
+          register: sap_playbook_interactive_tasks_availability
+          ignore_errors: true
+
+        - name: Execute collection of interactive inputs
+          ansible.builtin.include_tasks:
+            file: optional/interactive/main.yml
+          when: sap_playbook_interactive_tasks_availability.stat.exists
+
+
+#### Begin Infrastructure-as-Code provisioning ####
+- name: Ansible Play to create dynamic inventory group for provisioning
+  hosts: localhost
+  gather_facts: false
+  tasks:
+
+    - name: Search variables for placeholders  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        sap_playbook_placeholder_vars: "{{ sap_playbook_placeholder_vars | d([]) + [item.key] }}"
+      loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
+      when: item.value == 'ENTER_STRING_VALUE_HERE'
+
+    - name: Warning if placeholder variable was found
+      ansible.builtin.fail:
+        msg: |
+          Ensure that the variables do not contain placeholder values before executing playbook again.
+          Variables: {{ sap_playbook_placeholder_vars | join(', ') }}
+      when: sap_playbook_placeholder_vars is defined and sap_playbook_placeholder_vars | length > 0
+
+    - name: Set fact with selected host dictionary
+      ansible.builtin.set_fact:
+        sap_playbook_host_dictionary:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+            + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+
+    - name: Create dynamic inventory group for Ansible Role sap_vm_provision
+      ansible.builtin.add_host:
+        name: "{{ item }}"
+        group: sap_vm_provision_target_inventory_group
+      loop: "{{ sap_playbook_host_dictionary.keys() }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+
+
+# Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
+- name: Ansible Play to provision hosts for SAP
+  hosts: sap_vm_provision_target_inventory_group
+  gather_facts: false
+  tasks:
+
+    # Ensure that all sap_* or __sap_* variables set in Interactive Mode are appended to the target inventory Group
+    - name: Assign all relevant facts from execution node before provisioning  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+        cacheable: true
+      loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
+
+    - name: Execute Ansible Role sap_vm_provision
+      ansible.builtin.include_role:
+        name: community.sap_infrastructure.sap_vm_provision
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+
+- name: Ansible Play to set sap variables on provisioned hosts
+  hosts: sap_vm_provision_target_inventory_group  # noqa: ignore-errors
+  gather_facts: false
+  tasks:
+
+    - name: Assign all relevant facts from execution node after provisioning  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        "{{ item.key }}": "{{ item.value }}"
+        cacheable: true
+      loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      no_log: true
+      ignore_errors: true
+
+
+#### VM storage filesystem setup ####
+- name: Ansible Play for hosts storage setup
+  hosts: hana_primary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    # Use inventory_hostname_short to retrieve host specification from the dictionary.
+    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
+    - name: Execute Ansible Role sap_storage_setup
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_storage_setup
+      vars:
+        sap_playbook_host_dictionary_hostname:
+          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
+           + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][inventory_hostname_short] }}"
+        sap_storage_setup_sid: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_sid'] | d('') }}"
+        sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_ascs_instance_nr'] | d('') }}"
+        sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_pas_instance_nr'] | d('') }}"
+        sap_storage_setup_host_type: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_host_type'] | list }}"
+      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
+
+
+#### Begin downloading SAP software installation media to hosts ####
+- name: Ansible Play for downloading SAP S/4HANA installation media
+  hosts: hana_primary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    # SAP software download will only occur if the 'community.sap_launchpad' collection is installed.
+    # Playbook will continue without the collection, assuming SAP software is already available.
+    - name: Check availability of sap_launchpad collection on execution node
+      delegate_to: localhost
+      become: false  # Enables usage of Python VENV
+      ansible.builtin.command:
+        cmd: ansible-galaxy collection list
+      register: sap_playbook_collection_list_output
+
+    - name: Execute Ansible Role sap_software_download
+      ansible.builtin.include_role:
+        name: community.sap_launchpad.sap_software_download
+      vars:
+        sap_software_download_suser_id: "{{ sap_id_user }}"
+        sap_software_download_suser_password: "{{ sap_id_user_password }}"
+        sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
+        sap_software_download_deduplicate: first
+        sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
+          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
+      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+
+
+#### Begin downloading SAP HANA complete data backup
+- name: Ansible Play for downloading SAP HANA complete data backup
+  hosts: hana_primary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    - name: Install rsync
+      ansible.builtin.package:
+        name: rsync
+        state: present
+
+    - name: Find SAP HANA complete data backup files
+      ansible.builtin.find:
+        paths: "{{ sap_playbook_backup_files_directory }}"
+        patterns: "COMPLETE_DATA_BACKUP*"
+        recurse: true
+      register: sap_hana_backup_files
+
+    - name: Prepare for file transfers, copy Private SSH Key from local
+      ansible.builtin.copy:
+        src: "{{ sap_vm_provision_ssh_host_private_key_file_path
+          if sap_vm_provision_ssh_host_private_key_file_path is defined
+          else sap_vm_provision_terraform_work_dir_path ~ '/ssh/hosts_rsa' }}"
+        dest: "/tmp/hosts_rsa"
+        mode: "0400"
+
+    # Create directory for database backups with ownership of SAP HANA sidadm:sapsys
+    - name: Prepare for file transfers, create directory for SAP HANA complete data backup
+      ansible.builtin.file:
+        path: "{{ sap_install_media_detect_source_directory + '/backup/' }}"
+        state: directory
+        owner: "{{ sap_system_hana_db_sid | lower ~ 'adm' }}"
+        group: sapsys
+        mode: '0755'
+
+    # synchronize Ansible Module does not natively provide a remote host folder to folder copy
+    # it is expected to use the copy Ansible Module instead, but as this copy is from an NFS
+    # with large backup files to ensure file integrity use synchronize Ansible Module (for rsync) with delegate_to.
+    # Therefore, use push from delegated remote host as source, to the remote host - i.e. same host from NFS mount to local directory
+    - name: Transfer SAP HANA complete data backup to host
+      delegate_to: "{{ software_source_ip }}"
+      remote_user: "root"
+      ansible.posix.synchronize:
+        src: "{{ item }}"
+        dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/backup/' }}"
+        mode: "push"
+        dest_port: 22
+        use_ssh_args: false
+        verify_host: false
+        private_key: "/tmp/hosts_rsa"
+        owner: false        # Effectively chown to root user
+        group: false        # Effectively chown to root group
+        compress: false     # SAP HANA backup files are already compressed, this will waste time
+        rsync_timeout: 3600 # 60 minute timeout for rsync before trying to resume from partial
+        rsync_opts:
+          - "--partial"     # Resume from partial if timeout/failed, in combination with retries
+        # set_remote_user: false
+      loop: "{{ sap_hana_backup_files.files | map(attribute='path') | list }}"
+      retries: 2
+      vars:
+        software_source_ip: "{{ ansible_host | default(none) }}" # Current host IP Address
+
+    - name: Remove temporary file, if it exists
+      ansible.builtin.file:
+        path: "/tmp/hosts_rsa"
+        state: absent
+
+
+#### Begin SAP software hosts preparation ####
+- name: Ansible Play for preparing all SAP software hosts
+  hosts: hana_primary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    - name: Execute Ansible Role sap_general_preconfigure
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_general_preconfigure
+
+    - name: Execute Ansible Role sap_netweaver_preconfigure
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_netweaver_preconfigure
+
+    - name: Execute Ansible Role sap_hana_preconfigure
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_hana_preconfigure
+
+
+#### Begin SAP software installations ####
+- name: Ansible Play for SAP HANA Database Server installation
+  hosts: hana_primary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    - name: Execute Ansible Role sap_install_media_detect
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_install_media_detect
+      vars:
+        sap_install_media_detect_swpm: false
+        sap_install_media_detect_hostagent: true
+        sap_install_media_detect_igs: false
+        sap_install_media_detect_kernel: false
+        sap_install_media_detect_webdisp: false
+        sap_install_media_detect_db: "saphana"
+
+    - name: Execute Ansible Role sap_hana_install
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_hana_install
+
+
+- name: Ansible Play for SAP System Copy Restore with SAP NetWeaver Application Server installation - ABAP Central Services (ASCS), Database Load, Primary Application Server (PAS)
+  hosts: hana_primary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    - name: Execute Ansible Role sap_install_media_detect
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_install_media_detect
+      vars:
+        sap_install_media_detect_swpm: true
+        sap_install_media_detect_hostagent: true
+        sap_install_media_detect_igs: true
+        sap_install_media_detect_kernel: true
+        sap_install_media_detect_webdisp: false
+        sap_install_media_detect_db_client: "saphana"
+
+    # Monitor System Copy Restore using SAP HANA backup recovery process for complete data backup
+    # using /hana/shared/$SAP_HANA_SID/HDB$SAP_HANA_INSTANCE_NO/$SAP_SYSTEM_SID/trace/DB_$SAP_HANA_SID/backup.log
+    - name: Execute Ansible Role sap_swpm
+      ansible.builtin.include_role:
+        name: community.sap_install.sap_swpm
+      vars:
+        sap_swpm_templates_product_input: "{{ sap_software_product }}"

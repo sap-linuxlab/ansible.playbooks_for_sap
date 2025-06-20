@@ -6,12 +6,13 @@
 
 #### Bastion server details ####
 # Bastion variables are used when sap_vm_provision_bastion_execution is set to `true`
-sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
-sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
+sap_vm_provision_bastion_execution: false
+# sap_vm_provision_bastion_user: "ENTER_STRING_VALUE_HERE"  # Bastion user name (String).
+# sap_vm_provision_bastion_ssh_port: "ENTER_STRING_VALUE_HERE"  # Bastion user password (String).
 
 # Variables required for sap_vm_provision_iac_type=ansible
-sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
-sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion server's SSH private key on the execution node (String).
+# sap_vm_provision_bastion_public_ip: "ENTER_STRING_VALUE_HERE"  # Public IP of the bastion server (String).
+# sap_vm_provision_ssh_bastion_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to bastion server's SSH private key on the execution node (String).
 sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"  # Path to target host's SSH private key on the execution node (String).
 
 #### Infrastructure platform variables ####
@@ -23,6 +24,8 @@ sap_vm_provision_kubevirt_vm_host_os_image_url: "ENTER_STRING_VALUE_HERE" # Imag
 # Optional, create OS User and Password. Otherwise only 'root' will exist using the SSH Key
 sap_vm_provision_kubevirt_os_user: "ENTER_STRING_VALUE_HERE"  # Optional OS user name (String).
 sap_vm_provision_kubevirt_os_user_password: "ENTER_STRING_VALUE_HERE"  # Optional OS user password (String).
+
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
 
 # Variables required for sap_vm_provision_iac_type=ansible_to_terraform
 sap_vm_provision_terraform_state: "ENTER_STRING_VALUE_HERE" # present, absent

@@ -35,6 +35,8 @@ sap_vm_provision_ibmcloud_resource_group_name: "ENTER_STRING_VALUE_HERE" # Resou
 sap_vm_provision_ibmcloud_powervs_location: "ENTER_STRING_VALUE_HERE"  # Location (String).
 sap_vm_provision_ibmcloud_vpc_subnet_name: "ENTER_STRING_VALUE_HERE" # VPC Subnet name (String). only for ansible_to_terraform, can be name or 'new'
 
+sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
+
 # Enter image name from dictionary sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary keys (String)..
 # Example: sles-15-5-sap-ha (SUSE), rhel-9-2-sap-ha (Red Hat)
 sap_vm_provision_ibmcloud_powervs_host_os_image: "ENTER_STRING_VALUE_HERE"
