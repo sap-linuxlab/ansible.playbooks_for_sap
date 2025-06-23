@@ -37,12 +37,14 @@ jobs:
 
           # Loop through all deploy_scenarios and supported special_actions
           for dir in ./deploy_scenarios/* ./special_actions/*; do
+            dir_name=$(basename "$dir")
             extravars_file="$dir/ansible_extravars.yml"
 
             # Check if the ansible_extravars.yml file exists
             if [ -f "$extravars_file" ]; then
               # Check if the file contains "sap_playbook_internal: true"
               if grep -q "sap_playbook_internal: true" "$extravars_file"; then
+                echo "OK - $dir_name - Scenario was removed"
                 rm -rf "$dir"
               fi  # string is present
             fi  # extravars file exists
@@ -60,6 +62,8 @@ jobs:
 
           # Loop through all deploy_scenarios and supported special_actions
           for dir in ./deploy_scenarios/* ./special_actions/*; do
+            dir_name=$(basename "$dir")
+
             # Copy interactive tasks only if optional/ansible_extravars_interactive.yml is present.
             interactive_vars="$dir"/optional/ansible_extravars_interactive.yml
             if [ -f "$interactive_vars" ]; then
@@ -68,12 +72,23 @@ jobs:
 
               # Update path to interactive tasks in playbooks
               sed -i 's/..\/..\/common_fragments\/tasks\//optional\//' $dir/ansible_playbook.yml
+              echo "OK - $dir_name - Interactive tasks were copied"
+            else
+              echo "SKIP - $dir_name - Interactive tasks were not copied, because ansible_extravars_interactive.yml is missing"
             fi  # interactive_vars exists
 
             # Copy ansible_requirements if it does not exist
             ansible_requirements="$dir"/ansible_requirements.yml
             if [ ! -f "$ansible_requirements" ]; then
               cp ./common_fragments/ansible_requirements.yml $dir/
+              # Check again to validate file was copied
+              if [ -f "$ansible_requirements" ]; then
+                echo "OK - $dir_name - ansible_requirements.yml was copied"
+              else
+                echo "FAIL - $dir_name - ansible_requirements.yml was not copied"
+              fi
+            else
+              echo "SKIP - $dir_name - ansible_requirements.yml is already present"
             fi  # ansible_requirements not exists
           done
 
@@ -90,7 +105,7 @@ jobs:
               if [[ -f "$file" ]]; then
                 # Extract platform name using basename of file
                 platform=$(basename "$file" | sed 's/ansible_extravars_\(.*\)_base\.yml/\1/')
-                
+
                 # Define files for appending
                 fragment_vars="common_fragments/vars/platform_vars_${platform}.yml"
                 fragment_images="common_fragments/vars/platform_images_${platform}.yml"
@@ -134,9 +149,15 @@ jobs:
 
       - name: Synchronize main with transformed stage
         run: |
-          rsync --human-readable --itemize-changes --archive --delete --exclude '.git' repo_playbooks_stage/ repo_playbooks_main/ > rsync.log
+          # Checksum mode added to ensure that ansible_requirements.yml are not ignored
+          rsync --human-readable --itemize-changes --archive --delete --checksum --exclude '.git' repo_playbooks_stage/ repo_playbooks_main/ > rsync.log
           echo "--- rsync.log content (filtered) ---"
           cat rsync.log | grep -v '^[>.][df]\.\.t\.\.\.\.\.\.' || true
+
+      - name: Show unfiltered rsync output
+        run: |
+          echo "--- rsync.log content (unfiltered) ---"
+          cat rsync.log
 
       - name: Check for changes
         working-directory: repo_playbooks_main
