@@ -137,12 +137,12 @@
         sap_system_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
         sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
         sap_ha_pacemaker_cluster_nwas_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr_register.user_input }}"
-      when: sap_system_nwas_abap_ascs_instance_nr is not defined or sap_swpm_ascs_instance_nr is not defined
+      when: sap_system_nwas_abap_ascs_instance_nr is not defined
 
     - name: Fail if sap_system_nwas_abap_ascs_instance_nr is invalid
       ansible.builtin.fail:
         msg: |
-          Invalid value for variable 'sap_system_nwas_abap_ascs_instance_nr': '{{ sap_system_nwas_abap_ascs_instance_nr }}'
+          Invalid value for variable 'sap_system_nwas_abap_ascs_instance_nr': '{{ sap_system_nwas_abap_ascs_instance_nr | string }}'
           Required length of SAP ABAP System Central Service Instance Number is 2 letters.
           {% if sap_system_nwas_abap_ascs_instance_nr_register.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
@@ -151,7 +151,7 @@
           {% endif %}
       when:
         - sap_system_nwas_abap_ascs_instance_nr | string | length != 2
-          or sap_system_nwas_abap_ascs_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+          or sap_system_nwas_abap_ascs_instance_nr | string is not match('^[0-9]+$')  # Accepts only numbers
 
 
 - name: Block for sap_system_nwas_java_scs_instance_nr
@@ -170,12 +170,12 @@
         sap_system_nwas_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
         sap_swpm_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
         sap_ha_pacemaker_cluster_nwas_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr_register.user_input }}"
-      when: sap_system_nwas_java_scs_instance_nr is not defined or sap_swpm_ascs_instance_nr is not defined
+      when: sap_system_nwas_java_scs_instance_nr is not defined
 
     - name: Fail if sap_system_nwas_java_scs_instance_nr is invalid
       ansible.builtin.fail:
         msg: |
-          Invalid value for variable 'sap_system_nwas_java_scs_instance_nr': '{{ sap_system_nwas_java_scs_instance_nr }}'
+          Invalid value for variable 'sap_system_nwas_java_scs_instance_nr': '{{ sap_system_nwas_java_scs_instance_nr | string }}'
           Required length of SAP JAVA System Central Service Instance Number is 2 letters.
           {% if sap_system_nwas_java_scs_instance_nr_register.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
@@ -184,7 +184,7 @@
           {% endif %}
       when:
         - sap_system_nwas_java_scs_instance_nr | string | length != 2
-          or sap_system_nwas_java_scs_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+          or sap_system_nwas_java_scs_instance_nr | string is not match('^[0-9]+$')  # Accepts only numbers
 
 
 # Used for all distributed_ha scenarios
@@ -204,12 +204,12 @@
         sap_system_nwas_abap_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
         sap_swpm_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
         sap_ha_pacemaker_cluster_nwas_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr_register.user_input }}"
-      when: sap_system_nwas_abap_ers_instance_nr is not defined or sap_swpm_ers_instance_nr is not defined
+      when: sap_system_nwas_abap_ers_instance_nr is not defined
 
     - name: Fail if sap_system_nwas_abap_ers_instance_nr is invalid
       ansible.builtin.fail:
         msg: |
-          Invalid value for variable 'sap_system_nwas_abap_ers_instance_nr': '{{ sap_system_nwas_abap_ers_instance_nr }}'
+          Invalid value for variable 'sap_system_nwas_abap_ers_instance_nr': '{{ sap_system_nwas_abap_ers_instance_nr | string }}'
           Required length of SAP Enqueue Replication Service Instance Number is 2 letters.
           {% if sap_system_nwas_abap_ers_instance_nr_register.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
@@ -218,7 +218,7 @@
           {% endif %}
       when:
         - sap_system_nwas_abap_ers_instance_nr | string | length != 2
-          or sap_system_nwas_abap_ers_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+          or sap_system_nwas_abap_ers_instance_nr | string is not match('^[0-9]+$')  # Accepts only numbers
 
 
 # Used for all scenarios except dedicated HANA scenarios
@@ -237,12 +237,12 @@
       ansible.builtin.set_fact:
         sap_system_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr_register.user_input }}"
         sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr_register.user_input }}"
-      when: sap_system_nwas_abap_pas_instance_nr is not defined or sap_swpm_pas_instance_nr is not defined
+      when: sap_system_nwas_abap_pas_instance_nr is not defined
 
     - name: Fail if sap_system_nwas_abap_pas_instance_nr is invalid
       ansible.builtin.fail:
         msg: |
-          Invalid value for variable 'sap_system_nwas_abap_pas_instance_nr': '{{ sap_system_nwas_abap_pas_instance_nr }}'
+          Invalid value for variable 'sap_system_nwas_abap_pas_instance_nr': '{{ sap_system_nwas_abap_pas_instance_nr | string }}'
           Required length of SAP Primary Application Server Instance Number is 2 letters.
           {% if sap_system_nwas_abap_pas_instance_nr_register.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
@@ -251,7 +251,7 @@
           {% endif %}
       when:
         - sap_system_nwas_abap_pas_instance_nr | string | length != 2
-          or sap_system_nwas_abap_pas_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+          or sap_system_nwas_abap_pas_instance_nr | string is not match('^[0-9]+$')  # Accepts only numbers
 
 
 # Used for all distributed scenarios
@@ -270,12 +270,12 @@
       ansible.builtin.set_fact:
         sap_system_nwas_abap_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr_register.user_input }}"
         sap_swpm_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr_register.user_input }}"
-      when: sap_system_nwas_abap_aas_instance_nr is not defined or sap_swpm_aas_instance_nr is not defined
+      when: sap_system_nwas_abap_aas_instance_nr is not defined
 
     - name: Fail if sap_system_nwas_abap_aas_instance_nr is invalid
       ansible.builtin.fail:
         msg: |
-          Invalid value for variable 'sap_system_nwas_abap_aas_instance_nr': '{{ sap_system_nwas_abap_aas_instance_nr }}'
+          Invalid value for variable 'sap_system_nwas_abap_aas_instance_nr': '{{ sap_system_nwas_abap_aas_instance_nr | string }}'
           Required length of SAP Additional Application Server Instance Number is 2 letters.
           {% if sap_system_nwas_abap_aas_instance_nr_register.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
@@ -284,4 +284,4 @@
           {% endif %}
       when:
         - sap_system_nwas_abap_aas_instance_nr | string | length != 2
-          or sap_system_nwas_abap_aas_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+          or sap_system_nwas_abap_aas_instance_nr | string is not match('^[0-9]+$')  # Accepts only numbers

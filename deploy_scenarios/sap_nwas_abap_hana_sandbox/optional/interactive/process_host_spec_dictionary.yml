@@ -5,14 +5,14 @@
 
 # Each dictionary[plan] key is checked for 'sap_host_type' value, which can accept new 'sap_vm_provision_group_*' variables.
 
-- name: Fail if 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined
+- name: Fail if 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty
   ansible.builtin.fail:
     msg: |
-      Variable 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined.
+      Variable 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty.
       Correct this variable in extra vars and re-run the playbook.
   when:
-    - "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars"
-    - lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') | length == 0
+    - "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars
+      or lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') | length == 0"
 
 - name: Block for sap_vm_provision_host_specification_plan
   vars:
@@ -72,7 +72,7 @@
     sap_playbook_host_hana_primary_hostname: "{{ sap_playbook_host_hana_primary_list[0] }}"
   when: sap_playbook_host_hana_primary_list | d([]) | length > 0
 
-# HANA scenarios require at least one hana_primary node
+# HANA scenarios require at least one hana_primary node (including Sandbox)
 - name: Fail if required hosts are not present - SAP HANA
   ansible.builtin.fail:
     msg: |
@@ -133,6 +133,7 @@
       'sap_host_type': {{ sap_vm_provision_group_nwas_ascs | d('nwas_ascs') }}
       Correct this variable in extra vars re-run the playbook.
   when:
+    - sap_playbook_interactive_layout in ['distributed', 'distributed_ha']
     - sap_playbook_interactive_product not in ['hana', 'nwas_java']
     - sap_playbook_host_nwas_ascs_list | d([]) | length == 0
 
@@ -158,7 +159,8 @@
       'sap_host_type': {{ sap_vm_provision_group_nwas_scs | d('nwas_scs') }}
       Correct this variable in extra vars re-run the playbook.
   when:
-    - sap_playbook_interactive_product not in ['hana', 'nwas_java']
+    - sap_playbook_interactive_layout in ['distributed', 'distributed_ha']
+    - sap_playbook_interactive_product not in ['hana', 'nwas_abap']
     - sap_playbook_host_nwas_scs_list | d([]) | length == 0
 
 
@@ -226,6 +228,10 @@
       Correct this variable in extra vars re-run the playbook.
   when:
     - sap_playbook_interactive_product not in ['hana']
+    # PAS is part of non-HANA Sandbox systems, Standard, Distributed and Distributed HA
+    - sap_playbook_interactive_layout in ['distributed', 'distributed_ha']
+      or sap_playbook_interactive_product in ['ecc', 'nwas_abap', 'nwas_java'] and sap_playbook_interactive_layout == 'sandbox' and sap_playbook_interactive_database != 'hana'
+      or sap_playbook_interactive_product in ['s4hana', 'bw4hana'] and sap_playbook_interactive_layout in ['standard', 'standard_scaleout']
     - sap_playbook_host_nwas_pas_list | d([]) | length == 0
 
 
