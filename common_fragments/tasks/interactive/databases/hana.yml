@@ -35,10 +35,10 @@
         sap_ha_install_hana_hsr_instance_number: "{{ sap_system_hana_db_instance_nr_register.user_input }}"
       when: sap_system_hana_db_instance_nr is not defined
 
-    - name: Fail if sap_swpm_master_password is invalid
+    - name: Fail if sap_system_hana_db_instance_nr is invalid
       ansible.builtin.fail:
         msg: |
-          Invalid value for variable 'sap_swpm_master_password': '{{ sap_swpm_master_password }}'
+          Invalid value for variable 'sap_system_hana_db_instance_nr': '{{ sap_system_hana_db_instance_nr | string }}'
           Required length of SAP HANA Instance Number is 2 letters.
           {% if sap_system_hana_db_instance_nr_register.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
@@ -46,8 +46,8 @@
             Re-run the playbook and provide a valid input.
           {% endif %}
       when:
-        - sap_system_hana_db_instance_nr | length != 2
-          or sap_system_hana_db_instance_nr is not match('^[0-9]+$')  # Accepts only numbers
+        - sap_system_hana_db_instance_nr | string | length != 2
+          or sap_system_hana_db_instance_nr | string is not match('^[0-9]+$')  # Accepts only numbers
 
 
 # Passwords
