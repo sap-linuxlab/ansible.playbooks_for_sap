@@ -151,7 +151,7 @@
               # DiagnosticsAgent.SolMan.HostName: solman01.example.com
               # DiagnosticsAgent.SolMan.PortNumber: 44401
               # DiagnosticsAgent.SolMan.UserName: SOLMAN_ADMIN
-              # DiagnosticsAgent.SolMan.Password: "NewPass$321"
+              # DiagnosticsAgent.SolMan.Password: ''
               # DiagnosticsAgent.SAProuter.RouteString:
               # DiagnosticsAgent.SAProuter.Password:
               DiagnosticsAgent.SLD.Connection: "no"
