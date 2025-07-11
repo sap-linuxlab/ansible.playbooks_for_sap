@@ -46,8 +46,8 @@ sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solutio
 
 
 #### SAP SWPM Installation ####
-sap_swpm_master_password: "NewPass$321"  # Master password for the SAP system (String).
-sap_swpm_ddic_000_password: "NewPass$321"  # Password for the DDIC user in client 000 (String).
+sap_swpm_master_password: ''  # Master password for the SAP system (String).
+sap_swpm_ddic_000_password: '' # Password for the DDIC user in client 000 (String).
 
 # Dynamic assignment of SAP SWPM variables
 sap_swpm_sid: "{{ sap_system_sid }}"
@@ -73,8 +73,8 @@ sap_swpm_wd_backend_rfc_host: "{{ sap_swpm_pas_instance_hostname }}"
 sap_swpm_wd_backend_rfc_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
 sap_swpm_wd_backend_rfc_client_nr: "000" # 000 default
 sap_swpm_wd_backend_rfc_user: "DDIC" # DDIC default
-sap_swpm_wd_backend_rfc_user_password: "NewPass$321"
-sap_swpm_ume_j2ee_admin_password: "NewPass$321" # use ICM Auth Web Admin password
+sap_swpm_wd_backend_rfc_user_password: ''
+sap_swpm_ume_j2ee_admin_password: '' # use ICM Auth Web Admin password
 
 #### SAP SWPM Installation - Optional variables ####
 ## Unix User ID
