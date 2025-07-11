@@ -90,7 +90,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -124,7 +124,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -168,7 +168,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -221,7 +221,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -315,7 +315,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -349,7 +349,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -393,7 +393,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -446,7 +446,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -540,7 +540,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -574,7 +574,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -618,7 +618,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
@@ -671,7 +671,7 @@ sap_software_install_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
         sap_swpm_configure_tms: true
-        sap_swpm_tmsadm_password: "NewPass$321"
+        sap_swpm_tmsadm_password: ''
         sap_swpm_spam_update: false
         sap_swpm_sum_prepare: true
         sap_swpm_sum_start: true
