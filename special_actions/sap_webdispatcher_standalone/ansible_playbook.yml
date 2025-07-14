@@ -45,6 +45,7 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -65,6 +66,7 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 

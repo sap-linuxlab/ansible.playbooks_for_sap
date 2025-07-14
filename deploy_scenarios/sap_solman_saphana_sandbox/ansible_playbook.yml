@@ -33,7 +33,7 @@
         sap_playbook_empty_password_vars: "{{ sap_playbook_empty_password_vars | d([]) + [item.key]
           if 'password' in item.key and (item.value is none or not item.value is string or item.value == '')
           else sap_playbook_empty_password_vars | d([]) }}"
-      loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | rejectattr('key', 'match', '.*_register$') | list }}"
+      loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | rejectattr('key', 'match', '.*_register$') | list }}"
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -98,6 +98,7 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -118,6 +119,7 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
