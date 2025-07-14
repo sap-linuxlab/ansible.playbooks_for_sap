@@ -72,6 +72,8 @@ The explanation of Deployment Topologies:
 
 ## How to get started
 **Before running the playbook, please read the [full documentation](/docs#readme) for how-to guidance, requirements, and all other details.**  
+- Ensure that the password variables are defined following [Prepare the Password Variables](/docs#prepare-the-password-variables).  
+- Ensure that the variables with placeholder values are correctly defined. Placeholder value can be recognized as `ENTER_STRING_VALUE_HERE`.
 
 The playbooks can be executed with one of following methods.
 
@@ -166,7 +168,7 @@ Potential issues:
    - The playbooks mount NFS shares but do not currently validate or purge existing mounts.
    - Re-running the playbook without cleaning up previous NFS mounts may lead to SAP Software Provisioning Manager (SWPM) failures or unexpected behavior due to the presence of existing SAP directories.
 2. **SAP System Detection:**
-   - The `community.sap_swpm` Ansible role, used for SAP software installation, may fail or produce inconsistent results if it detects an existing SAP system on the target host.
+   - The `sap_swpm` Ansible role, used for SAP software installation, may fail or produce inconsistent results if it detects an existing SAP system on the target host.
    - To avoid issues, use the playbooks on fresh systems or ensure thorough cleanup of any previous SAP installations.
 
 

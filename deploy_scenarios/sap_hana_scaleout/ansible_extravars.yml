@@ -49,9 +49,12 @@ sap_hana_preconfigure_saptune_solution: 'HANA'  # SUSE saptune solution to apply
 
 
 #### SAP HANA Database Server installation ####
+# IMPORTANT: All SAP passwords must be replaced with complex and secure values per SAP best practices.
+# Do NOT leave placeholder values or empty strings.
+
 # SAP HANA Master password
 sap_hana_install_use_master_password: "y"  # Use a master password for SAP HANA installation (y/n) (String).
-sap_hana_install_master_password: "NewPass$321"  # The master password for SAP HANA (String).
+sap_hana_install_master_password: ''  # The master password for SAP HANA (String).
 
 # SAP HANA Scale-Out variables for role sap_Hana_install
 sap_hana_install_new_system: true  # Set to 'false', when adding hosts using sap_hana_install_addhosts

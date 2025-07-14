@@ -3,7 +3,7 @@
 Table of Contents:
 - [Customized deployments of Ansible Playbooks for SAP](#customized-deployments-of-ansible-playbooks-for-sap)
 - [SAP Software Download common errors](#sap-software-download-common-errors)
-- [SAP System Passwords](#sap-system-passwords)
+- [SAP System Password Recommendations](#sap-system-password-recommendations)
 - [High Availability](#high-availability)
 
 
@@ -73,54 +73,77 @@ SAP Software Center is likely experiencing temporary problems, please try again 
 
 <br/>
 
-## SAP System Passwords
+## SAP System Password Recommendations
 ---
 
-By default, Ansible Playbooks for SAP use the password `NewPass$321` (as a reminder to reset the password post-installation).
+Ansible Playbooks for SAP do not use any default password and they must be set before executing playbooks.
 
-> However, `NewPass@321` is used for SAP MaxDB, `NewPass>321` for IBM Db2, and `NewPass#321` for Oracle DB. See below information.
+### SAP Databases
 
-### SAP HANA password restrictions?
+#### SAP HANA
 
-- Between 6 and 64 characters
-- Alphanumerical, not advisable to use space character
-- No restrictions on Special Characters
-
-Reference:
-- [SAP HANA Security Guide for SAP HANA Platform - Password Policy](https://help.sap.com/docs/SAP_HANA_PLATFORM/b3ee5778bc2e4a089d3299b82ec762a7/dce2826dbb571014be628d6279aeeaa3.html?locale=en-US)
-- [SAP Note 2969917 - Can't use special characters like ! @ # $ % & in HANA user's password](https://me.sap.com/notes/2969917)
-
-
-### SAP AnyDB password restrictions?
+* **Length:** Between 6 and 64 characters (recommended by SAP).
+* **Avoid Characters (observed issues during SAP installations/SWPM):**
+    * Space character (` `) is generally not advisable.
+    * **Note:** SAP HANA is generally more flexible with special characters, but the most common issues arise from characters that conflict with shell or client parsing.
+* **Example:** `HanaP@ssw0rd!`
+    * **WARNING: This is an example password and MUST NOT be used in any production or sensitive environment.**
+* **References:**
+    * [SAP HANA Security Guide for SAP HANA Platform - Password Policy](https://help.sap.com/docs/SAP_HANA_PLATFORM/b3ee5778bc2e4a089d3299b82ec762a7/dce2826dbb571014be628d6279aeeaa3.html?locale=en-US)
+    * [SAP Note 2969917 - Can't use special characters like ! @ # $ % & in HANA user's password](https://me.sap.com/notes/2969917)
 
 #### SAP Sybase ASE
 
-No special recommendations
+* **Length:** Typically 6 to 30 characters (can be customized by policy).
+* **Avoid Characters (observed issues during SAP installations/SWPM):**
+    * Spaces, single quotes (`'`), double quotes (`"`), backticks (`` ` ``), backslashes (`\`).
+    * **Other potentially problematic characters:** `(`, `)`, `[`, `]`, `{`, `}`, `;`, `:`, `,`, `.`, `/`, `!`, `@`, `#`, `$`, `%`, `^`, `&`, `*`, `+`, `=`, `<`, `>`, `?`, `|`, `~`.
+* **Example:** `ASEP@ssw0rd!`
+    * **WARNING: This is an example password and MUST NOT be used in any production or sensitive environment.**
 
 #### SAP MaxDB
 
-Restricted to certain Special Characters `#$@_`. Must not begin with a digit.
+* **Length:** Varies by policy, typically 6 to 18 characters (check database-specific policy).
+* **Avoid Characters (observed issues during SAP installations/SWPM):**
+    * `#`, `$`, `_`, `>`
+    * **Also avoid:** Spaces and language-specific characters (e.g., umlauts).
+* **First Character Restriction:** Must not begin with a digit (`0-9`) or `_` (underscore).
+* **Example:** `MaxDBPassw0rd!`
+    * **WARNING: This is an example password and MUST NOT be used in any production or sensitive environment.**
 
 #### IBM Db2
 
-Avoid use of Special Character `$` which may cause automation errors when parsed
+* **Length:** Typically 6 to 18 characters (can be customized by policy).
+* **Avoid Characters (observed issues during SAP installations/SWPM):**
+    * Spaces, double quotes (`"`), single quotes (`'`), backslashes (`\`).
+    * **Other potentially problematic characters:** `(`, `)`, `;`, `|`, `<`, `>`, `!`, `#`, `&`, `*`, `?`, `~`, `$`, `%`.
+* **Example:** `Db2P@ssw0rd!`
+    * **WARNING: This is an example password and MUST NOT be used in any production or sensitive environment.**
 
 #### Oracle DB
 
-Avoid use of Special Character `$` which may cause automation errors when parsed. Must not begin with a digit or underscore.
+* **Length:** Varies by policy, typically 8 to 30 characters (check database-specific or policy).
+* **Avoid Characters (observed issues during SAP installations/SWPM):**
+    * `$`, `@`, `/`, `\`, `%`, `,`, `;`
+    * **Also avoid:** Spaces.
+    * **Note:** The double quote character (`"`) itself is often problematic if passwords require quoting.
+* **First Character Restriction:** Must not begin with a digit (`0-9`) or `_` (underscore).
+* **Example:** `OraP@ssw0rd!`
+    * **WARNING: This is an example password and MUST NOT be used in any production or sensitive environment.**
 
 
-### SAP System / SAP NetWeaver password restrictions?
+### SAP System, SAP NetWeaver (Application)
 
-> Note: These are configurable in the Profile Parameters (`login/min_password_*` and `login/password_*`), below are default
+* **Length:** Between 3 and 40 characters (based on default profile parameters `login/min_password_*` and `login/password_*`).
+* **Characters to Avoid / Handle with Extreme Caution (observed issues with SAP NetWeaver application/tools):**
+    * **Highly Problematic (avoid if possible):** Spaces (` `), backslash (`\`), double quotes (`"`), single quotes (`'`). These often cause parsing errors or require complex escaping.
+    * **Potentially Problematic (test carefully):** `(`, `)`, `{`, `}`, `[`, `]`, `!`, `?`, `’`, `*`, `+`, `~`, `/`, `<`, `>`, `|`, `;`, `:`
+    * **Note:** The exact set of allowed/disallowed characters can be customized via Profile Parameters (e.g., `login/password_compliance_lib` and other `login/password_*` settings).
+* **Example:** `ExampleNetW$123`
+    * **WARNING: This is an example password and MUST NOT be used in any production or sensitive environment.**
 
-- Between 3 and 40 characters
-- Alphanumerical, not advisable to use space character
-- Restricted to certain Special Characters `!"@$%&/()=?’*+~#-_.,;:{[]}\<>│`. Not advisible to use `\` or `"`
-
-**Reference:**
-
-For SAP NetWeaver Application Server (ABAP) see document [Password Rules - User and Role Administration - SAP NetWeaver Application Server for ABAP 7.52](https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_752/c6e6d078ab99452db94ed7b3b7bbcccf/4ac3efb58c352470e10000000a42189c.html?locale=en-US).
+**References:**  
+For SAP NetWeaver Application Server (ABAP) see document [Password Rules - User and Role Administration - SAP NetWeaver Application Server for ABAP 7.52](https://help.sap.com/docs/SAP_NETWEAVER_AS_ABAP_752/c6e6d078ab99452db94ed7b3b7bbcccf/4ac3efb58c352470e10000000a42189c.html?locale=en-US).  
 
 For further information, please see [User Guides for System Provisioning with Software Provisioning Manager](https://help.sap.com/docs/SOFTWARE_PROVISIONING_MANAGER/30839dda13b2485889466316ce5b39e9/4901b2032db94b64bac87454dd94805b.html) which contains a list of different guides under two sections:
 
@@ -129,13 +152,12 @@ For further information, please see [User Guides for System Provisioning with So
 2. Installation Option of Software Provisioning Manager 1.0
     - Installation Guides - Application Server Systems - Software Provisioning Manager 1.0
 
-On each of these pages (for SWPM 1.0/2.0) there are documents (HTML/PDF) in a table with choice for `Database, Product Release, Operating System Platform, Technical Track`. Each document contains layered sections 'Planning > Basic Installation Parameters > SAP System Parameters' with Password limitation information.
+On each of these pages (for SWPM 1.0/2.0) there are documents (HTML/PDF) in a table with choice for `Database, Product Release, Operating System Platform, Technical Track`.  
+- Each document contains layered sections 'Planning > Basic Installation Parameters > SAP System Parameters' with Password limitation information.  
 
-For example, [SAP System Parameters - Installation of SAP ABAP Systems on UNIX : SAP HANA 2.0 - SWPM 2.0](https://help.sap.com/docs/SLTOOLSET/39c32e9783f6439e871410848f61544c/fe3f4554f82b1d5de10000000a44538d.html).
+For example, [SAP System Parameters - Installation of SAP ABAP Systems on UNIX : SAP HANA 2.0 - SWPM 2.0](https://help.sap.com/docs/SLTOOLSET/39c32e9783f6439e871410848f61544c/fe3f4554f82b1d5de10000000a44538d.html).  
 
 Please note, these guides are different than those listed on [Guide Finder for SAP NetWeaver and ABAP Platform](https://help.sap.com/docs/r/nwguidefinder).
-
-<br/>
 
 ## High Availability
 ---

@@ -5,6 +5,7 @@ This Readme document contains additional instructions for using Ansible Playbook
 Table of Contents:
 - [Operating System Requirements](#operating-system-requirements)
 - [Available Scenarios](#available-scenarios)
+- [Prepare the Password Variables](#prepare-the-password-variables)
 - [Prepare the execution node](#prepare-the-execution-node)
 - [Prepare the Infrastructure Platform for provisioning](#prepare-the-infrastructure-platform-for-provisioning)
 - [Customization of Ansible Playbooks for SAP](#customization-of-ansible-playbooks-for-sap)
@@ -97,6 +98,49 @@ Requirements for using Existing Hosts:
 - :no_entry_sign: <sub>Not provided by SAP</sub>
 - <sub>N/A: Not Applicable</sub>
 
+
+## Prepare the Password Variables
+Each scenario contains a range of variable files, such as `ansible_extravars.yml`, which include password variables.  
+
+**IMPORTANT:** All SAP passwords must be replaced with complex and secure values, adhering to SAP best practices. Empty or invalid password variables will result in playbook failure.  
+
+More information about SAP Passwords is available at [FAQ section](./FAQ.md#sap-system-password-recommendations)
+
+### Securing Passwords with Ansible Vault (Recommended)
+For secure management of sensitive data like passwords, **Ansible Vault is strongly recommended.**  
+While optional, using Vault encrypts your variables, preventing them from being stored in plaintext.
+
+**NOTE: Variables set in extravars files take precedence over Ansible Vault variables. Ensure that you remove them or comment them out in extravars file!** 
+
+Here's a quick start guide for using Ansible Vault:
+1. **Move Sensitive Variables to a Vault File:**
+   - Comment out or remove sensitive variables (like passwords) from your regular variable files (e.g., ansible_extravars.yml). These variables are often initially defined as empty strings ('') as placeholders.
+   - Create a new, dedicated Ansible Vault file for these sensitive variables (e.g., ansible_vault.yml). Populate this file with your sensitive variables and their actual, secure values.
+
+2. **Encrypt an ansible vault file:**
+    ```bash
+    ansible-vault encrypt ansible_vault.yml
+    ```
+    You will be prompted to set and confirm a new Vault password.
+
+3. **View an encrypted file:**
+    ```bash
+    ansible-vault view ansible_vault.yml
+    ```
+
+4. **Edit an encrypted file:**
+    ```bash
+    ansible-vault edit ansible_vault.yml
+    ```
+
+5. **Run a playbook with Vault:**
+    You will need to provide your Vault password when running the playbook.
+    This is simplified example and it does not contain all extravars files.
+    ```bash
+    ansible-playbook ansible_playbook.yml -e "@.ansible_vault.yml" -i ansible_inventory_noninteractive.yml --ask-vault-pass
+    ```
+
+For more comprehensive details on Ansible Vault, including advanced usage like encrypting individual variables or integrating with CI/CD, please refer to the [official Ansible documentation on Vault](https://docs.ansible.com/ansible/latest/vault_guide/index.html).
 
 
 ## Prepare the execution node
