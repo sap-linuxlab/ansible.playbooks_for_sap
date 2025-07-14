@@ -137,7 +137,7 @@ Here's a quick start guide for using Ansible Vault:
     You will need to provide your Vault password when running the playbook.
     This is simplified example and it does not contain all extravars files.
     ```bash
-    ansible-playbook -i inventory.ini main_playbook.yml --ask-vault-pass
+    ansible-playbook ansible_playbook.yml -e "@.ansible_vault.yml" -i inventory --ask-vault-pass
     ```
 
 For more comprehensive details on Ansible Vault, including advanced usage like encrypting individual variables or integrating with CI/CD, please refer to the [official Ansible documentation on Vault](https://docs.ansible.com/ansible/latest/vault_guide/index.html).
