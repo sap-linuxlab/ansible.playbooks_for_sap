@@ -30,26 +30,72 @@
           when: sap_playbook_interactive_tasks_availability.stat.exists
 
 
+- name: Ansible Play to validate the variables
+  hosts: localhost
+  # gather_facts is required for loop over hostvars
+  tasks:
+
+    - name: Fail if sap_vm_provision_iac_type is undefined or invalid
+      ansible.builtin.fail:
+        msg: |
+          The variable 'sap_vm_provision_iac_type' is undefined or invalid.
+          Available options: ansible, ansible_to_terraform, existing_hosts
+      when: sap_vm_provision_iac_type is not defined or sap_vm_provision_iac_type not in ['ansible', 'ansible_to_terraform', 'existing_hosts']
+
+    - name: Fail if sap_vm_provision_iac_platform is undefined or invalid
+      ansible.builtin.fail:
+        msg: |
+          The variable 'sap_vm_provision_iac_platform' is undefined or invalid.
+          Available options: aws_ec2_vs, gcp_ce_vm, msazure_vm, ibmcloud_powervs, ibmcloud_vs, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm, existing_hosts
+      when: sap_vm_provision_iac_platform is not defined or sap_vm_provision_iac_platform not in
+        ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs', 'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
+
+    - name: Identify variables with placeholder values or empty passwords  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        sap_playbook_placeholder_vars: "{{ sap_playbook_placeholder_vars | d([]) + [item.key]
+          if item.value in ['ENTER_STRING_VALUE_HERE']
+          else sap_playbook_placeholder_vars | d([]) }}"
+        sap_playbook_empty_password_vars: "{{ sap_playbook_empty_password_vars | d([]) + [item.key]
+          if 'password' in item.key and (item.value is none or not item.value is string or item.value == '')
+          else sap_playbook_empty_password_vars | d([]) }}"
+      loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | rejectattr('key', 'match', '.*_register$') | list }}"
+      no_log: true
+      ignore_errors: true  # Ignore errors for variables defined later during runtime
+
+    - name: Report SAP variable validation failures
+      ansible.builtin.fail:
+        msg: |
+          Please address the following issues before re-running the playbook:
+          {% if sap_playbook_placeholder_vars | length > 0 %}
+          - Placeholder values found for variable(s):
+            {% for item in sap_playbook_placeholder_vars %}
+            {{ item }}
+            {% endfor %}
+
+          {% endif %}
+          {% if sap_playbook_empty_password_vars | length > 0 %}
+          - Empty or invalid values found for password variable(s):
+            {% for item in sap_playbook_empty_password_vars %}
+            {{ item }}
+            {% endfor %}
+          {% endif %}
+      when:
+        - sap_playbook_placeholder_vars | d([]) | length > 0 or sap_playbook_empty_password_vars | d([]) | length > 0
+
+
 #### Begin Infrastructure-as-Code provisioning ####
 - name: Ansible Play to create dynamic inventory group for provisioning
   hosts: localhost
   gather_facts: false
   tasks:
 
-    - name: Search variables for placeholders  # noqa: ignore-errors
-      ansible.builtin.set_fact:
-        sap_playbook_placeholder_vars: "{{ sap_playbook_placeholder_vars | d([]) + [item.key] }}"
-      loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
-      no_log: true
-      ignore_errors: true
-      when: item.value == 'ENTER_STRING_VALUE_HERE'
-
-    - name: Warning if placeholder variable was found
+    - name: Fail if 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty
       ansible.builtin.fail:
         msg: |
-          Ensure that the variables do not contain placeholder values before executing playbook again.
-          Variables: {{ sap_playbook_placeholder_vars | join(', ') }}
-      when: sap_playbook_placeholder_vars is defined and sap_playbook_placeholder_vars | length > 0
+          Variable 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty.
+      when:
+        - "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars
+          or lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') | length == 0"
 
     - name: Set fact with selected host dictionary
       ansible.builtin.set_fact:
@@ -85,7 +131,6 @@
         group: sap_vm_provision_target_inventory_group
       loop: "{{ lookup('ansible.builtin.vars', sap_vm_provision_iac_platform + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan].keys()
         if sap_vm_provision_calculate_sap_hana_scaleout_active_coordinator is defined else sap_playbook_host_dictionary.keys() }}"
-      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
 
 
 # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
@@ -100,13 +145,16 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
-      ignore_errors: true
+      ignore_errors: true  # Ignore errors for variables defined later during runtime
 
     - name: Execute Ansible Role sap_vm_provision
       ansible.builtin.include_role:
         name: community.sap_infrastructure.sap_vm_provision
-      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+      when:
+        - sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+        - sap_vm_provision_iac_platform != 'existing_hosts'
 
 - name: Ansible Play to set sap variables on provisioned hosts
   hosts: sap_vm_provision_target_inventory_group  # noqa: ignore-errors
@@ -118,8 +166,9 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
-      ignore_errors: true
+      ignore_errors: true  # Ignore errors for variables defined later during runtime
 
 
 #### VM storage filesystem setup ####
@@ -147,7 +196,6 @@
         sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_ascs_instance_nr'] | d('') }}"
         sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_pas_instance_nr'] | d('') }}"
         sap_storage_setup_host_type: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_host_type'] | list }}"
-      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
 
 - name: Ansible Play for ensuring rsync on all hosts

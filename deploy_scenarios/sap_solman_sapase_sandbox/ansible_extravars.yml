@@ -47,17 +47,20 @@ sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solutio
 
 
 #### SAP SWPM Installation ####
-sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+# IMPORTANT: All SAP passwords must be replaced with complex and secure values per SAP best practices.
+# Do NOT leave placeholder values or empty strings.
+
+sap_swpm_install_saphostagent: true  # Whether to install SAP Host Agent during SWPM installation (String).
 
 sap_swpm_db_schema_abap: "SAPABAP1"  # Name of the ABAP schema in the SAP AnyDB database (String).
 
 # NOTE: Do not use password with $ # > for password with SAP ASE or MaxDB
-sap_swpm_master_password: "NewPass@321"  # Master password for the SAP system (String).
-sap_swpm_ddic_000_password: "NewPass@321"  # Password for the DDIC user in client 000 (String).
-sap_swpm_sap_sidadm_password: "NewPass@321"  # Password for Database Administrator User sidadm (String).
-sap_swpm_db_system_password: "NewPass@321"  # Password for Database System User (String).
-sap_swpm_db_schema_abap_password: "NewPass@321"   # Password for the ABAP schema user (String).
-sap_swpm_db_sidadm_password: "NewPass@321"  # Password for the <sid>adm user in the database (String).
+sap_swpm_master_password: ''  # Master password for the SAP system (String).
+sap_swpm_ddic_000_password: ''  # Password for the DDIC user in client 000 (String).
+sap_swpm_sap_sidadm_password: ''  # Password for Database Administrator User sidadm (String).
+sap_swpm_db_system_password: ''  # Password for Database System User (String).
+sap_swpm_db_schema_abap_password: ''   # Password for the ABAP schema user (String).
+sap_swpm_db_sidadm_password: ''  # Password for the <sid>adm user in the database (String).
 
 
 # Dynamic assignment of SAP SWPM variables

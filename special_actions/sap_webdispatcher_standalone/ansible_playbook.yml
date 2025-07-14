@@ -11,20 +11,13 @@
   gather_facts: false
   tasks:
 
-    - name: Search variables for placeholders  # noqa: ignore-errors
-      ansible.builtin.set_fact:
-        sap_playbook_placeholder_vars: "{{ sap_playbook_placeholder_vars | d([]) + [item.key] }}"
-      loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
-      no_log: true
-      ignore_errors: true
-      when: item.value == 'ENTER_STRING_VALUE_HERE'
-
-    - name: Warning if placeholder variable was found
+    - name: Fail if 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty
       ansible.builtin.fail:
         msg: |
-          Ensure that the variables do not contain placeholder values before executing playbook again.
-          Variables: {{ sap_playbook_placeholder_vars | join(', ') }}
-      when: sap_playbook_placeholder_vars is defined and sap_playbook_placeholder_vars | length > 0
+          Variable 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty.
+      when:
+        - "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars
+          or lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') | length == 0"
 
     - name: Set fact with selected host dictionary
       ansible.builtin.set_fact:
@@ -52,13 +45,16 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
-      ignore_errors: true
+      ignore_errors: true  # Ignore errors for variables defined later during runtime
 
     - name: Execute Ansible Role sap_vm_provision
       ansible.builtin.include_role:
         name: community.sap_infrastructure.sap_vm_provision
-      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+      when:
+        - sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+        - sap_vm_provision_iac_platform != 'existing_hosts'
 
 - name: Ansible Play to set sap variables on provisioned hosts
   hosts: sap_vm_provision_target_inventory_group  # noqa: ignore-errors
@@ -70,8 +66,9 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      when: vars[item.key] is undefined
       no_log: true
-      ignore_errors: true
+      ignore_errors: true  # Ignore errors for variables defined later during runtime
 
 
 #### VM storage filesystem setup ####
@@ -93,7 +90,6 @@
            + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][inventory_hostname_short] }}"
         sap_storage_setup_sid: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_sid'] | d('') }}"
         sap_storage_setup_host_type: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_host_type'] | list }}"
-      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
 
 #### Begin downloading SAP software installation media to hosts ####
