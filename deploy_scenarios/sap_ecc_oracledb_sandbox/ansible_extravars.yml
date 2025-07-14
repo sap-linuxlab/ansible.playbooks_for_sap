@@ -60,7 +60,7 @@ sap_anydb_install_oracle_system_password: ''  # System password (String).
 # IMPORTANT: All SAP passwords must be replaced with complex and secure values per SAP best practices.
 # Do NOT leave placeholder values or empty strings.
 
-sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+sap_swpm_install_saphostagent: true  # Whether to install SAP Host Agent during SWPM installation (String).
 
 # Must be 6 characters precisely otherwise Oracle DB will fail (i.e. do not use SAPABAP1)
 sap_swpm_db_schema_abap: "SAPSR3"  # Name of the ABAP schema in the SAP AnyDB database (String).

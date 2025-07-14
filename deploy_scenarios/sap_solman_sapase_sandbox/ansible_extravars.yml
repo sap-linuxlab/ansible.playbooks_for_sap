@@ -50,7 +50,7 @@ sap_netweaver_preconfigure_saptune_solution: 'NETWEAVER'  # SUSE saptune solutio
 # IMPORTANT: All SAP passwords must be replaced with complex and secure values per SAP best practices.
 # Do NOT leave placeholder values or empty strings.
 
-sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+sap_swpm_install_saphostagent: true  # Whether to install SAP Host Agent during SWPM installation (String).
 
 sap_swpm_db_schema_abap: "SAPABAP1"  # Name of the ABAP schema in the SAP AnyDB database (String).
 

@@ -289,7 +289,7 @@ sap_software_install_dictionary:
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
 
         # SAP Host Agent
-        sap_swpm_install_saphostagent: 'true'
+        sap_swpm_install_saphostagent: true
 
       software_files_wildcard_list:
         - 'SAPCAR*'
@@ -553,7 +553,7 @@ sap_software_install_dictionary:
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
 
         # SAP Host Agent
-        sap_swpm_install_saphostagent: 'true'
+        sap_swpm_install_saphostagent: true
 
       software_files_wildcard_list:
         - 'SAPCAR*'
@@ -805,7 +805,7 @@ sap_software_install_dictionary:
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
 
         # SAP Host Agent
-        sap_swpm_install_saphostagent: 'true'
+        sap_swpm_install_saphostagent: true
 
       software_files_wildcard_list:
         - 'SAPCAR*'
@@ -1049,7 +1049,7 @@ sap_software_install_dictionary:
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
 
         # SAP Host Agent
-        sap_swpm_install_saphostagent: 'true'
+        sap_swpm_install_saphostagent: true
 
       software_files_wildcard_list:
         - 'SAPCAR*'

@@ -87,7 +87,7 @@ sap_hana_install_log_mode: overwrite  # Options: normal, overwrite.
 # IMPORTANT: All SAP passwords must be replaced with complex and secure values per SAP best practices.
 # Do NOT leave placeholder values or empty strings.
 
-sap_swpm_install_saphostagent: 'true'  # Whether to install SAP Host Agent during SWPM installation (String).
+sap_swpm_install_saphostagent: true  # Whether to install SAP Host Agent during SWPM installation (String).
 
 sap_swpm_master_password: ''  # Master password for the SAP system (String).
 
