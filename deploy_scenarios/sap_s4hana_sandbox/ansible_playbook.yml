@@ -35,32 +35,50 @@
   # gather_facts is required for loop over hostvars
   tasks:
 
-    - name: Fail if sap_vm_provision_iac_type is undefined or invalid
-      ansible.builtin.fail:
-        msg: |
+    - name: Assert that the variable 'sap_vm_provision_iac_type' is valid
+      ansible.builtin.assert:
+        that:
+          - sap_vm_provision_iac_type is defined
+          - sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
+        fail_msg: |
           The variable 'sap_vm_provision_iac_type' is undefined or invalid.
           Available options: ansible, ansible_to_terraform, existing_hosts
-      when: sap_vm_provision_iac_type is not defined or sap_vm_provision_iac_type not in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
-    - name: Fail if sap_vm_provision_iac_platform is undefined or invalid
-      ansible.builtin.fail:
-        msg: |
+    - name: Assert that the variable 'sap_vm_provision_iac_platform' is valid
+      ansible.builtin.assert:
+        that:
+          - sap_vm_provision_iac_platform is defined
+          - sap_vm_provision_iac_platform in
+            ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs', 'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
+        fail_msg: |
           The variable 'sap_vm_provision_iac_platform' is undefined or invalid.
           Available options: aws_ec2_vs, gcp_ce_vm, msazure_vm, ibmcloud_powervs, ibmcloud_vs, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm, existing_hosts
-      when: sap_vm_provision_iac_platform is not defined or sap_vm_provision_iac_platform not in
-        ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs', 'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
+
+    # Ignore registered vars and sap_swpm hostnames which could contain hostvars.
+    - name: Prepare list of SAP variables for validation  # noqa: ignore-errors
+      ansible.builtin.set_fact:
+        sap_playbook_dictionary_vars:
+          "{{ dict(sap_playbook_dictionary_vars | zip(lookup('ansible.builtin.vars', *sap_playbook_dictionary_vars))) }}"
+      vars:
+        sap_playbook_dictionary_vars:
+          "{{ lookup('ansible.builtin.varnames', '^(__)?sap_', wantlist=true)
+              | reject('search', '(^(__)?sap_swpm_.*_hostname$)|(.*_register$)')
+              | reject('in', ['sap_swpm_db_host'])
+              | list }}"
+      no_log: true
+      ignore_errors: true
 
     - name: Identify variables with placeholder values or empty passwords  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        sap_playbook_placeholder_vars: "{{ sap_playbook_placeholder_vars | d([]) + [item.key]
-          if item.value in ['ENTER_STRING_VALUE_HERE']
-          else sap_playbook_placeholder_vars | d([]) }}"
-        sap_playbook_empty_password_vars: "{{ sap_playbook_empty_password_vars | d([]) + [item.key]
-          if 'password' in item.key and (item.value is none or not item.value is string or item.value == '')
-          else sap_playbook_empty_password_vars | d([]) }}"
-      loop: "{{ vars | dict2items | selectattr('key', 'match', '^(__)?sap_') | rejectattr('key', 'match', '.*_register$') | list }}"
+        sap_playbook_placeholder_vars:
+          "{{ sap_playbook_dictionary_vars | dict2items
+              | selectattr('value', 'equalto', 'ENTER_STRING_VALUE_HERE') | map(attribute='key') | list }}"
+
+        sap_playbook_empty_password_vars:
+          "{{ sap_playbook_dictionary_vars | dict2items | selectattr('key', 'search', 'password')
+              | selectattr('value', 'in', [none, '']) | map(attribute='key') | list }}"
       no_log: true
-      ignore_errors: true  # Ignore errors for variables defined later during runtime
+      ignore_errors: true
 
     - name: Report SAP variable validation failures
       ansible.builtin.fail:
@@ -89,26 +107,47 @@
   gather_facts: false
   tasks:
 
-    - name: Fail if 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty
-      ansible.builtin.fail:
-        msg: |
-          Variable 'sap_vm_provision_{{ sap_vm_provision_iac_platform }}_host_specifications_dictionary' is undefined or empty.
+    - name: Block to prepare inventory for provisioning
       when:
-        - "'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary' not in vars
-          or lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform + '_host_specifications_dictionary') | length == 0"
+        - sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+        - sap_vm_provision_iac_platform != 'existing_hosts'
+      vars:
+        __sap_playbook_host_dictionary_name: "{{ 'sap_vm_provision_' ~ sap_vm_provision_iac_platform ~ '_host_specifications_dictionary' }}"
+      block:
+        - name: Assert that the variable {{ __sap_playbook_host_dictionary_name }} is defined and valid
+          ansible.builtin.assert:
+            that:
+              - lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name) is defined
+              - lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name) is mapping
+              - lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name) | length > 0
+            fail_msg: |
+              The variable {{ __sap_playbook_host_dictionary_name }} is undefined or invalid.
+              It must be a non-empty dictionary.
 
-    - name: Set fact with selected host dictionary
-      ansible.builtin.set_fact:
-        sap_playbook_host_dictionary:
-          "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
-            + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan] }}"
+        - name: Assert that the variable 'sap_vm_provision_host_specification_plan' is defined and valid
+          ansible.builtin.assert:
+            that:
+              - sap_vm_provision_host_specification_plan is defined
+              - sap_vm_provision_host_specification_plan is string
+              - sap_vm_provision_host_specification_plan | trim | length > 0
+            fail_msg: |
+              The variable 'sap_vm_provision_host_specification_plan' is undefined or invalid.
+              It must be a non-empty string.
 
-    - name: Create dynamic inventory group for Ansible Role sap_vm_provision
-      ansible.builtin.add_host:
-        name: "{{ item }}"
-        group: sap_vm_provision_target_inventory_group
-      loop: "{{ sap_playbook_host_dictionary.keys() }}"
-      when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
+        - name: Assert that the variable 'sap_vm_provision_host_specification_plan' is present in a dictionary
+          ansible.builtin.assert:
+            that:
+              - lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan] is defined
+              - lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan] is mapping
+              - lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan] | length > 0
+            fail_msg: |
+              The variable 'sap_vm_provision_host_specification_plan' is not present in a dictionary {{ __sap_playbook_host_dictionary_name }}.
+
+        - name: Create dynamic inventory group for Ansible Role sap_vm_provision
+          ansible.builtin.add_host:
+            name: "{{ item }}"
+            group: sap_vm_provision_target_inventory_group
+          loop: "{{ lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan].keys() }}"
 
 
 # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
@@ -123,7 +162,11 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
-      when: vars[item.key] is undefined
+      when:
+        - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
+        - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
+        - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
+        - vars[item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -144,7 +187,11 @@
         "{{ item.key }}": "{{ item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
-      when: vars[item.key] is undefined
+      when:
+        - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
+        - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
+        - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
+        - vars[item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -166,10 +213,13 @@
         sap_playbook_host_dictionary_hostname:
           "{{ lookup('ansible.builtin.vars', 'sap_vm_provision_' + sap_vm_provision_iac_platform
            + '_host_specifications_dictionary')[sap_vm_provision_host_specification_plan][inventory_hostname_short] }}"
-        sap_storage_setup_sid: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_sid'] | d('') }}"
-        sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_ascs_instance_nr'] | d('') }}"
-        sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_nwas_abap_pas_instance_nr'] | d('') }}"
-        sap_storage_setup_host_type: "{{ sap_playbook_host_dictionary_hostname['sap_storage_setup_host_type'] | list }}"
+        sap_storage_setup_sid: "{{ sap_playbook_host_dictionary_hostname.get('sap_storage_setup_sid', (sap_system_sid | d(''))) }}"
+        sap_storage_setup_nwas_abap_ascs_instance_nr:
+          "{{ sap_playbook_host_dictionary_hostname.get('sap_storage_setup_nwas_abap_ascs_instance_nr', (sap_system_nwas_abap_ascs_instance_nr | d(''))) }}"
+        sap_storage_setup_nwas_abap_pas_instance_nr:
+          "{{ sap_playbook_host_dictionary_hostname.get('sap_storage_setup_nwas_abap_pas_instance_nr', (sap_system_nwas_abap_pas_instance_nr | d(''))) }}"
+        sap_storage_setup_host_type: "{{ sap_playbook_host_dictionary_hostname.get('sap_storage_setup_host_type', []) }}"
+      when: sap_playbook_host_dictionary_hostname is defined
 
 
 #### Begin downloading SAP software installation media to hosts ####
@@ -199,7 +249,7 @@
         sap_software_download_deduplicate: first
         sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
           ['softwarecenter_search_list_' ~ ansible_architecture] }}"
-      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
 
 
 #### Begin SAP software hosts preparation ####

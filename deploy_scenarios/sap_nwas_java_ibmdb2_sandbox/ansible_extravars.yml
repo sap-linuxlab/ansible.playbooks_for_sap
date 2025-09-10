@@ -70,7 +70,8 @@ sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 sap_swpm_fqdn: "{{ ansible_domain }}"
 
 # SAP NetWeaver JAVA Parameters
-sap_swpm_java_scs_instance_hostname: "{{ sap_hostname | d(ansible_hostname) }}"
+sap_swpm_pas_instance_hostname: "{{ sap_swpm_db_host }}"
+sap_swpm_java_scs_instance_hostname: "{{ sap_swpm_db_host }}"
 sap_swpm_ume_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
 sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
 sap_swpm_ume_sapjsf_password: "{{ sap_swpm_master_password }}"
@@ -82,7 +83,7 @@ sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
 sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
 sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
 
-sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during SWPM installation (String).
 
 
 #### Shared Ansible Facts ####
