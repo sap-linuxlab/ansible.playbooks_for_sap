@@ -112,7 +112,7 @@ sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
 sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
 sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
 
-sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during SWPM installation (String).
 
 
 #### Shared Ansible Facts ####

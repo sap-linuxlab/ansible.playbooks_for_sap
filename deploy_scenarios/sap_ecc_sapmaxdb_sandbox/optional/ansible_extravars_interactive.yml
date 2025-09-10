@@ -39,7 +39,7 @@ sap_software_install_dictionary:
     sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm1_exportfiles
-      - swpm_installation_media_swpm1_sapmaxdb
+      # - swpm_installation_media_swpm1_sapmaxdb  # Required when using CD Media, not SAR file.
       - credentials
       - credentials_anydb_sapmaxdb
       - db_config_anydb_all
