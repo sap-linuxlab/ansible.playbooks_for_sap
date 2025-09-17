@@ -461,7 +461,7 @@
     # NOTE: if incorrect workergroup and failover group are defined, will result in error shown in SAP Note 3043860 - Recovery fails due to incorrect worker group assignment
     - name: Ansible Vars extravars file check if non-interactive (no var prompts) requested by end user
       ansible.builtin.set_fact:
-        sap_hana_install_addhosts: |
+        sap_hana_install_addhosts: >-
           {%- if sap_vm_provision_calculate_sap_hana_scaleout_standby > 0 -%}
             {%- for host in (groups['hana_primary'] | reject('regex', '0$') | list)[:-1] -%}
               {{ hostvars[host]['inventory_hostname_short'] }}:role=worker:workergroup={{ sap_hana_install_workergroup }}:group={{ sap_hana_install_group }},
