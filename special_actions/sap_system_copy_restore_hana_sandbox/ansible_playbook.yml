@@ -101,7 +101,7 @@
         sap_swpm_pas_instance_nr: "{{ ansible_prompt_sap_system_id_instance_nwas_pas }}"
 
         sap_swpm_fqdn: "{{ ansible_domain }}"
-        sap_swpm_update_etchosts: 'false'
+        sap_swpm_update_etchosts: false
         sap_swpm_db_host: "{{ ansible_hostname }}"
         sap_swpm_ascs_instance_hostname: "{{ ansible_hostname }}"
 
@@ -132,7 +132,7 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_hana_install
 
-    - name: Execute Ansible Role sap_install_media_detect
+    - name: Execute Ansible Role sap_install_media_detect with export
       ansible.builtin.include_role:
         name: community.sap_install.sap_install_media_detect
       vars:

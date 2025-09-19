@@ -73,7 +73,7 @@ sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
 sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
 sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
 
-sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during SWPM installation (String).
 
 
 #### Shared Ansible Facts ####
@@ -96,7 +96,7 @@ sap_software_install_dictionary:
     sap_swpm_inifile_sections_list:
       - swpm_installation_media
       - swpm_installation_media_swpm1_exportfiles
-      - swpm_installation_media_swpm1_sapmaxdb
+      # - swpm_installation_media_swpm1_sapmaxdb  # Required when using CD Media, not SAR file.
       - credentials
       - credentials_anydb_sapmaxdb
       - db_config_anydb_all

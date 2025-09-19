@@ -19,9 +19,11 @@ sap_general_preconfigure_domain: "{{ ansible_domain }}"
 sap_vm_provision_ssh_host_private_key_file_path: "ENTER_STRING_VALUE_HERE"
 
 # sap_storage role variable assignment per host
-sap_storage_setup_definition:
-  "{{ sap_vm_provision_existing_hosts_host_specifications_dictionary[sap_vm_provision_host_specification_plan]
-    [inventory_hostname_short].storage_definition }}"
+# Defaults ensure that validation for placeholders will not show error.
+sap_storage_setup_definition: >-
+  {{ (sap_vm_provision_existing_hosts_host_specifications_dictionary
+      [sap_vm_provision_host_specification_plan]
+      [inventory_hostname_short] | default({})).storage_definition | default([]) }}
 
 # Define the NFS mount points for HANA data, log, and shared directories (String).
 sap_vm_provision_nfs_mount_point: "ENTER_STRING_VALUE_HERE"

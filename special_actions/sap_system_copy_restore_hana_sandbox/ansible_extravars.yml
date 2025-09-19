@@ -52,8 +52,6 @@ sap_hana_install_use_master_password: y
 # Pass some extra arguments to the hdblcm cli, e.g.  --ignore=<check1>[,<check2>]...
 # sap_hana_install_hdblcm_extraargs:
 
-# Update hosts file
-sap_hana_install_update_etchosts: 'false'
 
 # For more optional parameters please consult the documentation or
 # Check the file <role path>/defaults/main.yml
@@ -75,7 +73,7 @@ sap_swpm_templates_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2016.ERP608.HDB.CP
 
     sap_swpm_inifile_sections_list:
-      sap_swpm_update_etchosts: 'false'
+      sap_swpm_update_etchosts: false
       #sap_swpm_cd_rdms_path:
       sap_swpm_load_type: HBR
 
@@ -100,7 +98,7 @@ sap_swpm_templates_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2013SR2.ERP607SR2.HDB.CP
 
     sap_swpm_inifile_sections_list:
-      sap_swpm_update_etchosts: 'false'
+      sap_swpm_update_etchosts: false
       #sap_swpm_cd_rdms_path:
       sap_swpm_load_type: HBR
 
@@ -125,7 +123,7 @@ sap_swpm_templates_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA1909.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
-      sap_swpm_update_etchosts: 'false'
+      sap_swpm_update_etchosts: false
 
     sap_swpm_inifile_list:
       - swpm_installation_media
@@ -148,7 +146,7 @@ sap_swpm_templates_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2020.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
-      sap_swpm_update_etchosts: 'false'
+      sap_swpm_update_etchosts: false
 
     sap_swpm_inifile_list:
       - swpm_installation_media
@@ -171,7 +169,7 @@ sap_swpm_templates_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2021.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
-      sap_swpm_update_etchosts: 'false'
+      sap_swpm_update_etchosts: false
 
     sap_swpm_inifile_list:
       - swpm_installation_media
@@ -194,7 +192,7 @@ sap_swpm_templates_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
-      sap_swpm_update_etchosts: 'false'
+      sap_swpm_update_etchosts: false
 
     sap_swpm_inifile_list:
       - swpm_installation_media
@@ -217,7 +215,7 @@ sap_swpm_templates_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.CORE.HDB.CP
 
     sap_swpm_inifile_sections_list:
-      sap_swpm_update_etchosts: 'false'
+      sap_swpm_update_etchosts: false
 
     sap_swpm_inifile_list:
       - swpm_installation_media

@@ -57,7 +57,7 @@ sap_hana_install_use_master_password: "y"  # Use a master password for SAP HANA 
 sap_hana_install_master_password: ''  # The master password for SAP HANA (String).
 
 # SAP HANA Scale-Out variables for role sap_Hana_install
-sap_hana_install_new_system: true  # Set to 'false', when adding hosts using sap_hana_install_addhosts
+sap_hana_install_new_system: true  # Set to false, when adding hosts using sap_hana_install_addhosts
 # sap_hana_install_addhosts: ''  # Set to 'true', when adding hosts dynamically after provisioning
 sap_hana_install_workergroup: default  # must be 'default', see README
 sap_hana_install_group: default  # must be 'default', see README
