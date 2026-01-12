@@ -43,6 +43,12 @@ sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
   sles-15-7-sap-ha:
     project: "suse-sap-cloud"
     family: "sles-15-sp7-sap"
+  sles-16-0:
+    project: "suse-cloud"
+    family: "sles-16-0-x86-64"
+  sles-16-0-sap-ha:
+    project: "suse-sap-cloud"
+    family: "sles-sap-16-0-x86-64"
 
   # SUSE - Bring-your-own-subscription (BYOS)
   sles-15-5-byos:
@@ -63,3 +69,9 @@ sap_vm_provision_gcp_ce_vm_host_os_image_dictionary:
   sles-15-7-sap-byos:
     project: "suse-byos-cloud"
     family: "sles-15-sp7-sap-byos"
+  sles-16-0-byos:
+    project: "suse-byos-cloud"
+    family: "sles-16-0-byos-x86-64"
+  sles-16-0-sap-byos:
+    project: "suse-byos-cloud"
+    family: "sles-sap-16-0-byos-x86-64"

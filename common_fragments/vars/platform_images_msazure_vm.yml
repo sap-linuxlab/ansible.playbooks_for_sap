@@ -128,6 +128,14 @@ sap_vm_provision_msazure_vm_host_os_image_dictionary:
     publisher: "SUSE"
     offer: "sles-sap-15-sp7"
     sku: "gen2"
+  sles-16-0:
+    publisher: "SUSE"
+    offer: "sles-16-0-x86-64"
+    sku: "gen2"
+  sles-16-0-sap-ha:
+    publisher: "SUSE"
+    offer: "sles-sap-16-0-x86-64"
+    sku: "gen2"
 
   # SUSE - Bring-your-own-subscription (BYOS)
   sles-15-5-byos:
@@ -153,4 +161,12 @@ sap_vm_provision_msazure_vm_host_os_image_dictionary:
   sles-15-7-sap-byos:
     publisher: "SUSE"
     offer: "sles-sap-15-sp7-byos"
+    sku: "gen2"
+  sles-16-0-byos:
+    publisher: "SUSE"
+    offer: "sles-16-0-byos-x86-64"
+    sku: "gen2"
+  sles-16-0-sap-byos:
+    publisher: "SUSE"
+    offer: "sles-sap-16-0-byos-x86-64"
     sku: "gen2"
