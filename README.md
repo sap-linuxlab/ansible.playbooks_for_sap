@@ -172,11 +172,12 @@ Potential issues:
    - To avoid issues, use the playbooks on fresh systems or ensure thorough cleanup of any previous SAP installations.
 
 
-## License
-[Apache 2.0](./LICENSE)
+## Contributing
+For information on how to contribute, please see our [contribution guidelines](https://sap-linuxlab.github.io/initiative_contributions/).<br>
+You can find more information about repository specific guidelines at [How to contribute](./docs/CONTRIBUTING.md).
 
 ## Contributors
-Key contributors are shown within the [contributors](./docs/CONTRIBUTORS.md) file.
+We welcome contributions to this collection. For a list of all contributors and information on how you can get involved, please see our [CONTRIBUTORS document](./CONTRIBUTORS.md).
 
-## Contributing
-You can find more information about ways you can contribute at [How to contribute](./docs/CONTRIBUTING.md).
+## License
+[Apache 2.0](./LICENSE)
