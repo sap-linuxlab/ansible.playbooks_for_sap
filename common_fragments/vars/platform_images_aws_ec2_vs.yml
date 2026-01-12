@@ -29,6 +29,8 @@ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   sles-15-6-sap-ha: "*suse-sles-sap-15-sp6-v202*-hvm-ssd-x86_64*"
   sles-15-7: "*suse-sles-15-sp7-v202*-hvm-ssd-x86_64*"
   sles-15-7-sap-ha: "*suse-sles-sap-15-sp7-v202*-hvm-ssd-x86_64*"
+  sles-16-0: "*suse-sles-16-0-v202*-hvm-ssd-x86_64*"
+  sles-16-0-sap-ha: "*suse-sles-sap-16-0-v202*-hvm-ssd-x86_64*"
 
   # SUSE - Bring-your-own-subscription (BYOS)
   sles-15-5-byos: "*suse-sles-15-sp5-byos-v202*-hvm-ssd-x86_64*"
@@ -37,3 +39,5 @@ sap_vm_provision_aws_ec2_vs_host_os_image_dictionary:
   sles-15-6-sap-ha-byos: "*suse-sles-sap-15-sp6-byos-v202*-hvm-ssd-x86_64*"
   sles-15-7-byos: "*suse-sles-15-sp7-byos-v202*-hvm-ssd-x86_64*"
   sles-15-7-sap-ha-byos: "*suse-sles-sap-15-sp7-byos-v202*-hvm-ssd-x86_64*"
+  sles-16-0-byos: "*suse-sles-16-0-byos-v202*-hvm-ssd-x86_64*"
+  sles-16-0-sap-ha-byos: "*suse-sles-sap-16-0-byos-v202*-hvm-ssd-x86_64*"
