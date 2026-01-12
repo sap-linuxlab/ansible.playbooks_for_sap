@@ -14,7 +14,7 @@ collections:
     version: ">=1.100.0"
   - name: community.sap_install
     type: galaxy
-    version: ">=1.7.1"
+    version: ">=1.8.0"
   - name: community.sap_launchpad
     type: galaxy
     version: ">=1.3.0"
@@ -41,7 +41,7 @@ collections:
   # Replace with ibm.cloud in future, legacy Ansible Collection uses hidden on-the-fly Terraform files in /var/tmp/ansible/ibmcloud)
   - name: ibm.cloudcollection
     type: galaxy
-    version: 1.71.2
+    version: "1.71.2"
   - name: ovirt.ovirt
     type: galaxy
     version: ">=3.2.1"
