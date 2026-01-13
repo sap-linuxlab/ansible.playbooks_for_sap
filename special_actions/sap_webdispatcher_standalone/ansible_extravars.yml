@@ -62,13 +62,13 @@ sap_swpm_fqdn: "{{ ansible_domain }}"
 sap_swpm_wd_virtual_host: "{{ ansible_hostname }}"
 sap_swpm_wd_instance_nr: "{{ sap_system_wd_instance_nr }}"
 
-sap_swpm_wd_system_connectivity: 'true'
+sap_swpm_wd_system_connectivity: true
 sap_swpm_wd_backend_sid: "{{ sap_system_sid }}"
 sap_swpm_wd_backend_ms_host: "{{ sap_swpm_ascs_instance_hostname }}"
 sap_swpm_wd_backend_ms_http_port: '80{{ sap_swpm_ascs_instance_nr }}'
 sap_swpm_wd_backend_scenario_size: '500'
 
-sap_swpm_wd_activate_icf: 'true'
+sap_swpm_wd_activate_icf: true
 sap_swpm_wd_backend_rfc_host: "{{ sap_swpm_pas_instance_hostname }}"
 sap_swpm_wd_backend_rfc_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
 sap_swpm_wd_backend_rfc_client_nr: "000" # 000 default
@@ -82,7 +82,7 @@ sap_swpm_sapadm_uid: '3000'  # Unix User ID for the sapadm user (String).
 sap_swpm_sapsys_gid: '3001'  # Unix Group ID for the sapsys group (String).
 sap_swpm_sidadm_uid: '3001'  # Unix User ID for the <sid>adm user (String).
 
-sap_swpm_update_etchosts: 'false'  # Whether to update the /etc/hosts file during SWPM installation (String).
+sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during SWPM installation (String).
 
 
 # SAP Web Dispatcher version to download
@@ -199,7 +199,7 @@ sap_software_install_dictionary:
     sap_swpm_inifile_dictionary:
 
       # SAP Host Agent
-      sap_swpm_install_saphostagent: 'false'
+      sap_swpm_install_saphostagent: false
 
 
   sap_webdispatcher_pre_7_5x_standalone_swpm1:
@@ -220,4 +220,4 @@ sap_software_install_dictionary:
     sap_swpm_inifile_dictionary:
 
       # SAP Host Agent
-      sap_swpm_install_saphostagent: 'false'
+      sap_swpm_install_saphostagent: false

@@ -1,6 +1,6 @@
 ---
 
-name: ansible-lint of the ansible playbooks for sap
+name: Ansible Lint
 
 on:
   # Runs at 10:10 on every Monday
@@ -27,51 +27,12 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
+      - uses: actions/checkout@v5
+
+        # Use @v25 to automatically track the latest release from the year 2025.
+        # ansible-lint uses Calendar Versioning (e.g., v25.9.0 -> YYYY.MM.PATCH).
+        # Avoid using @main, which can introduce breaking changes unexpectedly.
+      - uses: ansible/ansible-lint@v25
         with:
-          path: repo_playbooks
-
-      - name: Set up Python 3
-        uses: actions/setup-python@v5
-        with:
-          python-version: '3.12'
-
-      - name: Install dependencies for Python
-        run: |
-          pip3 install --upgrade pip
-          pip3 install ansible==11.4.0
-          pip3 install ansible-compat==4.1.11
-          pip3 install ansible-core==2.18.4
-          pip3 install ansible-lint==25.2.1
-
-        # dev branch is using shared fragments
-      - name: Install dependencies for Ansible (dev)
-        working-directory: repo_playbooks
-        if: github.ref == 'refs/heads/dev'
-        run: |
-          ansible-galaxy collection install -r ./common_fragments/ansible_requirements.yml
-
-        # main branch is using:
-        # - deploy_scenarios/sap_hana if file exists
-        # - else first scenario with ansible_requirements.yml
-      - name: Install dependencies for Ansible (main)
-        working-directory: repo_playbooks
-        if: github.ref == 'refs/heads/main'
-        run: |
-          if [ -f ./deploy_scenarios/sap_hana/ansible_requirements.yml ]; then
-            ansible-galaxy collection install -r ./deploy_scenarios/sap_hana/ansible_requirements.yml
-          else
-            first_file=$(find ./deploy_scenarios/ -name ansible_requirements.yml -print -quit)
-            if [ -n "$first_file" ]; then
-              echo "Using $first_file"
-              ansible-galaxy collection install -r "$first_file"
-            else
-              echo "No ansible_requirements.yml found in deploy_scenarios"
-              exit 1
-            fi
-          fi
-
-      - name: Run ansible-lint
-        working-directory: repo_playbooks
-        run: ansible-lint
+          # Use the shared requirements file from the collection root for dependency context.
+          requirements_file: ./common_fragments/ansible_requirements.yml

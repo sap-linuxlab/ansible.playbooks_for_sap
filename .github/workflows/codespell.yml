@@ -2,7 +2,6 @@
 name: CodeSpell
 
 on:
-  # Runs on push and pull request to dev
   push:
     branches:
       - dev
@@ -10,7 +9,6 @@ on:
     branches:
       - dev
 
-  # Enable manual start button
   workflow_dispatch:
 
 jobs:
@@ -19,13 +17,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v4
-        with:
-          path: repo_playbooks
+      - uses: actions/checkout@v5
 
       - uses: codespell-project/actions-codespell@v2
         with:
-          path: repo_playbooks
           # lowercase only
-          ignore_words_list: aas,iterm,daa
+          ignore_words_list: aas,hsa,te,chage,addopt,sybsystem,uptodate,iterm,daa

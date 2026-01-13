@@ -37,7 +37,7 @@ The Ansible Playbooks for SAP offer several key benefits:
 | --- | --- | --- | --- |
 | SAP HANA | 2.0 SPS 08<br> 2.0 SPS 07<br> 2.0 SPS 06 | Sandbox<br> Scale-Out <br> Scale-Up High Availability | SAP HANA |
 | SAP BW/4HANA | 2023<br> 2021 | Sandbox<br> Scale-Out | SAP HANA |
-| SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | Sandbox<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
+| SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | Sandbox<br> Sandbox (System Copy restore)<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
 | SAP S/4HANA<br> Maintenance Plan | Any version - Defined by Maintenance Plan</br> Includes latest FPS and security patches | Sandbox<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
 | SAP S/4HANA Foundation | 2023<br> 2022<br> 2021 | Sandbox<br> Standard | SAP HANA |
 | SAP Landscape for SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | 3-System Standard | SAP HANA |
@@ -172,11 +172,12 @@ Potential issues:
    - To avoid issues, use the playbooks on fresh systems or ensure thorough cleanup of any previous SAP installations.
 
 
-## License
-[Apache 2.0](./LICENSE)
+## Contributing
+For information on how to contribute, please see our [contribution guidelines](https://sap-linuxlab.github.io/initiative_contributions/).<br>
+You can find more information about repository specific guidelines at [How to contribute](./docs/CONTRIBUTING.md).
 
 ## Contributors
-Key contributors are shown within the [contributors](./docs/CONTRIBUTORS.md) file.
+We welcome contributions to this collection. For a list of all contributors and information on how you can get involved, please see our [CONTRIBUTORS document](./CONTRIBUTORS.md).
 
-## Contributing
-You can find more information about ways you can contribute at [How to contribute](./docs/CONTRIBUTING.md).
+## License
+[Apache 2.0](./LICENSE)

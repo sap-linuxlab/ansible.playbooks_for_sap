@@ -312,7 +312,7 @@
   register: sap_playbook_collection_list_output
 
 - name: Block for sap_id_user
-  when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+  when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
   no_log: true
   block:
     - name: Prompt for SAP S-User ID
@@ -343,7 +343,7 @@
 
 
 - name: Block for sap_id_user_password
-  when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+  when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
   no_log: true
   block:
     - name: Prompt for SAP S-User Password
