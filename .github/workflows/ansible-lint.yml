@@ -29,10 +29,21 @@ jobs:
     steps:
       - uses: actions/checkout@v5
 
+      # The shared file is available only in 'dev' and 'stage' branches,
+      # as it is removed during publishing workflow into 'main' branch.
+      # Scenario 'sap_hana' is used as source for 'main' branch.
+      - name: Determine requirements file path
+        id: get_path
+        run: |
+          if [[ "${{ github.ref_name }}" == "main" ]]; then
+            echo "REQUIREMENTS_PATH=./deploy_scenarios/sap_hana/ansible_requirements.yml" >> $GITHUB_ENV
+          else
+            echo "REQUIREMENTS_PATH=./common_fragments/ansible_requirements.yml" >> $GITHUB_ENV
+          fi
+
         # Use @v25 to automatically track the latest release from the year 2025.
         # ansible-lint uses Calendar Versioning (e.g., v25.9.0 -> YYYY.MM.PATCH).
         # Avoid using @main, which can introduce breaking changes unexpectedly.
       - uses: ansible/ansible-lint@v25
         with:
-          # Use the shared requirements file from the collection root for dependency context.
-          requirements_file: ./common_fragments/ansible_requirements.yml
+          requirements_file: ${{ env.REQUIREMENTS_PATH }}
