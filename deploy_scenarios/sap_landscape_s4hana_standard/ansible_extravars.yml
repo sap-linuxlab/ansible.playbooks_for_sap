@@ -93,7 +93,7 @@ sap_swpm_db_systemdb_password: ''  # Password for the SYSTEM user in the SAP HAN
 
 # Dynamic assignment of SAP SWPM variables
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_fqdn: "{{ ansible_facts['domain'] }}"
 
 #### SAP SWPM Installation - Optional variables ####
 ## Unix User ID
@@ -105,9 +105,9 @@ sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during 
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####

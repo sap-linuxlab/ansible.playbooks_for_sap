@@ -78,8 +78,8 @@ sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 ## Virtual host names
 # See virtual hostname information in SAP Note 2279110 and 962955
 # Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
-# sap_swpm_virtual_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ascs[0] | default(none) }}-ha"
-sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] | default(none) }}-ha" # Must be SAP HANA Virtual Hostname
+# sap_swpm_virtual_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ascs[0] | d(none) }}-ha"
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] | d(none) }}-ha" # Must be SAP HANA Virtual Hostname
 
 ## SAP HANA System Replication (HSR) installation
 sap_ha_install_hana_hsr_sid: "{{ sap_system_hana_db_sid }}"
@@ -88,8 +88,10 @@ sap_ha_install_hana_hsr_db_system_password: "{{ sap_hana_install_master_password
 
 ## Infrastructure Platform - High Availability Virtual IPs (VIPs)
 # AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
-# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
-# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service
+#                       for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined
+#                       by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
 # IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
 # MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
 # IBM PowerVM:          the VIP must be within the VLAN Subnet range
@@ -104,9 +106,9 @@ sap_system_hana_hacluster_user_password: 'clusterpass'  # Pacemaker cluster 'hac
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
