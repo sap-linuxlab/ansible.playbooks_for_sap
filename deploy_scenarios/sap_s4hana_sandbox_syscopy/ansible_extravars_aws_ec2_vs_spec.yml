@@ -32,10 +32,12 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -74,6 +76,7 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
         - name: "{{ sap_playbook_backup_files_directory | regex_replace('^/', '') }}"
           mountpoint: "{{ sap_playbook_backup_files_directory }}"
           nfs_path: ""
-          nfs_server: "{{ sap_vm_provision_nfs_mount_point_backup_files | default('') }}"  # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
-          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | default('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
-          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | default('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
+          # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
+          nfs_server: "{{ sap_vm_provision_nfs_mount_point_backup_files | d('') }}"
+          nfs_filesystem_type: "{{ sap_vm_provision_nfs_mount_point_type | d('') }}" # default: {{ sap_storage_setup_nfs_filesystem_type }}
+          nfs_mount_options: "{{ sap_vm_provision_nfs_mount_point_opts | d('') }}"   # default: {{ sap_storage_setup_nfs_mount_options }}
