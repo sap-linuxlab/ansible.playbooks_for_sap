@@ -26,7 +26,7 @@ sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
 
 # SAP NetWeaver JAVA Parameters
-sap_swpm_java_scs_instance_hostname: "{{ sap_hostname | d(ansible_hostname) }}"
+sap_swpm_java_scs_instance_hostname: "{{ sap_hostname | d(ansible_facts['hostname']) }}"
 sap_swpm_ume_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
 sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
 sap_swpm_ume_sapjsf_password: "{{ sap_swpm_master_password }}"
@@ -34,9 +34,9 @@ sap_swpm_ume_type: db # db, abap
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -77,7 +77,10 @@ sap_software_install_dictionary:
       - 'igshelper_17-10010245.sar'
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
       - 'SAPJVM8_90-80000202.SAR' # SAP JVM 8.1
-      - '51055106' # SAP Netweaver 7.5 SP22 Java, ZIP. Contains JAVA_EXPORT (SAP:JEXPORT:750:SP22:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:750:SP22:*:SW-LABEL), JAVA_J2EE_OSINDEP (SAP:J2EE-CD:750:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:750:SP22:*:*), JAVA_J2EE_OSINDEP_UT (SAP:UT:750:SP22:*:*)
+      # Contains JAVA_EXPORT (SAP:JEXPORT:750:SP22:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:750:SP22:*:SW-LABEL),
+      # JAVA_J2EE_OSINDEP (SAP:J2EE-CD:750:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:750:SP22:*:*),
+      # JAVA_J2EE_OSINDEP_UT (SAP:UT:750:SP22:*:*)
+      - '51055106' # SAP Netweaver 7.5 SP22 Java, ZIP.
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
       - '73554900102000002424' # IBM DB2 LUW 11.5 SAP OEM license (Note 816773), ZIP
       - '51056774' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 Client, ZIP
