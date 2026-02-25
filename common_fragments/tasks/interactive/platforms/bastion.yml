@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 # Interactive prompts - Bastion
 
@@ -14,19 +15,19 @@
     - name: Prompt for Bastion user
       ansible.builtin.pause:
         prompt: Enter the name of the Bastion user on Bastion server.
-      register: sap_vm_provision_bastion_user_register
+      register: __sap_playbook_register_sap_vm_provision_bastion_user
       when: sap_vm_provision_bastion_user is not defined
 
     - name: Set fact for sap_vm_provision_bastion_user
       ansible.builtin.set_fact:
-        sap_vm_provision_bastion_user: "{{ sap_vm_provision_bastion_user_register.user_input }}"
+        sap_vm_provision_bastion_user: "{{ __sap_playbook_register_sap_vm_provision_bastion_user.user_input }}"
       when: sap_vm_provision_bastion_user is not defined
 
     - name: Fail if sap_vm_provision_bastion_user is invalid
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_vm_provision_bastion_user': '{{ sap_vm_provision_bastion_user }}'
-          {% if sap_vm_provision_bastion_user_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_vm_provision_bastion_user.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -44,13 +45,13 @@
         prompt: |
           Enter the number of the SSH port on Bastion server.
           Press enter to skip and use the default value ('22').
-      register: sap_vm_provision_bastion_ssh_port_register
+      register: __sap_playbook_register_sap_vm_provision_bastion_ssh_port
       when: sap_vm_provision_bastion_ssh_port is not defined
 
     - name: Set fact for sap_vm_provision_bastion_ssh_port
       ansible.builtin.set_fact:
-        sap_vm_provision_bastion_ssh_port: "{{ sap_vm_provision_bastion_ssh_port_register.user_input
-          if sap_vm_provision_bastion_ssh_port_register.user_input | length > 0
+        sap_vm_provision_bastion_ssh_port: "{{ __sap_playbook_register_sap_vm_provision_bastion_ssh_port.user_input
+          if __sap_playbook_register_sap_vm_provision_bastion_ssh_port.user_input | length > 0
           else '22' }}"
       when: sap_vm_provision_bastion_ssh_port is not defined
 
@@ -58,7 +59,7 @@
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_vm_provision_bastion_ssh_port': '{{ sap_vm_provision_bastion_ssh_port }}'
-          {% if sap_vm_provision_bastion_ssh_port_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_vm_provision_bastion_ssh_port.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -74,19 +75,19 @@
     - name: Prompt for Bastion public IP
       ansible.builtin.pause:
         prompt: Enter the Public IP of the Bastion server.
-      register: sap_vm_provision_bastion_public_ip_register
+      register: __sap_playbook_register_sap_vm_provision_bastion_public_ip
       when: sap_vm_provision_bastion_public_ip is not defined
 
     - name: Set fact for sap_vm_provision_bastion_public_ip
       ansible.builtin.set_fact:
-        sap_vm_provision_bastion_public_ip: "{{ sap_vm_provision_bastion_public_ip_register.user_input }}"
+        sap_vm_provision_bastion_public_ip: "{{ __sap_playbook_register_sap_vm_provision_bastion_public_ip.user_input }}"
       when: sap_vm_provision_bastion_public_ip is not defined
 
     - name: Fail if sap_vm_provision_bastion_public_ip is invalid
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_vm_provision_bastion_public_ip': '{{ sap_vm_provision_bastion_public_ip }}'
-          {% if sap_vm_provision_bastion_public_ip_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_vm_provision_bastion_public_ip.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -102,19 +103,19 @@
     - name: Prompt for Bastion private key path
       ansible.builtin.pause:
         prompt: Enter the path to the Bastion user private key located on execution server.
-      register: sap_vm_provision_ssh_bastion_private_key_file_path_register
+      register: __sap_playbook_register_sap_vm_provision_ssh_bastion_private_key_file_path
       when: sap_vm_provision_ssh_bastion_private_key_file_path is not defined
 
     - name: Set fact for sap_vm_provision_ssh_bastion_private_key_file_path
       ansible.builtin.set_fact:
         sap_vm_provision_ssh_bastion_private_key_file_path:
-          "{{ sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input }}"
+          "{{ __sap_playbook_register_sap_vm_provision_ssh_bastion_private_key_file_path.user_input }}"
       when: sap_vm_provision_ssh_bastion_private_key_file_path is not defined
 
     - name: Check if {{ sap_vm_provision_ssh_bastion_private_key_file_path }} is available
       ansible.builtin.stat:
         path: "{{ sap_vm_provision_ssh_bastion_private_key_file_path }}"
-      register: sap_vm_provision_ssh_bastion_private_key_file_path_availability
+      register: __sap_playbook_register_sap_vm_provision_ssh_bastion_private_key_file_path_availability
       ignore_errors: true
 
     - name: Fail if sap_vm_provision_ssh_bastion_private_key_file_path is invalid
@@ -122,7 +123,7 @@
         msg: |
           Invalid value for variable 'sap_vm_provision_ssh_bastion_private_key_file_path': '{{
             sap_vm_provision_ssh_bastion_private_key_file_path }}'
-          {% if sap_vm_provision_ssh_bastion_private_key_file_path_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_vm_provision_ssh_bastion_private_key_file_path.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -130,4 +131,4 @@
       when:
         - sap_vm_provision_ssh_bastion_private_key_file_path | length == 0
           or sap_vm_provision_ssh_bastion_private_key_file_path == 'ENTER_STRING_VALUE_HERE'
-          or not sap_vm_provision_ssh_bastion_private_key_file_path_availability.stat.exists
+          or not __sap_playbook_register_sap_vm_provision_ssh_bastion_private_key_file_path_availability.stat.exists

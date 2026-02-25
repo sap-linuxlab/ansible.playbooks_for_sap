@@ -17,11 +17,11 @@
       prompt: Please enter filename of SAPCAR file (e.g. SAPCAR_1115-70006178.EXE)
       private: false
 
-    - name: __prompt_sap_swpm_swpm_path
+    - name: __prompt_sap_swpm_path
       prompt: Please enter the directory path to SAP SWPM SAR (excluding filename, e.g. /software/sap_swpm)
       private: false
 
-    - name: __prompt_sap_swpm_swpm_sar_file_name
+    - name: __prompt_sap_swpm_sar_file_name
       prompt: Please enter filename of SAP SWPM SAR (e.g. SWPM10SP39_1-20009701.SAR)
       private: false
 
@@ -66,8 +66,8 @@
       ansible.builtin.set_fact:
         sap_swpm_sapcar_path: "{{ __prompt_sap_swpm_sapcar_path }}"
         sap_swpm_sapcar_file_name: "{{ __prompt_sap_swpm_sapcar_file_name }}"
-        sap_swpm_swpm_path: "{{ __prompt_sap_swpm_swpm_path }}"
-        sap_swpm_swpm_sar_file_name: "{{ __prompt_sap_swpm_swpm_sar_file_name }}"
+        sap_swpm_path: "{{ __prompt_sap_swpm_path }}"
+        sap_swpm_sar_file_name: "{{ __prompt_sap_swpm_sar_file_name }}"
         sap_export_directory: "{{ __prompt_sap_export_directory }}"
         sap_export_system_software_version: "{{ __prompt_sap_export_system_software_version }}"
         sap_export_system_setup: "{{ __prompt_sap_export_system_setup }}"
