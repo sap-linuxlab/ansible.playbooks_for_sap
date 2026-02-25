@@ -11,7 +11,7 @@ sap_vm_provision_iac_type: "existing_hosts"
 sap_vm_provision_iac_platform: "existing_hosts"
 
 sap_general_preconfigure_modify_etc_hosts: true
-sap_general_preconfigure_domain: "{{ ansible_domain }}"
+sap_general_preconfigure_domain: "{{ ansible_facts['domain'] }}"
 
 
 # sap_storage role variable assignment per host
@@ -19,7 +19,7 @@ sap_general_preconfigure_domain: "{{ ansible_domain }}"
 sap_storage_setup_definition: >-
   {{ (sap_vm_provision_existing_hosts_host_specifications_dictionary
       [sap_vm_provision_host_specification_plan]
-      [inventory_hostname_short] | default({})).storage_definition | default([]) }}
+      [inventory_hostname_short] | d({})).storage_definition | d([]) }}
 
 
 #### Ansible Dictionary for host specifications ####
