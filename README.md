@@ -27,10 +27,21 @@ The Ansible Playbooks for SAP offer several key benefits:
 - IBM Cloud, Power Virtual Servers
 - Microsoft Azure Virtual Machines
 - IBM PowerVM Virtual Machines (LPARs)
-- OVirt (e.g. Red Hat Enterprise Linux KVM)
-- KubeVirt (e.g. Red Hat OpenShift Virtualization, SUSE Rancher with Harvester HCI) `[Experimental]`
-- VMware vSphere Virtual Machines `[Beta]`
+- OVirt Virtual Machines `[Experimental]`
+- KubeVirt Virtual Machines `[beta]` (e.g. Red Hat OpenShift Virtualization)
+- VMware vSphere Virtual Machines `[Experimental]`
 - Existing hosts without provisioning
+
+#### Microsoft Azure: Reliability Disclaimer
+Due to ongoing reliability issues with the Ansible Collection `azure.azcollection` (which is a core dependency of the `community.sap_infrastructure` collection), these playbooks are provided on a **best effort** basis for Microsoft Azure deployments.
+
+The reliability issues with the Ansible Collection for Microsoft Azure are due to underlying Python Packages for MS Azure and MS Azure API Schema versions across Regions. More details are below:
+
+- The `azure.azcollection` is dependent on an extensive list of Python libraries, which are locked to older versions than the MS Azure CLI STS/LTS.
+  - Specific installation instructions for these libraries must be followed precisely to ensure module stability.
+  - Upgrading existing Ansible Collection `azure.azcollection` can cause issues, due to changes in dependencies.
+- MS Azure API behavior is not globally uniform or predictable. The same playbook and variables may yield different results across different MS Azure regions due to localized API versions or resource provider constraints.
+  - This is specific to Ansible Modules from `azure.azcollection` calling MS Azure API and you can see different behavior when using Azure CLI.
 
 ### Supported Deployment Scenarios
 | SAP Product | Versions | Deployment Topology | Database |
