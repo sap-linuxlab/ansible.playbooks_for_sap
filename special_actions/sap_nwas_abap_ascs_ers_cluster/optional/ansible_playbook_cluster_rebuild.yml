@@ -23,12 +23,12 @@
         - name: Pause for user understanding and confirmation
           ansible.builtin.pause:
             prompt: "To continue, type 'yes' to confirm your understanding of the risks, or Ctrl+C to abort."
-          register: sap_playbook_confirm_warning
+          register: __sap_playbook_register_sap_playbook_confirm_warning
 
         - name: Abort playbook if user does not confirm
           ansible.builtin.fail:
             msg: "Playbook aborted. User did not confirm understanding of risks."
-          when: sap_playbook_confirm_warning.user_input is not defined or sap_playbook_confirm_warning.user_input | lower != 'yes'
+          when: __sap_playbook_register_sap_playbook_confirm_warning.user_input is not defined or __sap_playbook_register_sap_playbook_confirm_warning.user_input | lower != 'yes'
 
 
 #### Create dynamic inventory ####
@@ -46,9 +46,9 @@
     # Create inventory groups without role sap_vm_provision
     - name: Create dynamic inventory groups per sap_host_type  # noqa: jinja[spacing]
       ansible.builtin.add_host:
-        name: "{{ item }}"
-        group: "{{ sap_playbook_host_dictionary[item].sap_host_type }}"
-        ansible_host: "{{ item }}.{{ sap_vm_provision_dns_root_domain }}"
+        name: "{{ host_item }}"
+        group: "{{ sap_playbook_host_dictionary[host_item].sap_host_type }}"
+        ansible_host: "{{ host_item }}.{{ sap_vm_provision_dns_root_domain }}"
         # ansible_user: "{{ 'azureadmin' if sap_vm_provision_iac_platform == 'msazure_vm' else 'root' }}"
         ansible_user: "root"
         ansible_ssh_private_key_file: "{{ sap_vm_provision_ssh_host_private_key_file_path }}"
@@ -58,6 +58,8 @@
           -p {{ sap_vm_provision_bastion_ssh_port }} -i {{ sap_vm_provision_ssh_bastion_private_key_file_path }}
           -o StrictHostKeyChecking=no -o UserKnownHostsFile=/dev/null'"
       loop: "{{ sap_playbook_host_dictionary.keys() }}"
+      loop_control:
+        loop_var: host_item
       when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform']
 
 
@@ -71,16 +73,18 @@
 
     - name: Get stat of cluster configuration files
       ansible.builtin.stat:
-        path: "{{ item }}"
+        path: "{{ file_item }}"
       loop:
         - /etc/corosync/corosync.conf
         - /var/lib/pacemaker/cib/cib.xml
-      register: sap_playbook_config_files_stat
+      loop_control:
+        loop_var: file_item
+      register: __sap_playbook_register_config_files_stat
 
     - name: Stop cluster
       ansible.builtin.command:
-        cmd: "{{ 'crm' if ansible_os_family == 'Suse' else 'pcs' }} cluster stop"
-      when: not sap_playbook_config_files_stat.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
+        cmd: "{{ 'crm' if ansible_facts['os_family'] == 'Suse' else 'pcs' }} cluster stop"
+      when: not __sap_playbook_register_config_files_stat.results | selectattr('stat.exists', 'equalto', false) | list | length > 0
       changed_when: true
 
     - name: Populate service facts
@@ -88,19 +92,21 @@
 
     - name: Stop cluster daemons
       ansible.builtin.service:
-        name: "{{ item }}"
+        name: "{{ service_item }}"
         state: stopped  # noqa no-handler
       loop:
         - pacemaker.service
         - corosync.service
         - corosync-qdevice.service
-      when: item in ansible_facts.services
+      loop_control:
+        loop_var: service_item
+      when: service_item in ansible_facts.services
 
     - name: Remove cluster configuration files
       ansible.builtin.file:
-        path: "{{ config_file.item }}"
+        path: "{{ config_file.file_item }}"
         state: absent
-      loop: "{{ sap_playbook_config_files_stat.results }}"
+      loop: "{{ __sap_playbook_register_config_files_stat.results }}"
       loop_control:
         loop_var: config_file
       when: config_file.stat.exists
@@ -112,15 +118,17 @@
 
     - name: Remove HAlib configuration
       ansible.builtin.lineinfile:
-        path: "{{ item }}"
+        path: "{{ dir_item }}"
         state: absent
         regexp: '^service/halib'
       loop:
         - "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ASCS{{ sap_system_nwas_abap_ascs_instance_nr }}_{{ sap_swpm_ascs_instance_hostname }}"
         - "/sapmnt/{{ sap_system_sid }}/profile/{{ sap_system_sid }}_ERS{{ sap_system_nwas_abap_ers_instance_nr }}_{{ sap_swpm_ers_instance_hostname }}"
+      loop_control:
+        loop_var: dir_item
 
 
-- name: Ansible Play for SAP NetWeaver Application Server installation - High Availability using ABAP Central Services (ASCS) and Enqueue Replication Service (ERS) with Standalone Enqueue Server 2 (ENSA2)
+- name: Ansible Play for SAP NetWeaver Application Server installation - High Availability using ABAP Central Services (ASCS) and Enqueue Replication Service (ERS) with Standalone Enqueue Server 2 (ENSA2)  # noqa yaml[line-length]
   hosts: nwas_ascs, nwas_ers
   become: true
   any_errors_fatal: true
@@ -142,7 +150,7 @@
 
         sap_ha_pacemaker_cluster_vip_resource_group_name: vipnwasascs
 
-        sap_ha_pacemaker_cluster_nwas_sid: "{{ sap_system_sid | default('') }}"
+        sap_ha_pacemaker_cluster_nwas_sid: "{{ sap_system_sid | d('') }}"
         sap_ha_pacemaker_cluster_nwas_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
         sap_ha_pacemaker_cluster_nwas_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
 

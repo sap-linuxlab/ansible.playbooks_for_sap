@@ -30,9 +30,9 @@ sap_swpm_pas_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####

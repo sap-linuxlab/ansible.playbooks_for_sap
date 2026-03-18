@@ -24,7 +24,8 @@
         that:
           - sap_vm_provision_iac_platform is defined
           - sap_vm_provision_iac_platform in
-            ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs', 'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
+            ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs',
+              'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
         fail_msg: |
           The variable 'sap_vm_provision_iac_platform' is undefined or invalid.
           Available options: aws_ec2_vs, gcp_ce_vm, msazure_vm, ibmcloud_powervs, ibmcloud_vs, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm, existing_hosts
@@ -32,10 +33,10 @@
     # Ignore registered vars and sap_swpm hostnames which could contain hostvars.
     - name: Prepare list of SAP variables for validation  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        sap_playbook_dictionary_vars:
-          "{{ dict(sap_playbook_dictionary_vars | zip(lookup('ansible.builtin.vars', *sap_playbook_dictionary_vars))) }}"
+        __sap_playbook_fact_dictionary_vars:
+          "{{ dict(__sap_playbook_fact_dictionary_vars | zip(lookup('ansible.builtin.vars', *__sap_playbook_fact_dictionary_vars))) }}"
       vars:
-        sap_playbook_dictionary_vars:
+        __sap_playbook_fact_dictionary_vars:
           "{{ lookup('ansible.builtin.varnames', '^(__)?sap_', wantlist=true)
               | reject('search', '(^(__)?sap_swpm_.*_hostname$)|(.*_register$)')
               | reject('in', ['sap_swpm_db_host'])
@@ -45,12 +46,12 @@
 
     - name: Identify variables with placeholder values or empty passwords  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        sap_playbook_placeholder_vars:
-          "{{ sap_playbook_dictionary_vars | dict2items
+        __sap_playbook_fact_placeholder_vars:
+          "{{ __sap_playbook_fact_dictionary_vars | dict2items
               | selectattr('value', 'equalto', 'ENTER_STRING_VALUE_HERE') | map(attribute='key') | list }}"
 
-        sap_playbook_empty_password_vars:
-          "{{ sap_playbook_dictionary_vars | dict2items | selectattr('key', 'search', 'password')
+        __sap_playbook_fact_empty_password_vars:
+          "{{ __sap_playbook_fact_dictionary_vars | dict2items | selectattr('key', 'search', 'password')
               | selectattr('value', 'in', [none, '']) | map(attribute='key') | list }}"
       no_log: true
       ignore_errors: true
@@ -59,21 +60,21 @@
       ansible.builtin.fail:
         msg: |
           Please address the following issues before re-running the playbook:
-          {% if sap_playbook_placeholder_vars | length > 0 %}
+          {% if __sap_playbook_fact_placeholder_vars | length > 0 %}
           - Placeholder values found for variable(s):
-            {% for item in sap_playbook_placeholder_vars %}
+            {% for item in __sap_playbook_fact_placeholder_vars %}
             {{ item }}
             {% endfor %}
 
           {% endif %}
-          {% if sap_playbook_empty_password_vars | length > 0 %}
+          {% if __sap_playbook_fact_empty_password_vars | length > 0 %}
           - Empty or invalid values found for password variable(s):
-            {% for item in sap_playbook_empty_password_vars %}
+            {% for item in __sap_playbook_fact_empty_password_vars %}
             {{ item }}
             {% endfor %}
           {% endif %}
       when:
-        - sap_playbook_placeholder_vars | d([]) | length > 0 or sap_playbook_empty_password_vars | d([]) | length > 0
+        - __sap_playbook_fact_placeholder_vars | d([]) | length > 0 or __sap_playbook_fact_empty_password_vars | d([]) | length > 0
 
 
 #### Begin Infrastructure-as-Code provisioning ####
@@ -120,9 +121,11 @@
 
         - name: Create dynamic inventory group for Ansible Role sap_vm_provision
           ansible.builtin.add_host:
-            name: "{{ item }}"
+            name: "{{ host_item }}"
             group: sap_vm_provision_target_inventory_group
           loop: "{{ lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan].keys() }}"
+          loop_control:
+            loop_var: host_item
 
 
 # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
@@ -148,14 +151,14 @@
   tasks:
 
     # Use inventory_hostname_short to retrieve host specification from the dictionary.
-    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
+    # While ansible_facts['hostname'] will work for Ansible only, using Ansible>Terraform may see ansible_facts['hostname'] as 'localhost' and fail
     - name: Execute Ansible Role sap_storage_setup for SAP NetWeaver AS (ABAP)
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
       vars:
-        sap_storage_setup_sid: "{{ sap_system_sid_abap | default('') }}"
-        sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr | default('') }}"
-        sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr | default('') }}"
+        sap_storage_setup_sid: "{{ sap_system_sid_abap | d('') }}"
+        sap_storage_setup_nwas_abap_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr | d('') }}"
+        sap_storage_setup_nwas_abap_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr | d('') }}"
         sap_storage_setup_host_type:
           - hana_primary
           - nwas_abap_ascs
@@ -164,14 +167,14 @@
       when: sap_vm_provision_iac_type in ['ansible', 'ansible_to_terraform', 'existing_hosts']
 
     # Use inventory_hostname_short to retrieve host specification from the dictionary.
-    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
+    # While ansible_facts['hostname'] will work for Ansible only, using Ansible>Terraform may see ansible_facts['hostname'] as 'localhost' and fail
     - name: Execute Ansible Role sap_storage_setup for SAP NetWeaver AS (JAVA)
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
       vars:
-        sap_storage_setup_sid: "{{ sap_system_sid_java | default('') }}"
-        sap_storage_setup_nwas_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr | default('') }}"
-        sap_storage_setup_nwas_java_ci_instance_nr: "{{ sap_system_nwas_java_ci_instance_nr | default('') }}"
+        sap_storage_setup_sid: "{{ sap_system_sid_java | d('') }}"
+        sap_storage_setup_nwas_java_scs_instance_nr: "{{ sap_system_nwas_java_scs_instance_nr | d('') }}"
+        sap_storage_setup_nwas_java_ci_instance_nr: "{{ sap_system_nwas_java_ci_instance_nr | d('') }}"
         sap_storage_setup_host_type:
           - hana_primary
           - nwas_java_ci
@@ -193,7 +196,8 @@
       become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
-      register: sap_playbook_collection_list_output
+      register: __sap_playbook_register_collection_list_output
+      changed_when: false
 
     - name: Execute Ansible Role sap_software_download
       ansible.builtin.include_role:
@@ -204,8 +208,8 @@
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
         sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
-          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
-      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
+          ['softwarecenter_search_list_' ~ ansible_facts['architecture']] }}"
+      when: __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
 
 
 #### Begin SAP software hosts preparation ####
@@ -230,7 +234,7 @@
 
     - name: Install libuuid package
       ansible.builtin.package:
-        name: "{{ ('libuuid-devel' if ansible_os_family == 'RedHat' else 'libuuid1' if ansible_os_family == 'Suse') }}"
+        name: "{{ ('libuuid-devel' if ansible_facts['os_family'] == 'RedHat' else 'libuuid1' if ansible_facts['os_family'] == 'Suse') }}"
         state: present
 
 

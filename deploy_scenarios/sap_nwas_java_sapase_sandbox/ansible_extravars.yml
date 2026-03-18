@@ -67,10 +67,10 @@ sap_swpm_pas_instance_nr: "{{ sap_system_nwas_abap_pas_instance_nr }}"
 sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] }}"
 sap_swpm_db_sid: "{{ sap_system_anydb_sid }}"
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_fqdn: "{{ ansible_facts['domain'] }}"
 
 # SAP NetWeaver JAVA Parameters
-sap_swpm_java_scs_instance_hostname: "{{ sap_hostname | d(ansible_hostname) }}"
+sap_swpm_java_scs_instance_hostname: "{{ sap_hostname | d(ansible_facts['hostname']) }}"
 sap_swpm_ume_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
 sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
 sap_swpm_ume_sapjsf_password: "{{ sap_swpm_master_password }}"
@@ -86,9 +86,9 @@ sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during 
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -129,7 +129,10 @@ sap_software_install_dictionary:
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
       - 'SAPJVM8_90-80000202.SAR' # SAP JVM 8.1
-      - '51055106' # SAP Netweaver 7.5 SP22 Java, ZIP. Contains JAVA_EXPORT (SAP:JEXPORT:750:SP22:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:750:SP22:*:SW-LABEL), JAVA_J2EE_OSINDEP (SAP:J2EE-CD:750:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:750:SP22:*:*), JAVA_J2EE_OSINDEP_UT (SAP:UT:750:SP22:*:*)
+      # Contains JAVA_EXPORT (SAP:JEXPORT:750:SP22:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:750:SP22:*:SW-LABEL),
+      # JAVA_J2EE_OSINDEP (SAP:J2EE-CD:750:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:750:SP22:*:*),
+      # JAVA_J2EE_OSINDEP_UT (SAP:UT:750:SP22:*:*)
+      - '51055106' # SAP Netweaver 7.5 SP22 Java, ZIP.
       - '51057961_1' # SAP ASE 16.0.04.06 HF1 RDBMS Linux on x86_64 64bit
       - 'ASEBC16004P_5-20012477.SAR' # SAP ASE 16.0 SP04 (160-04) FOR BUS. SUITE DBCLIENT with Patch (P_*)
 

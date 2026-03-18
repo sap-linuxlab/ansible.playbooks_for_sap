@@ -12,14 +12,14 @@
         prompt: |
           Enter your SAP S-User ID.
           Example: S0001234567
-      register: sap_id_user_register
+      register: __sap_playbook_register_sap_id_user
       when: sap_id_user is not defined
 
     - name: Prompt for SAP S-User Password
       ansible.builtin.pause:
         prompt: |
           Enter your SAP S-User password.
-      register: sap_id_user_password_register
+      register: __sap_playbook_register_sap_id_user_password
       when: sap_id_user_password is not defined
       no_log: true
 
@@ -31,7 +31,7 @@
           sap_diag_agent_753_for_solman72_sp0_sp11 (for SAP SolMan >= 7.2 SP0 and <= 7.2 SP11)
 
           Products are defined in the 'sap_software_install_dictionary' variable.
-      register: sap_software_product_register
+      register: __sap_playbook_register_sap_software_product
       when: sap_software_product is not defined
 
     - name: Prompt for SAP installation media path
@@ -41,7 +41,7 @@
           This path will be used to download the SAP installation media files
           if they are not already present and the 'community.sap_launchpad' collection is available.
           Press enter to skip and use the default value ('/software').
-      register: sap_install_media_detect_source_directory_register
+      register: __sap_playbook_register_sap_install_media_detect_source_directory
       when: sap_install_media_detect_source_directory is not defined
 
     - name: Prompt for SAP SDA System ID
@@ -49,7 +49,7 @@
         prompt: |
           Enter SAP SAP System ID.
           Example: DAA
-      register: sap_sda_system_id_register
+      register: __sap_playbook_register_sap_sda_system_id
       when: sap_sda_system_id is not defined
 
     - name: Prompt for SAP SDA System Instance Number
@@ -57,14 +57,14 @@
         prompt: |
           Enter SAP SAP System Instance Number.
           Example: 98
-      register: sap_sda_instance_nr_register
+      register: __sap_playbook_register_sap_sda_instance_nr
       when: sap_sda_instance_nr is not defined
 
     - name: Prompt for sidadm user password
       ansible.builtin.pause:
         prompt: |
           Enter the password for the sidadm user.
-      register: sap_sda_adm_password_register
+      register: __sap_playbook_register_sap_sda_adm_password
       when: sap_sda_adm_password is not defined
       no_log: true
 
@@ -73,7 +73,7 @@
         prompt: |
           Enter Virtual Host Name (short) of the target SAP System.
           Example: s4h01
-      register: sap_sda_virtual_hostname_register
+      register: __sap_playbook_register_sap_sda_virtual_hostname
       when: sap_sda_virtual_hostname is not defined
 
 
@@ -83,17 +83,17 @@
 
     - name: Set facts for all hosts
       ansible.builtin.set_fact:
-        sap_id_user: "{{ sap_id_user | d(sap_id_user_register.user_input) }}"
-        sap_id_user_password: "{{ sap_id_user_password | d(sap_id_user_password_register.user_input) }}"
-        sap_software_product: "{{ sap_software_product | d(sap_software_product_register.user_input) }}"
+        sap_id_user: "{{ sap_id_user | d(__sap_playbook_register_sap_id_user.user_input) }}"
+        sap_id_user_password: "{{ sap_id_user_password | d(__sap_playbook_register_sap_id_user_password.user_input) }}"
+        sap_software_product: "{{ sap_software_product | d(__sap_playbook_register_sap_software_product.user_input) }}"
         sap_install_media_detect_directory: "{{ sap_install_media_detect_source_directory |
           d(sap_install_media_detect_source_directory.user_input
           if sap_install_media_detect_source_directory.user_input | length > 0
           else '/software') }}"
-        sap_sda_system_id: "{{ sap_sda_system_id | d(sap_sda_system_id_register.user_input) }}"
-        sap_sda_instance_nr: "{{ sap_sda_instance_nr | d(sap_sda_instance_nr_register.user_input) }}"
-        sap_sda_adm_password: "{{ sap_sda_adm_password | d(sap_sda_adm_password_register.user_input) }}"
-        sap_system_virtual_hostname: "{{ sap_sda_virtual_hostname | d(sap_sda_virtual_hostname_register.user_input) }}"
+        sap_sda_system_id: "{{ sap_sda_system_id | d(__sap_playbook_register_sap_sda_system_id.user_input) }}"
+        sap_sda_instance_nr: "{{ sap_sda_instance_nr | d(__sap_playbook_register_sap_sda_instance_nr.user_input) }}"
+        sap_sda_adm_password: "{{ sap_sda_adm_password | d(__sap_playbook_register_sap_sda_adm_password.user_input) }}"
+        sap_system_virtual_hostname: "{{ sap_sda_virtual_hostname | d(__sap_playbook_register_sap_sda_virtual_hostname.user_input) }}"
 
     # SAP software download will only occur if the 'community.sap_launchpad' collection is installed.
     # Playbook will continue without the collection, assuming SAP software is already available.
@@ -102,7 +102,8 @@
       become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
-      register: sap_playbook_collection_list_output
+      register: __sap_playbook_register_collection_list_output
+      changed_when: false
 
     - name: Execute Ansible Role sap_software_download
       ansible.builtin.include_role:
@@ -113,9 +114,9 @@
         sap_software_download_directory: "{{ sap_install_media_detect_directory }}"
         sap_software_download_deduplicate: first
         sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
-          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
+          ['softwarecenter_search_list_' ~ ansible_facts['architecture']] }}"
       when:
-        - sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+        - __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
 
 
     - name: Execute Ansible Role sap_install_media_detect

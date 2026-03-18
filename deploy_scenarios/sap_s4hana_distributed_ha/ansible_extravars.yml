@@ -110,7 +110,7 @@ sap_swpm_aas_instance_nr: "{{ sap_system_nwas_abap_aas_instance_nr }}"
 sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
 sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary[sap_software_product] }}"  # Distributed
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_fqdn: "{{ ansible_facts['domain'] }}"
 
 #### SAP SWPM Installation - Optional variables ####
 ## Unix User ID
@@ -137,8 +137,10 @@ sap_swpm_aas_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_aas
 
 ## Infrastructure Platform - High Availability Virtual IPs (VIPs)
 # AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
-# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
-# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service
+#                       for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined
+#                       by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
 # IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
 # MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
 # IBM PowerVM:          the VIP must be within the VLAN Subnet range
@@ -167,9 +169,9 @@ sap_ha_install_hana_hsr_db_system_password: "{{ sap_hana_install_master_password
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####

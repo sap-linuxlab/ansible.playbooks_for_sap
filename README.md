@@ -98,7 +98,7 @@ Managed Nodes (existing hosts):
 - The firewall on the managed node must allow incoming SSH communication (typically TCP port 22) from the Ansible Control Node.
 - The `/root/.ssh/authorized_keys` file must be correctly configured to allow SSH access from the Ansible Control Node.
    - The public SSH key from the Ansible Control Node must be added to the `/root/.ssh/authorized_keys` file on the managed node.
-- The `/etc/hosts` file must contain host's fully qualified domain hostname to determine `ansible_domain`, or set through `sap_domain` variable.
+- The `/etc/hosts` file must contain host's fully qualified domain hostname to determine `ansible_facts['domain']`, or set through `sap_domain` variable.
 - The `/etc/hosts` file must contain Virtual IP address for High Availability scenarios for SWPM execution (`sap_swpm` role).
 
 

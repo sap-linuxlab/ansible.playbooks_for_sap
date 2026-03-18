@@ -36,9 +36,9 @@ sap_swpm_pas_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -596,7 +596,8 @@ sap_software_install_dictionary:
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
 
         # SAP Maintenance Planner, ensure SAP SWPM sapinst property is not used otherwise SAP NWAS AAS will not install
-        # When passing the SAP Maintenance Planner Stack XML file to SAP SWPM sapinst, the Product Catalog ID suffix .PD is rejected by SAP SWPM 2.0 with "no component with this ID was found in product catalog"
+        # When passing the SAP Maintenance Planner Stack XML file to SAP SWPM sapinst,
+        # the Product Catalog ID suffix .PD is rejected by SAP SWPM 2.0 with "no component with this ID was found in product catalog"
         # sap_swpm_mp_stack_path: ''
 
       software_files_wildcard_list:

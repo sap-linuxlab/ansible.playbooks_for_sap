@@ -49,9 +49,11 @@
 
         - name: Create dynamic inventory group for Ansible Role sap_vm_provision
           ansible.builtin.add_host:
-            name: "{{ item }}"
+            name: "{{ host_item }}"
             group: sap_vm_provision_target_inventory_group
           loop: "{{ lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan].keys() }}"
+          loop_control:
+            loop_var: host_item
 
 
 # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
@@ -77,7 +79,7 @@
   tasks:
 
     # Use inventory_hostname_short to retrieve host specification from the dictionary.
-    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
+    # While ansible_facts['hostname'] will work for Ansible only, using Ansible>Terraform may see ansible_facts['hostname'] as 'localhost' and fail
     - name: Execute Ansible Role sap_storage_setup
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
@@ -105,7 +107,8 @@
       become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
-      register: sap_playbook_collection_list_output
+      register: __sap_playbook_register_collection_list_output
+      changed_when: false
 
     - name: Execute Ansible Role sap_software_download
       ansible.builtin.include_role:
@@ -116,10 +119,10 @@
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
         sap_software_download_files: "{{ softwarecenter_search_list_x86_64[sap_playbook_webdispatcher_version]
-          if ansible_architecture == 'x86_64'
+          if ansible_facts['architecture'] == 'x86_64'
           else (softwarecenter_search_list_ppc64le[sap_playbook_webdispatcher_version]
-            if ansible_architecture == 'ppc64le' else '') }}"
-      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
+            if ansible_facts['architecture'] == 'ppc64le' else '') }}"
+      when: __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
 
 
 #### Begin SAP software hosts preparation ####

@@ -96,10 +96,12 @@ sap_swpm_db_system_password: ''  # Password for the SYSTEM user in the SAP HANA 
 sap_swpm_db_systemdb_password: ''  # Password for the SYSTEM user in the SAP HANA system database (String).
 
 # System Copy restore from backup/export
-sap_swpm_ddic_000_password: "ENTER_STRING_VALUE_HERE"  # Password for the DDIC user in client 000 of the Database Schema. Password is determined by backup file (String).
-sap_swpm_db_schema_abap: "ENTER_STRING_VALUE_HERE"  # Name of the ABAP schema contained in the SAP HANA Complete Data Backup files. Determined by backup file (String).
-sap_swpm_db_schema_abap_password: "ENTER_STRING_VALUE_HERE"  # Password for the ABAP schema user in the backup file. Password is determined by backup file (String).
-sap_swpm_backup_system_password: "ENTER_STRING_VALUE_HERE"  #  Password of user 'SYSTEM' inside the SAP HANA Tenant Database Schema. Password is determined by backup file (String).
+# Passwords are determined by backup file:
+sap_swpm_ddic_000_password: "ENTER_STRING_VALUE_HERE"  # Password for the DDIC user in client 000 of the Database Schema (String).
+sap_swpm_db_schema_abap_password: "ENTER_STRING_VALUE_HERE"  # Password for the ABAP schema user in the backup file (String).
+sap_swpm_backup_system_password: "ENTER_STRING_VALUE_HERE"  #  Password of user 'SYSTEM' inside the SAP HANA Tenant Database Schema (String).
+# Determined by backup file:
+sap_swpm_db_schema_abap: "ENTER_STRING_VALUE_HERE"  # Name of the ABAP schema contained in the SAP HANA Complete Data Backup files (String).
 sap_swpm_backup_location: "ENTER_STRING_VALUE_HERE"  # SAP HANA complete data backup files location (String).
 sap_swpm_backup_prefix: "ENTER_STRING_VALUE_HERE"  # SAP HANA complete data backup filename prefix (e.g. COMPLETE_DATA_BACKUP) (String).
 
@@ -112,7 +114,7 @@ sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] }}"
 sap_swpm_db_sid: "{{ sap_system_hana_db_sid }}"
 sap_swpm_db_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_fqdn: "{{ ansible_facts['domain'] }}"
 
 #### SAP SWPM Installation - Optional variables ####
 ## Unix User ID
@@ -124,9 +126,9 @@ sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during 
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####

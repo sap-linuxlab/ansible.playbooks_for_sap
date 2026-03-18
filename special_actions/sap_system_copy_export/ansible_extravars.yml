@@ -21,7 +21,8 @@ sap_swpm_ansible_role_mode: advanced_templates
 # Templates and default values
 sap_swpm_templates_install_dictionary:
 
-  # SAP Business Suite 7i 2016 > EHP8 for SAP ERP 6.0 ABAP > IBM Db2 for Linux, UNIX, and Windows > System Copy > Source System > Based on AS ABAP > Database Instance Export
+  # SAP Business Suite 7i 2016 > EHP8 for SAP ERP 6.0 ABAP > IBM Db2 for Linux, UNIX, and Windows
+  # > System Copy > Source System > Based on AS ABAP > Database Instance Export
   sap_ecc6_ehp8_anydb_ibmdb2_distributed_syscopy_export:
 
     sap_swpm_product_catalog_id: NW_Export:BS2016.ERP608.DB6.CP
