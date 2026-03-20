@@ -345,6 +345,9 @@
       loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_hana_install_media_files.files | map(attribute='path') | list }}"
       loop_control:
         loop_var: file_item
+      # In some operating systems (e.g. SLES 16), the particular combination of RSYNC version and SSH configuration can cause issues.
+      # 'throttle: 1' prevents a 'Network is unreachable' errors during parallel execution.
+      throttle: 1
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
@@ -372,6 +375,9 @@
       loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
       loop_control:
         loop_var: file_item
+      # In some operating systems (e.g. SLES 16), the particular combination of RSYNC version and SSH configuration can cause issues.
+      # 'throttle: 1' prevents a 'Network is unreachable' errors during parallel execution.
+      throttle: 1
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
