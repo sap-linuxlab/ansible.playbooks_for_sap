@@ -345,6 +345,9 @@
       loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_hana_install_media_files.files | map(attribute='path') | list }}"
       loop_control:
         loop_var: file_item
+      # In some operating systems (e.g. SLES 16), the particular combination of RSYNC version and SSH configuration can cause issues.
+      # 'throttle: 1' prevents a 'Network is unreachable' errors during parallel execution.
+      throttle: 1
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
@@ -372,6 +375,9 @@
       loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
       loop_control:
         loop_var: file_item
+      # In some operating systems (e.g. SLES 16), the particular combination of RSYNC version and SSH configuration can cause issues.
+      # 'throttle: 1' prevents a 'Network is unreachable' errors during parallel execution.
+      throttle: 1
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
@@ -526,6 +532,9 @@
         sap_ha_pacemaker_cluster_hana_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 
         sap_ha_pacemaker_cluster_cluster_nodes: "{{ sap_hana_cluster_nodes }}"
+
+        # Ensures that conflicting packages are uninstalled before using SAP HANA Angi.
+        sap_ha_pacemaker_cluster_saphanasr_angi_force: true
 
 
 - name: Ansible Play for SAP NetWeaver Application Server installation - ABAP Central Services (ASCS) for HA

@@ -142,8 +142,8 @@ sap_software_install_dictionary:
       # EXP3, EXP4 (SAP:SOLMAN:SR27.2:DVD_EXPORT(2/2):SAP SOLUTION MANAGER 7.2 SR2 Installation Export DVD 2/2:Dxxxxxxxx_2)
       - '51054655_2'
       # - '51054655_3' # SAP Solution Manager 7.2 SR2 Language, ZIP. (SAP:SAP:SAP:MM:SAP:Dxxxxxxxx_3)
-      - 'IMDB_SERVER20_085_0-80002031.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
-      - 'IMDB_CLIENT20_024_24-80002082.SAR' # SAP HANA CLIENT Version 2.24
+      - 'IMDB_SERVER20_089_1-80002031.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002082.SAR'  # SAP HANA CLIENT Version 2.28
       - 'SAPEXE_500-80007612.SAR'  # Kernel Part I (754)
       - 'SAPEXEDB_500-80007611.SAR'  # Kernel Part II (754)
       # JAVA specific
@@ -170,8 +170,8 @@ sap_software_install_dictionary:
       # EXP3, EXP4 (SAP:SOLMAN:SR27.2:DVD_EXPORT(2/2):SAP SOLUTION MANAGER 7.2 SR2 Installation Export DVD 2/2:Dxxxxxxxx_2)
       - '51054655_2'
       # - '51054655_3' # SAP Solution Manager 7.2 SR2 Language, ZIP. (SAP:SAP:SAP:MM:SAP:Dxxxxxxxx_3)
-      - 'IMDB_SERVER20_085_0-80002046.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
-      - 'IMDB_CLIENT20_024_24-80002095.SAR'  # SAP HANA CLIENT Version 2.24
+      - 'IMDB_SERVER20_089_1-80002046.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002095.SAR'  # SAP HANA CLIENT Version 2.28
       - 'SAPEXE_500-80007669.SAR' # Kernel Part I (754)
       - 'SAPEXEDB_500-80007668.SAR' # Kernel Part II (754), SAP HANA
       # JAVA specific

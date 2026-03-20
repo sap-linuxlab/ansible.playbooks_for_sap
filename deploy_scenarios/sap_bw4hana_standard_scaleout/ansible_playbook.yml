@@ -349,6 +349,9 @@
       loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_hana_install_media_files.files | map(attribute='path') | list }}"
       loop_control:
         loop_var: file_item
+      # In some operating systems (e.g. SLES 16), the particular combination of RSYNC version and SSH configuration can cause issues.
+      # 'throttle: 1' prevents a 'Network is unreachable' errors during parallel execution.
+      throttle: 1
       vars:
         software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
         software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
@@ -475,7 +478,7 @@
     # For further details, see documentation 'SAP HANA Administration Guide for SAP HANA Platform - Add Hosts Using the Command-Line Interface'
     ## role - worker, standby etc.
     ## workergroup - Worker Group
-    ## group - High-Availability Group (failover gooup)
+    ## group - High-Availability Group (failover group)
     # NOTE: hdblcm addhosts parameter will alter nameserver.ini '[landscape]' section
     # NOTE: if incorrect workergroup and failover group are defined, will result in error shown:
     # SAP Note 3043860 - Recovery fails due to incorrect worker group assignment
@@ -503,11 +506,11 @@
         loop_var: host_item
       changed_when: false
 
-    # Install SAP HANA from designated coordinator node
+    # Restriction to 'hana_primary' was removed,
+    # because 'sap_hana_install' now requires all nodes in Scale-Out in order to correctly apply all pre and post tasks.
     - name: Execute Ansible Role sap_hana_install
       ansible.builtin.include_role:
         name: community.sap_install.sap_hana_install
-      when: inventory_hostname_short == (groups['hana_primary'] | first)
 
 
 - name: Ansible Play for SAP NetWeaver Application Server installation - ABAP Central Services (ASCS), Database Load, Primary Application Server (PAS)
