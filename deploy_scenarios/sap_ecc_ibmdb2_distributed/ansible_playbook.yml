@@ -270,8 +270,9 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
-        sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
-          ['softwarecenter_search_list_' ~ ansible_facts['architecture']] }}"
+        sap_software_download_files: "{{ (
+          sap_software_install_dictionary[sap_software_product]['sap_software_list_' ~ ansible_facts['architecture']] | d([]) +
+          sap_software_install_dictionary[sap_software_product]['sap_software_list_independent'] | d([])) | unique }}"
       when: __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
 
 
@@ -279,7 +280,7 @@
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_ascs']['software_files_wildcard_list'] }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_ascs']['sap_software_files_wildcard_list'] }}"
         recurse: true
       register: __sap_playbook_register_sap_nwas_ascs_install_media_files
 
@@ -287,7 +288,7 @@
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_aas']['software_files_wildcard_list'] }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_aas']['sap_software_files_wildcard_list'] }}"
         recurse: true
       register: __sap_playbook_register_sap_nwas_aas_install_media_files
 

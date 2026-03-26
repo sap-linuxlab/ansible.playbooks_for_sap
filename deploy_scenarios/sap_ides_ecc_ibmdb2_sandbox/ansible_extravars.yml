@@ -29,7 +29,7 @@ sap_software_product: "ENTER_STRING_VALUE_HERE"
 ## Required for download using community.sap_launchpad
 # SAP ONE Support Launchpad credentials
 sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+sap_id_user_password: ''  # Your SAP S-user password (String).
 
 # Directory with SAP installation media (e.g. /software) (String)
 sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
@@ -93,34 +93,20 @@ sap_software_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2016.ERP608.DB6.PD
 
     # List of INI file sections to generate using sap_install.sap_swpm role (List).
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1_exportfiles
-      - swpm_installation_media_swpm1_ibmdb2
-      - credentials
-      - credentials_anydb_ibmdb2
-      - db_config_anydb_all
-      - db_config_anydb_ibmdb2
-      - db_connection_nw_anydb_ibmdb2
-      - nw_config_anydb
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
+    # This list assigned from dictionary below, because it is same with other products or host types.
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
-      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
-      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - 'SWPM10SP43_2-20009701.SAR'
-      - 'igsexe_13-80003187.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
+    # List of product specific software files that are architecture independent.
+    # Independent files are not used, because it is not available for IBM Power Little Endian (ppc64le).
+    sap_software_list_independent: []
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Database Server
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
       - '73554900102000002424' # IBM DB2 LUW 11.5 SAP OEM license (Note 816773), ZIP
       - '51056774' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 Client, ZIP
+      # Application Server
       - '51053216_1' # IDES SAP ERP 6.0 EHP8 - INSTALL. EXP. (1/2) 1/22
       - '51053216_2'
       - '51053216_3'
@@ -143,9 +129,18 @@ sap_software_install_dictionary:
       - '51053216_20'
       - '51053216_21'
       - '51053216_22'
+      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
+      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'igshelper_17-10010245.sar'
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM10SP43_2-20009701.SAR'
 
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
     # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
-    softwarecenter_search_list_ppc64le:
+    sap_software_list_ppc64le:
       - 'SAPCAR_1300-70007726.EXE'
 
 
@@ -153,37 +148,21 @@ sap_software_install_dictionary:
   # > Installation > Application Server ABAP > Standard System
   # uses SAP NetWeaver 7.5
   sap_ides_ecc6_ehp7_ibmdb2_onehost:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2013SR2.ERP607SR2.DB6.PD
 
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1_exportfiles
-      - swpm_installation_media_swpm1_ibmdb2
-      - credentials
-      - credentials_anydb_ibmdb2
-      - db_config_anydb_all
-      - db_config_anydb_ibmdb2
-      - db_connection_nw_anydb_ibmdb2
-      - nw_config_anydb
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
-      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
-      - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
-      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - 'SWPM10SP43_2-20009701.SAR'
-      - 'igsexe_13-80003187.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
+    # Independent files are not used, because it is not available for IBM Power Little Endian (ppc64le).
+    sap_software_list_independent: []
+
+    sap_software_list_x86_64:
+      # Database Server
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
       - '73554900102000002424' # IBM DB2 LUW 11.5 SAP OEM license (Note 816773), ZIP
       - '51056774' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 Client, ZIP
+      # Application Server
       - '51052818_1' # IDES SAP ERP 6.0 EHP7 Installation Export 1/18
       - '51052818_2'
       - '51052818_3'
@@ -202,7 +181,38 @@ sap_software_install_dictionary:
       - '51052818_16'
       - '51052818_17'
       - '51052818_18'
+      - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
+      - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
+      - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'igshelper_17-10010245.sar'
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM10SP43_2-20009701.SAR'
 
     # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
-    softwarecenter_search_list_ppc64le:
+    sap_software_list_ppc64le:
       - 'SAPCAR_1300-70007726.EXE'
+
+
+### Reusable dictionaries for SAP Playbooks ###
+
+# Dictionary of lists for 'sap_swpm_inifile_sections' used across various products in 'sap_swpm' role.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_swpm_inifile_sections:
+  sandbox:
+    - swpm_installation_media
+    - swpm_installation_media_swpm1_exportfiles
+    - swpm_installation_media_swpm1_ibmdb2
+    - credentials
+    - credentials_anydb_ibmdb2
+    - db_config_anydb_all
+    - db_config_anydb_ibmdb2
+    - db_connection_nw_anydb_ibmdb2
+    - nw_config_anydb
+    - nw_config_other
+    - nw_config_central_services_abap
+    - nw_config_primary_application_server_instance
+    - nw_config_ports
+    - nw_config_host_agent
+    - sap_os_linux_user
