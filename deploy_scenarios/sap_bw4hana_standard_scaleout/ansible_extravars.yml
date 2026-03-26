@@ -147,6 +147,7 @@ sap_software_install_dictionary:
     # This list assigned from dictionary below, because it is same with other products or host types.
     sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['pas'] }}"
 
+    # List of product specific software files that are architecture independent.
     sap_software_list_independent:
       # Application Media
       - 'BW4HANA400_INST_EXPORT_1.zip'
@@ -162,6 +163,7 @@ sap_software_install_dictionary:
       # Application Server
       - 'igshelper_17-10010245.sar'
 
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
     sap_software_list_x86_64:
       # Database Server - SPS07 is used because NFS for /lss/shared is not enforced like in SPS08.
       - 'IMDB_SERVER20_079_8-80002031.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
@@ -177,6 +179,7 @@ sap_software_install_dictionary:
       - 'SAPCAR_1300-70007716.EXE'
       - 'SWPM20SP20_1-80003424.SAR'
 
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
     sap_software_list_ppc64le:
       # Database Server
       - 'IMDB_SERVER20_079_8-80002046.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
@@ -187,7 +190,7 @@ sap_software_install_dictionary:
       - 'SAPEXE_51-70007832.SAR' # Kernel Part I (785)
       - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (785), SAP HANA 2.0
       - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
-      - 'igsexe_6-70005446.sar'  # Support Package SAP IGS 7.81 Linux on x86_64 64bit
+      - 'igsexe_6-70005446.sar'  # Support Package SAP IGS 7.81 Linux on Power LE 64bit
       # Tools
       - 'SAPCAR_1300-70007726.EXE'
       - 'SWPM20SP20_1-80003426.SAR'
@@ -197,11 +200,10 @@ sap_software_install_dictionary:
 
 
   sap_bw4hana_2021_standard:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BW4HANA2021.CORE.HDB.ABAP
 
-    # List of INI file sections to generate using sap_install.sap_swpm role (List).
-    # This list assigned from dictionary below, because it is same with other products or host types.
     sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['pas'] }}"
 
     sap_software_list_independent:
@@ -248,7 +250,6 @@ sap_software_install_dictionary:
       - 'SAPCAR_1300-70007726.EXE'
       - 'SWPM20SP20_1-80003426.SAR'
 
-    # This list assigned from dictionary below, because it is same with other products or host types.
     sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
 
 

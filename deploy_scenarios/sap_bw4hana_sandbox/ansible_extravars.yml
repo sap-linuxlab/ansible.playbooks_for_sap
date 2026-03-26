@@ -133,6 +133,7 @@ sap_software_install_dictionary:
     # This list assigned from dictionary below, because it is same with other products or host types.
     sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
+    # List of product specific software files that are architecture independent.
     sap_software_list_independent:
       # Application Media
       - 'BW4HANA400_INST_EXPORT_1.zip'
@@ -148,6 +149,7 @@ sap_software_install_dictionary:
       # Application Server
       - 'igshelper_17-10010245.sar'
 
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
     sap_software_list_x86_64:
       # Database Server
       - 'IMDB_SERVER20_079_8-80002031.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
@@ -163,6 +165,7 @@ sap_software_install_dictionary:
       - 'SAPCAR_1300-70007716.EXE'
       - 'SWPM20SP20_1-80003424.SAR'
 
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
     sap_software_list_ppc64le:
       # Database Server
       - 'IMDB_SERVER20_079_8-80002046.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
@@ -180,11 +183,10 @@ sap_software_install_dictionary:
 
 
   sap_bw4hana_2021_sandbox:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BW4HANA2021.CORE.HDB.ABAP
 
-    # List of INI file sections to generate using sap_install.sap_swpm role (List).
-    # This list assigned from dictionary below, because it is same with other products or host types.
     sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
     sap_software_list_independent:
