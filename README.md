@@ -48,10 +48,10 @@ The reliability issues with the Ansible Collection for Microsoft Azure are due t
 | --- | --- | --- | --- |
 | SAP HANA | 2.0 SPS 08<br> 2.0 SPS 07<br> 2.0 SPS 06 | Sandbox<br> Scale-Out <br> Scale-Up High Availability | SAP HANA |
 | SAP BW/4HANA | 2023<br> 2021 | Sandbox<br> Scale-Out | SAP HANA |
-| SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | Sandbox<br> Sandbox (System Copy restore)<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
+| SAP S/4HANA | 2025<br> 2023<br> 2022<br> 2021<br> 2020 | Sandbox<br> Sandbox (System Copy restore)<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
 | SAP S/4HANA<br> Maintenance Plan | Any version - Defined by Maintenance Plan</br> Includes latest FPS and security patches | Sandbox<br> Standard<br> Distributed<br> Distributed with High Availability | SAP HANA |
-| SAP S/4HANA Foundation | 2023<br> 2022<br> 2021 | Sandbox<br> Standard | SAP HANA |
-| SAP Landscape for SAP S/4HANA | 2023<br> 2022<br> 2021<br> 2020 | 3-System Standard | SAP HANA |
+| SAP S/4HANA Foundation | 2025<br> 2023<br> 2022<br> 2021 | Sandbox<br> Standard | SAP HANA |
+| SAP Landscape for SAP S/4HANA | 2025<br> 2023<br> 2022<br> 2021<br> 2020 | 3-System Standard | SAP HANA |
 | SAP Landscape for SAP S/4HANA<br> Maintenance Plan | Any version - Defined by Maintenance Plan</br> Includes latest FPS and security patches | 3-System Standard | SAP HANA |
 | SAP Business Suite (ECC) | EHP 8<br> EHP 7 | Sandbox | SAP HANA |
 | SAP Business Suite (ECC) | EHP 8 | Sandbox<br> Distributed (IBM Db2) | IBM Db2<br> Oracle DB<br> SAP ASE<br> SAP MaxDB |
