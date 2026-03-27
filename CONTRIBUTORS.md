@@ -24,7 +24,7 @@ For specific role maintainers, see the `README.md` file in the corresponding rol
 | Name | Commits | Lines Changed | Last Commit |
 | ---- | ------- | ------------- | ----------- |
 | [Sean Freeman](https://github.com/sean-freeman) | 144 | 241528 | 2025-06-20 |
-| [Marcel Mamula](https://github.com/marcelmamula) | 96 | 156108 | 2026-02-25 |
+| [Marcel Mamula](https://github.com/marcelmamula) | 109 | 179364 | 2026-03-26 |
 | Edmund Häfele | 1 | 7 | 2026-01-13 |
 | [Gabriele Puliti](https://github.com/Wabri) | 1 | 68 | 2024-06-12 |
 | [Janine Fuchs](https://github.com/ja9fuchs) | 1 | 4 | 2024-04-15 |
