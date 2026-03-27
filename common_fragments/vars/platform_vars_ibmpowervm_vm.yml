@@ -16,7 +16,7 @@ sap_vm_provision_iac_platform: "ibmpowervm_vm"  # Name of the provisioning platf
 # IBM Power Virtualization Center authentication endpoint (String). e.g https://POWERVC_HOST:5000/v3/
 sap_vm_provision_ibmpowervm_vc_auth_endpoint: "ENTER_STRING_VALUE_HERE"
 sap_vm_provision_ibmpowervm_vc_user: "ENTER_STRING_VALUE_HERE"  # Virtualization Center user (String).
-sap_vm_provision_ibmpowervm_vc_user_password: "ENTER_STRING_VALUE_HERE"  # Virtualization Center user password (String).
+sap_vm_provision_ibmpowervm_vc_user_password: ''  # Virtualization Center user password (String).
 sap_vm_provision_ibmpowervm_vc_project_name: "ENTER_STRING_VALUE_HERE"  # Virtualization Center Project Name (String).
 sap_vm_provision_ibmpowervm_host_group_name: "ENTER_STRING_VALUE_HERE"  # Host group name (String).
 sap_vm_provision_ibmpowervm_host_group_shared_procesor_pool_name: "ENTER_STRING_VALUE_HERE"  # Host group shared pool name (String). e.g. DefaultPool

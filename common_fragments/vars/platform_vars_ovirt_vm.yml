@@ -16,7 +16,7 @@ sap_vm_provision_ovirt_engine_insecure_bool: true  # Enables insecure authentica
 sap_vm_provision_ovirt_engine_url: "ENTER_STRING_VALUE_HERE"  # URL (String).
 sap_vm_provision_ovirt_engine_fqdn: "ENTER_STRING_VALUE_HERE"  # FQDN (String).
 sap_vm_provision_ovirt_engine_user: "ENTER_STRING_VALUE_HERE"  # User name (String).
-sap_vm_provision_ovirt_engine_password: "ENTER_STRING_VALUE_HERE"  # User password (String).
+sap_vm_provision_ovirt_engine_password: ''  # User password (String). Defaults to OVIRT_PASSWORD environment variable if not set.
 sap_vm_provision_ovirt_engine_cafile: "ENTER_STRING_VALUE_HERE"  # CA file path (String).
 
 sap_vm_provision_ovirt_hypervisor_cluster_name: "ENTER_STRING_VALUE_HERE"  # Hypervisor cluster name (String).

@@ -118,9 +118,9 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
-        sap_software_download_files: "{{ softwarecenter_search_list_x86_64[sap_playbook_webdispatcher_version]
+        sap_software_download_files: "{{ sap_software_dict_x86_64[sap_playbook_webdispatcher_version]
           if ansible_facts['architecture'] == 'x86_64'
-          else (softwarecenter_search_list_ppc64le[sap_playbook_webdispatcher_version]
+          else (sap_software_dict_ppc64le[sap_playbook_webdispatcher_version]
             if ansible_facts['architecture'] == 'ppc64le' else '') }}"
       when: __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
 

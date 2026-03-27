@@ -30,7 +30,7 @@ sap_software_product: "ENTER_STRING_VALUE_HERE"
 ## Required for download using community.sap_launchpad
 # SAP ONE Support Launchpad credentials
 sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+sap_id_user_password: ''  # Your SAP S-user password (String).
 
 # Directory with SAP installation media (e.g. /software) (String)
 sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
@@ -131,104 +131,113 @@ sap_software_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:NW752.HDB.PD
 
     # List of INI file sections to generate using sap_install.sap_swpm role (List).
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1
-      - swpm_installation_media_swpm1_exportfiles
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
+    # This list assigned from dictionary below, because it is same with other products or host types.
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
+    # List of product specific software files that are architecture independent.
+    sap_software_list_independent:
+      # Application Media
+      - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
+      - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
+      # Application Server
+      - 'igshelper_17-10010245.sar'
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Database Server
       - 'IMDB_SERVER20_089_1-80002031.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
       - 'IMDB_CLIENT20_028_17-80002082.SAR'  # SAP HANA CLIENT Version 2.28
-      # - 'VCH202300_2085_0-70007416.SAR'  # Not mandatory
-      - 'SWPM10SP43_3-20009701.SAR'
-      - 'igsexe_5-80007786.sar' # IGS 7.54
-      - 'igshelper_17-10010245.sar'
+      # Application Server
       - 'SAPEXE_500-80007612.SAR'  # Kernel Part I (754)
       - 'SAPEXEDB_500-80007611.SAR'  # Kernel Part II (754)
       - 'SAPHOSTAGENT67_67-80004822.SAR'  # SAP HOST AGENT 7.22 SP67
-      - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
-      - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
+      - 'igsexe_5-80007786.sar' # IGS 7.54
+      # - 'VCH202300_2085_0-70007416.SAR'  # Not mandatory
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM10SP43_3-20009701.SAR'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    sap_software_list_ppc64le:
+      # Database Server
       - 'IMDB_SERVER20_089_1-80002046.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
       - 'IMDB_CLIENT20_028_17-80002095.SAR'  # SAP HANA CLIENT Version 2.28
-      # - 'VCH202300_2085_0-70007417.SAR'  # Not mandatory
-      - 'SWPM10SP43_3-70002492.SAR'
-      - 'igsexe_5-80007795.sar' # IGS 7.54
-      - 'igshelper_17-10010245.sar'
+      # Application Server
       - 'SAPEXE_500-80007669.SAR' # Kernel Part I (754)
       - 'SAPEXEDB_500-80007668.SAR' # Kernel Part II (754), SAP HANA
       - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP HOST AGENT 7.22 SP67
-      - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
-      - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
+      - 'igsexe_5-80007795.sar' # IGS 7.54
+      # - 'VCH202300_2085_0-70007417.SAR'  # Not mandatory
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'SWPM10SP43_3-70002492.SAR'
 
 
   # SAP NetWeaver 7.5 > SAP HANA > Installation > Application Server ABAP > Standard System
   sap_nwas_750_sp00_abap_hana_sandbox:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:NW750.HDB.ABAP
 
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1
-      - swpm_installation_media_swpm1_exportfiles
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
-      - 'IMDB_SERVER20_067_4-80002031.SAR'
-    #  - 'VCH202000_2059_0-80005463.SAR'
-      - 'SWPM10SP43_2-20009701.SAR'
-      - 'igsexe_13-80003187.sar' # IGS 7.53
+    sap_software_list_independent:
+      # Application Media
+      - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
+    #  - '51050829_4' # NW 7.5 Language 1/2
+    #  - '51050829_5' # NW 7.5 Language 2/2
+    #  - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
+    #  - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
+    #  - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
+    #  - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2
+      # Application Server
       - 'igshelper_17-10010245.sar'
+
+    sap_software_list_x86_64:
+      # Database Server
+      - 'IMDB_SERVER20_067_4-80002031.SAR'
+      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
+      # Application Server
       - 'SAPEXE_800-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002572.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
-    #  - '51050829_4' # NW 7.5 Language 1/2
-    #  - '51050829_5' # NW 7.5 Language 2/2
-    #  - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
-    #  - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
-    #  - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
-    #  - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+    #  - 'VCH202000_2059_0-80005463.SAR'
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM10SP43_2-20009701.SAR'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    sap_software_list_ppc64le:
+      # Database Server
       - 'IMDB_SERVER20_067_4-80002046.SAR'
-    #  - 'VCH202000_2059_0-80005464.SAR'
-      - 'SWPM10SP43_2-70002492.SAR'
-      - 'igsexe_13-80003246.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
+      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
+      # Application Server
       - 'SAPEXE_800-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_800-80002629.SAR' # Kernel Part II (753)
-      - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
       - 'SAPHOSTAGENT51_51-70002261.SAR' # SAP Host Agent 7.21
-      - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
-    #  - '51050829_4' # NW 7.5 Language 1/2
-    #  - '51050829_5' # NW 7.5 Language 2/2
-    #  - '51050829_6' # NW 7.5 Upgrade Export Part I 1/2
-    #  - '51050829_7' # NW 7.5 Upgrade Export Part I 2/2
-    #  - '51050829_8' # NW 7.5 Upgrade Export Part II 1/2
-    #  - '51050829_9' # NW 7.5 Upgrade Export Part II 2/2
+      - 'igsexe_13-80003246.sar' # IGS 7.53
+    #  - 'VCH202000_2059_0-80005464.SAR'
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'SWPM10SP43_2-70002492.SAR'
+
+
+### Reusable dictionaries for SAP Playbooks ###
+
+# Dictionary of lists for 'sap_swpm_inifile_sections' used across various products in 'sap_swpm' role.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_swpm_inifile_sections:
+  sandbox:
+    - swpm_installation_media
+    - swpm_installation_media_swpm1
+    - swpm_installation_media_swpm1_exportfiles
+    - credentials
+    - credentials_hana
+    - db_config_hana
+    - db_connection_nw_hana
+    - nw_config_other
+    - nw_config_central_services_abap
+    - nw_config_primary_application_server_instance
+    - nw_config_ports
+    - nw_config_host_agent
+    - sap_os_linux_user
