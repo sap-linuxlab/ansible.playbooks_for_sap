@@ -1,10 +1,21 @@
 ---
-# Collection wide lint-file
-# DO NOT CHANGE
+## Collection wide ansible-lint configuration file.
+# Changes for ansible-lint v25.7.0+
+# - Always executed from collection root using collection configuration.
+# - .ansible-lint-ignore can be used to ignore files, not folders.
+## Execution examples:
+# ansible-lint
+# ansible-lint roles/sap_swpm
+# ansible-lint roles/sap_install_media_detect -c roles/sap_install_media_detect/.ansible-lint
+
 exclude_paths:
+  - .ansible/
   - .cache/
   - .github/
-  #- docs/
+  - changelogs/
+  - playbooks/
+  - tests/
+  - docs/
   # Ansible requirements are not recognized as valid yaml file
   - deploy_scenarios/.*/ansible_requirements\.yml$
   - common_fragments/vars/ansible_requirements.yml
@@ -15,39 +26,11 @@ enable_list:
 skip_list:
   # We don't want to enforce new Ansible versions for Galaxy:
   - meta-runtime[unsupported-version]
-
   # We do not want to use checks which are marked as experimental:
   - experimental
-
-  # # We use ignore_errors for all the assert tasks, which should be acceptable:
-  # - ignore-errors
-
-  # # We want to allow single digit version numbers in a role's meta/main.yml file:
-  # - schema
-
+  # We use ignore_errors for all the assert tasks, which should be acceptable:
+  - ignore-errors
+  # We want to allow single digit version numbers in a role's meta/main.yml file:
+  - schema
   # Allow templating inside name because it creates more detailed output:
   - name[template]
-
-  # Duplicates correct in editable file /optional/ansible_extravars_noninteractive.yml
-  - yaml[key-duplicates]
-
-  # Used for /etc/hosts edits
-  - no-tabs
-
-  # Incorrectly shows error for nested {%- endfor -%} already correct indent
-  - jinja[spacing]
-
-  # Shell commands are required
-  - no-changed-when
-  - command-instead-of-shell
-
-  # Prettify problems
-  - yaml[comments]
-  - yaml[line-length]
-  - yaml[empty-lines]
-
-  # Ignore ha_cluster vars used within sap_ha_pacemaker_cluster
-  # - var-naming[no-role-prefix]
-
-  # Ignore dynamic variable population for Scale-Out
-  - var-naming[no-jinja]

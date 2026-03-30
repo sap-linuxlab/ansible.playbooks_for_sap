@@ -21,13 +21,13 @@
         - name: Check if interactive tasks are available
           ansible.builtin.stat:
             path: ../../common_fragments/tasks/interactive/main.yml
-          register: sap_playbook_interactive_tasks_availability
+          register: __sap_playbook_register_interactive_tasks_availability
           ignore_errors: true
 
         - name: Execute collection of interactive inputs
           ansible.builtin.include_tasks:
             file: ../../common_fragments/tasks/interactive/main.yml
-          when: sap_playbook_interactive_tasks_availability.stat.exists
+          when: __sap_playbook_register_interactive_tasks_availability.stat.exists
 
 
 - name: Ansible Play to validate the variables
@@ -49,7 +49,8 @@
         that:
           - sap_vm_provision_iac_platform is defined
           - sap_vm_provision_iac_platform in
-            ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs', 'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
+            ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs',
+              'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
         fail_msg: |
           The variable 'sap_vm_provision_iac_platform' is undefined or invalid.
           Available options: aws_ec2_vs, gcp_ce_vm, msazure_vm, ibmcloud_powervs, ibmcloud_vs, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm, existing_hosts
@@ -57,10 +58,10 @@
     # Ignore registered vars and sap_swpm hostnames which could contain hostvars.
     - name: Prepare list of SAP variables for validation  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        sap_playbook_dictionary_vars:
-          "{{ dict(sap_playbook_dictionary_vars | zip(lookup('ansible.builtin.vars', *sap_playbook_dictionary_vars))) }}"
+        __sap_playbook_fact_dictionary_vars:
+          "{{ dict(__sap_playbook_fact_dictionary_vars | zip(lookup('ansible.builtin.vars', *__sap_playbook_fact_dictionary_vars))) }}"
       vars:
-        sap_playbook_dictionary_vars:
+        __sap_playbook_fact_dictionary_vars:
           "{{ lookup('ansible.builtin.varnames', '^(__)?sap_', wantlist=true)
               | reject('search', '(^(__)?sap_swpm_.*_hostname$)|(.*_register$)')
               | reject('in', ['sap_swpm_db_host'])
@@ -70,12 +71,12 @@
 
     - name: Identify variables with placeholder values or empty passwords  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        sap_playbook_placeholder_vars:
-          "{{ sap_playbook_dictionary_vars | dict2items
+        __sap_playbook_fact_placeholder_vars:
+          "{{ __sap_playbook_fact_dictionary_vars | dict2items
               | selectattr('value', 'equalto', 'ENTER_STRING_VALUE_HERE') | map(attribute='key') | list }}"
 
-        sap_playbook_empty_password_vars:
-          "{{ sap_playbook_dictionary_vars | dict2items | selectattr('key', 'search', 'password')
+        __sap_playbook_fact_empty_password_vars:
+          "{{ __sap_playbook_fact_dictionary_vars | dict2items | selectattr('key', 'search', 'password')
               | selectattr('value', 'in', [none, '']) | map(attribute='key') | list }}"
       no_log: true
       ignore_errors: true
@@ -84,21 +85,21 @@
       ansible.builtin.fail:
         msg: |
           Please address the following issues before re-running the playbook:
-          {% if sap_playbook_placeholder_vars | length > 0 %}
+          {% if __sap_playbook_fact_placeholder_vars | length > 0 %}
           - Placeholder values found for variable(s):
-            {% for item in sap_playbook_placeholder_vars %}
+            {% for item in __sap_playbook_fact_placeholder_vars %}
             {{ item }}
             {% endfor %}
 
           {% endif %}
-          {% if sap_playbook_empty_password_vars | length > 0 %}
+          {% if __sap_playbook_fact_empty_password_vars | length > 0 %}
           - Empty or invalid values found for password variable(s):
-            {% for item in sap_playbook_empty_password_vars %}
+            {% for item in __sap_playbook_fact_empty_password_vars %}
             {{ item }}
             {% endfor %}
           {% endif %}
       when:
-        - sap_playbook_placeholder_vars | d([]) | length > 0 or sap_playbook_empty_password_vars | d([]) | length > 0
+        - __sap_playbook_fact_placeholder_vars | d([]) | length > 0 or __sap_playbook_fact_empty_password_vars | d([]) | length > 0
 
 
 #### Begin Infrastructure-as-Code provisioning ####
@@ -145,9 +146,11 @@
 
         - name: Create dynamic inventory group for Ansible Role sap_vm_provision
           ansible.builtin.add_host:
-            name: "{{ item }}"
+            name: "{{ host_item }}"
             group: sap_vm_provision_target_inventory_group
           loop: "{{ lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan].keys() }}"
+          loop_control:
+            loop_var: host_item
 
 
 # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
@@ -159,14 +162,16 @@
     # Ensure that all sap_* or __sap_* variables set in Interactive Mode are appended to the target inventory Group
     - name: Assign all relevant facts from execution node before provisioning  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        "{{ item.key }}": "{{ item.value }}"
+        "{{ var_item.key }}": "{{ var_item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      loop_control:
+        loop_var: var_item
       when:
         - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
         - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
         - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
-        - vars[item.key] is undefined
+        - vars[var_item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -184,14 +189,16 @@
 
     - name: Assign all relevant facts from execution node after provisioning  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        "{{ item.key }}": "{{ item.value }}"
+        "{{ var_item.key }}": "{{ var_item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      loop_control:
+        loop_var: var_item
       when:
         - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
         - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
         - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
-        - vars[item.key] is undefined
+        - vars[var_item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -205,7 +212,7 @@
   tasks:
 
     # Use inventory_hostname_short to retrieve host specification from the dictionary.
-    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
+    # While ansible_facts['hostname'] will work for Ansible only, using Ansible>Terraform may see ansible_facts['hostname'] as 'localhost' and fail
     - name: Execute Ansible Role sap_storage_setup
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
@@ -237,7 +244,8 @@
       become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
-      register: sap_playbook_collection_list_output
+      register: __sap_playbook_register_collection_list_output
+      changed_when: false
 
     - name: Execute Ansible Role sap_software_download
       ansible.builtin.include_role:
@@ -247,10 +255,11 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
-        sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
-          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
+        sap_software_download_files: "{{ (
+          sap_software_install_dictionary[sap_software_product]['sap_software_list_' ~ ansible_facts['architecture']] | d([]) +
+          sap_software_install_dictionary[sap_software_product]['sap_software_list_independent'] | d([])) | unique }}"
         sap_software_download_mp_transaction: "{{ sap_maintenance_planner_transaction_name }}"
-      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
+      when: __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
 
 
 #### Begin SAP software hosts preparation ####

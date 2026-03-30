@@ -21,48 +21,84 @@ sap_hana_preconfigure_saptune_solution: 'HANA'  # SUSE saptune solution to apply
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
 
-  sap_hana_2_sps07_install:
+  sap_hana_2_sps08_install:
 
-    softwarecenter_search_list_x86_64:
+    # List of product specific software files that are architecture independent.
+    sap_software_list_independent: []
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Database Server
+      - 'IMDB_SERVER20_089_1-80002031.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002082.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004822.SAR'  # SAP Host Agent 7.22
+      # Tools
       - 'SAPCAR_1300-70007716.EXE'
-      - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
 
-    softwarecenter_search_list_ppc64le:
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    sap_software_list_ppc64le:
+      # Database Server
+      - 'IMDB_SERVER20_089_1-80002046.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002095.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004831.SAR'  # SAP Host Agent 7.22
+      # Tools
       - 'SAPCAR_1300-70007726.EXE'
-      - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
 
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+
+  sap_hana_2_sps07_install:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
+
+    sap_software_list_independent: []
+
+    sap_software_list_x86_64:
+      # Database Server
+      - 'IMDB_SERVER20_079_8-80002031.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002082.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004822.SAR'  # SAP Host Agent 7.22
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+
+    sap_software_list_ppc64le:
+      # Database Server
+      - 'IMDB_SERVER20_079_8-80002046.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002095.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004831.SAR'  # SAP Host Agent 7.22
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
 
 
   sap_hana_2_sps06_install:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
+    sap_software_list_independent: []
+
+    sap_software_list_x86_64:
+      # Database Server
       - 'IMDB_SERVER20_067_4-80002031.SAR'
+      # Application Server
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    sap_software_list_ppc64le:
+      # Database Server
       - 'IMDB_SERVER20_067_4-80002046.SAR'
+      # Application Server
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
 
 
 #### Interactive Prompt Control Variables ####

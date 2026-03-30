@@ -18,7 +18,7 @@ sap_vm_provision_host_specification_plan: "ENTER_STRING_VALUE_HERE"
 
 ## SAP Product selection ##
 # Name of the SAP product to install (String).
-# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_2023_standard).
+# Options: Defined in sap_software_install_dictionary (e.g. sap_s4hana_2025_standard).
 sap_software_product: "ENTER_STRING_VALUE_HERE"
 
 
@@ -26,7 +26,7 @@ sap_software_product: "ENTER_STRING_VALUE_HERE"
 ## Required for download using community.sap_launchpad
 # SAP ONE Support Launchpad credentials
 sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+sap_id_user_password: ''  # Your SAP S-user password (String).
 
 # Directory with SAP installation media (e.g. /software) (String)
 sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
@@ -96,7 +96,7 @@ sap_swpm_db_systemdb_password: ''  # Password for the SYSTEM user in the SAP HAN
 
 # Dynamic assignment of SAP SWPM variables
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_fqdn: "{{ ansible_facts['domain'] }}"
 
 #### SAP SWPM Installation - Optional variables ####
 ## Unix User ID
@@ -108,51 +108,44 @@ sap_swpm_update_etchosts: false  # Whether to update the /etc/hosts file during 
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
 
-  sap_s4hana_2023_standard:
+  sap_s4hana_2025_standard:
 
+    # List of product specific software files that are architecture independent.
+    # Independent files are not used, because download uses Maintenance Plan.
+    sap_software_list_independent: []
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
     # SAP SWPM may not be included in the Maintenance Planner stack generated, please check and if not included then append to list
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
+    sap_software_list_x86_64:
+      - 'SAPCAR_1400-70007716.EXE'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    sap_software_list_ppc64le:
+      - 'SAPCAR_1400-70007726.EXE'
 
-    software_files_hana_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+    # List of file name patterns relevant to host type.
+    # This list assigned from shared dictionary, because it is same with other products or host types.
+    sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
+
+    # This list assigned from shared dictionary, because it is same with other products or host types.
+    sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
 
     # SWPM product catalog ID for the installation (String).
-    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.CORE.HDB.ABAP
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2025.CORE.HDB.ABAP
 
     # List of INI file sections to generate using sap_install.sap_swpm role (List).
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm2_hana
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
-      - maintenance_plan_stack_tms_config
-      - maintenance_plan_stack_spam_config
-      - maintenance_plan_stack_sum_config
+    # This list assigned from dictionary below, because it is same with other products or host types.
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['standard'] }}"
 
     sap_swpm_inifile_dictionary:
-
       # SAP SWPM using SAP Maintenance Planner Stack XML
       # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
       sap_swpm_configure_tms: true
@@ -161,63 +154,60 @@ sap_software_install_dictionary:
       sap_swpm_sum_prepare: true
       sap_swpm_sum_start: true
 
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_CLIENT*'
-      - 'SWPM20*'
-      - 'igsexe_*'
-      - 'igshelper_*'
-      - 'SAPEXE_*' # Kernel Part I (785)
-      - 'SAPEXEDB_*' # Kernel Part I (785)
-      - 'SUM*'
-      - 'SAPHOSTAGENT*'
-      - 'S4CORE*'
-      - 'S4HANAOP*'
-      - 'HANAUMML*'
-      - 'K-*'
-      - 'KD*'
-      - 'KE*'
-      - 'KIT*'
-      - 'SAPPAAPL*'
-      - 'SAP_BASIS*'
+
+  sap_s4hana_2023_standard:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
+
+    # Independent files are not used, because download uses Maintenance Plan.
+    sap_software_list_independent: []
+
+    # SAP SWPM may not be included in the Maintenance Planner stack generated, please check and if not included then append to list
+    sap_software_list_x86_64:
+      - 'SAPCAR_1400-70007716.EXE'
+
+    sap_software_list_ppc64le:
+      - 'SAPCAR_1400-70007726.EXE'
+
+    sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
+
+    sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
+
+    sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2023.CORE.HDB.ABAP
+
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['standard'] }}"
+
+    sap_swpm_inifile_dictionary:
+      # SAP SWPM using SAP Maintenance Planner Stack XML
+      # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
+      sap_swpm_configure_tms: true
+      sap_swpm_tmsadm_password: ''
+      sap_swpm_spam_update: false
+      sap_swpm_sum_prepare: true
+      sap_swpm_sum_start: true
 
 
   sap_s4hana_2022_standard:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
+
+    # Independent files are not used, because download uses Maintenance Plan.
+    sap_software_list_independent: []
 
     # SAP SWPM may not be included in the Maintenance Planner stack generated, please check and if not included then append to list
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
+    sap_software_list_x86_64:
+      - 'SAPCAR_1400-70007716.EXE'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    sap_software_list_ppc64le:
+      - 'SAPCAR_1400-70007726.EXE'
 
-    software_files_hana_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+    sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
-    # Product ID for New Installation
+    sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
+
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2022.CORE.HDB.ABAP
 
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm2_hana
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
-      - maintenance_plan_stack_tms_config
-      - maintenance_plan_stack_spam_config
-      - maintenance_plan_stack_sum_config
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['standard'] }}"
 
     sap_swpm_inifile_dictionary:
-
       # SAP SWPM using SAP Maintenance Planner Stack XML
       # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
       sap_swpm_configure_tms: true
@@ -225,64 +215,30 @@ sap_software_install_dictionary:
       sap_swpm_spam_update: false
       sap_swpm_sum_prepare: true
       sap_swpm_sum_start: true
-
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_CLIENT*'
-      - 'SWPM20*'
-      - 'igsexe_*'
-      - 'igshelper_*'
-      - 'SAPEXE_*' # Kernel Part I (785)
-      - 'SAPEXEDB_*' # Kernel Part I (785)
-      - 'SUM*'
-      - 'SAPHOSTAGENT*'
-      - 'S4CORE*'
-      - 'S4HANAOP*'
-      - 'HANAUMML*'
-      - 'K-*'
-      - 'KD*'
-      - 'KE*'
-      - 'KIT*'
-      - 'SAPPAAPL*'
-      - 'SAP_BASIS*'
 
 
   sap_s4hana_2021_standard:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
+
+    # Independent files are not used, because download uses Maintenance Plan.
+    sap_software_list_independent: []
 
     # SAP SWPM may not be included in the Maintenance Planner stack generated, please check and if not included then append to list
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
+    sap_software_list_x86_64:
+      - 'SAPCAR_1400-70007716.EXE'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    sap_software_list_ppc64le:
+      - 'SAPCAR_1400-70007726.EXE'
 
-    software_files_hana_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+    sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
-    # Product ID for New Installation
+    sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
+
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:S4HANA2021.CORE.HDB.ABAP
 
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm2_hana
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
-      - maintenance_plan_stack_tms_config
-      - maintenance_plan_stack_spam_config
-      - maintenance_plan_stack_sum_config
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['standard'] }}"
 
     sap_swpm_inifile_dictionary:
-
       # SAP SWPM using SAP Maintenance Planner Stack XML
       # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
       sap_swpm_configure_tms: true
@@ -291,22 +247,53 @@ sap_software_install_dictionary:
       sap_swpm_sum_prepare: true
       sap_swpm_sum_start: true
 
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_CLIENT*'
-      - 'SWPM20*'
-      - 'igsexe_*'
-      - 'igshelper_*'
-      - 'SAPEXE_*' # Kernel Part I (785)
-      - 'SAPEXEDB_*' # Kernel Part I (785)
-      - 'SUM*'
-      - 'SAPHOSTAGENT*'
-      - 'S4CORE*'
-      - 'S4HANAOP*'
-      - 'HANAUMML*'
-      - 'K-*'
-      - 'KD*'
-      - 'KE*'
-      - 'KIT*'
-      - 'SAPPAAPL*'
-      - 'SAP_BASIS*'
+
+### Reusable dictionaries for SAP Playbooks ###
+
+# Dictionary of lists for 'sap_swpm_inifile_sections' used across various products in 'sap_swpm' role.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_swpm_inifile_sections:
+  standard:
+    - swpm_installation_media
+    - swpm_installation_media_swpm2_hana
+    - credentials
+    - credentials_hana
+    - db_config_hana
+    - db_connection_nw_hana
+    - nw_config_other
+    - nw_config_central_services_abap
+    - nw_config_primary_application_server_instance
+    - nw_config_ports
+    - nw_config_host_agent
+    - sap_os_linux_user
+    - maintenance_plan_stack_tms_config
+    - maintenance_plan_stack_spam_config
+    - maintenance_plan_stack_sum_config
+
+# Dictionary of lists for software filename wildcard patterns that is used during rsync operations.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_software_wildcards:
+  hana:
+    - 'SAPCAR*'
+    - 'IMDB_*'
+    - 'SAPHOSTAGENT*'
+
+  netweaver:
+    - 'SAPCAR*'
+    - 'IMDB_CLIENT*'
+    - 'SWPM20*'
+    - 'igsexe_*'
+    - 'igshelper_*'
+    - 'SAPEXE_*'
+    - 'SAPEXEDB_*'
+    - 'SUM*'
+    - 'SAPHOSTAGENT*'
+    - 'S4CORE*'
+    - 'S4HANAOP*'
+    - 'HANAUMML*'
+    - 'K-*'
+    - 'KD*'
+    - 'KE*'
+    - 'KIT*'
+    - 'SAPPAAPL*'
+    - 'SAP_BASIS*'

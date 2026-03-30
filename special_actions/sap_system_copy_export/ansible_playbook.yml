@@ -9,51 +9,51 @@
 
   vars_prompt:
 
-    - name: ansible_prompt_sap_swpm_sapcar_path
+    - name: __prompt_sap_swpm_sapcar_path
       prompt: Please enter the directory path to SAPCAR (excluding filename, e.g. /software)
       private: false
 
-    - name: ansible_prompt_sap_swpm_sapcar_file_name
+    - name: __prompt_sap_swpm_sapcar_file_name
       prompt: Please enter filename of SAPCAR file (e.g. SAPCAR_1115-70006178.EXE)
       private: false
 
-    - name: ansible_prompt_sap_swpm_swpm_path
+    - name: __prompt_sap_swpm_path
       prompt: Please enter the directory path to SAP SWPM SAR (excluding filename, e.g. /software/sap_swpm)
       private: false
 
-    - name: ansible_prompt_sap_swpm_swpm_sar_file_name
+    - name: __prompt_sap_swpm_sar_file_name
       prompt: Please enter filename of SAP SWPM SAR (e.g. SWPM10SP39_1-20009701.SAR)
       private: false
 
-    - name: ansible_prompt_sap_export_directory
+    - name: __prompt_sap_export_directory
       prompt: Please enter the directory path for the EXPORT files (e.g. /software/sap_export)
       private: false
 
-    - name: ansible_prompt_sap_export_system_software_version
+    - name: __prompt_sap_export_system_software_version
       prompt: Please enter the source SAP System type to export (sap_ecc6_ehp8_anydb)
       private: false
 
-    - name: ansible_prompt_sap_export_system_setup
+    - name: __prompt_sap_export_system_setup
       prompt: Please enter the source SAP System setup architecture (distributed)
       private: false
 
-    - name: ansible_prompt_sap_export_db_type_source
+    - name: __prompt_sap_export_db_type_source
       prompt: Please enter the source SAP HANA or SAP AnyDB type to export from (ibmdb2)
       private: false
 
-    - name: ansible_prompt_sap_export_profile_path
+    - name: __prompt_sap_export_profile_path
       prompt: Please enter the source Profile Path of the SAP System to export (e.g. /sapmnt/E01/profile)
       private: false
 
-    - name: ansible_prompt_sap_export_db_connect_user
+    - name: __prompt_sap_export_db_connect_user
       prompt: Please enter the source DB Connection user of the SAP System to export (e.g. sape01)
       private: false
 
-    - name: ansible_prompt_sap_export_db_schema_abap
+    - name: __prompt_sap_export_db_schema_abap
       prompt: Please enter the source DB Schema (ABAP) of the SAP System to export (e.g. sape01)
       private: false
 
-    - name: ansible_prompt_sap_export_db_type_target
+    - name: __prompt_sap_export_db_type_target
       prompt: Please enter the export's target database type - SAP HANA or SAP AnyDB type (saphana, sapase, sapmaxdb, ibmdb2, oracledb)
       private: false
 
@@ -64,18 +64,18 @@
 
     - name: Set facts for all hosts
       ansible.builtin.set_fact:
-        sap_swpm_sapcar_path: "{{ ansible_prompt_sap_swpm_sapcar_path }}"
-        sap_swpm_sapcar_file_name: "{{ ansible_prompt_sap_swpm_sapcar_file_name }}"
-        sap_swpm_swpm_path: "{{ ansible_prompt_sap_swpm_swpm_path }}"
-        sap_swpm_swpm_sar_file_name: "{{ ansible_prompt_sap_swpm_swpm_sar_file_name }}"
-        sap_export_directory: "{{ ansible_prompt_sap_export_directory }}"
-        sap_export_system_software_version: "{{ ansible_prompt_sap_export_system_software_version }}"
-        sap_export_system_setup: "{{ ansible_prompt_sap_export_system_setup }}"
-        sap_export_db_type_source: "{{ ansible_prompt_sap_export_db_type_source }}"
-        sap_export_profile_path: "{{ ansible_prompt_sap_export_profile_path }}"
-        sap_export_db_connect_user: "{{ ansible_prompt_sap_export_db_connect_user }}"
-        sap_export_db_schema_abap: "{{ ansible_prompt_sap_export_db_schema_abap }}"
-        sap_export_db_type_target: "{{ ansible_prompt_sap_export_db_type_target }}"
+        sap_swpm_sapcar_path: "{{ __prompt_sap_swpm_sapcar_path }}"
+        sap_swpm_sapcar_file_name: "{{ __prompt_sap_swpm_sapcar_file_name }}"
+        sap_swpm_path: "{{ __prompt_sap_swpm_path }}"
+        sap_swpm_sar_file_name: "{{ __prompt_sap_swpm_sar_file_name }}"
+        sap_export_directory: "{{ __prompt_sap_export_directory }}"
+        sap_export_system_software_version: "{{ __prompt_sap_export_system_software_version }}"
+        sap_export_system_setup: "{{ __prompt_sap_export_system_setup }}"
+        sap_export_db_type_source: "{{ __prompt_sap_export_db_type_source }}"
+        sap_export_profile_path: "{{ __prompt_sap_export_profile_path }}"
+        sap_export_db_connect_user: "{{ __prompt_sap_export_db_connect_user }}"
+        sap_export_db_schema_abap: "{{ __prompt_sap_export_db_schema_abap }}"
+        sap_export_db_type_target: "{{ __prompt_sap_export_db_type_target }}"
 
     - name: Create directory for SAP System Copy EXPORT
       ansible.builtin.file:
@@ -90,5 +90,6 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
       vars:
-        sap_swpm_templates_product_input: "{{ sap_export_system_software_version + '_' + sap_export_db_type_source + '_' + sap_export_system_setup + '_syscopy_export' }}"
+        sap_swpm_templates_product_input:
+          "{{ sap_export_system_software_version + '_' + sap_export_db_type_source + '_' + sap_export_system_setup + '_syscopy_export' }}"
         sap_swpm_generic: true # tech debt, force override of the SAP NetWeaver install media files detection by sap_swpm itself

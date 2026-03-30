@@ -33,7 +33,7 @@ sap_software_product: "ENTER_STRING_VALUE_HERE"
 ## Required for download using community.sap_launchpad
 # SAP ONE Support Launchpad credentials
 sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+sap_id_user_password: ''  # Your SAP S-user password (String).
 
 # Directory with SAP installation media (e.g. /software) (String)
 sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
@@ -71,7 +71,7 @@ sap_swpm_sid: "{{ sap_system_sid }}"
 sap_swpm_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
 sap_swpm_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
 sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary[sap_software_product] }}"  # Distributed
-sap_swpm_fqdn: "{{ ansible_domain }}"
+sap_swpm_fqdn: "{{ ansible_facts['domain'] }}"
 
 #### SAP SWPM Installation - Optional variables ####
 ## Unix User ID
@@ -92,8 +92,10 @@ sap_swpm_ers_instance_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ers
 
 ## Infrastructure Platform - High Availability Virtual IPs (VIPs)
 # AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
-# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
-# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service
+#                       for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined
+#                       by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
 # IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
 # MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
 # IBM PowerVM:          the VIP must be within the VLAN Subnet range
@@ -109,9 +111,9 @@ sap_system_ascs_ers_hacluster_user_password: 'clusterpass'  # Pacemaker cluster 
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -119,24 +121,32 @@ sap_software_install_dictionary:
 
   sap_s4hana_2023_distributed:
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
-      - 'SWPM20SP20_1-80003424.SAR'
-      - 'igsexe_4-70005417.sar' # IGS 7.81
+    # List of product specific software files that are architecture independent.
+    sap_software_list_independent:
+      # Application Server
       - 'igshelper_17-10010245.sar'
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Application Server
       - 'SAPEXE_51-70007807.SAR' # Kernel Part I (793)
       - 'SAPEXEDB_51-70007806.SAR' # Kernel Part II (793)
       - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent
+      - 'igsexe_4-70005417.sar' # IGS 7.81
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM20SP20_1-80003424.SAR'
 
-
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
-      - 'SWPM20SP20_1-80003426.SAR'
-      - 'igsexe_4-70005446.sar' # IGS 7.81
-      - 'igshelper_17-10010245.sar'
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    sap_software_list_ppc64le:
+      # Application Server
       - 'SAPEXE_51-70007832.SAR' # Kernel Part I (793)
       - 'SAPEXEDB_51-70007831.SAR' # Kernel Part II (793)
       - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent
+      - 'igsexe_4-70005446.sar' # IGS 7.81
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'SWPM20SP20_1-80003426.SAR'
 
     nwas_ascs_ha:
 
@@ -155,7 +165,7 @@ sap_software_install_dictionary:
         - nw_config_host_agent
         - sap_os_linux_user
 
-      software_files_wildcard_list:
+      sap_software_files_wildcard_list:
         - 'SAPCAR*'
         - 'SWPM20*'
         - 'igsexe_*'
@@ -176,7 +186,7 @@ sap_software_install_dictionary:
         - nw_config_ers
         - sap_os_linux_user
 
-      software_files_wildcard_list:
+      sap_software_files_wildcard_list:
         - 'SAPCAR*'
         - 'SWPM20*'
         - 'igsexe_*'

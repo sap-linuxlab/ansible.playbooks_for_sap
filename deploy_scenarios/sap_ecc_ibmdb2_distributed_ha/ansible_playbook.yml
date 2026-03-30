@@ -21,13 +21,13 @@
         - name: Check if interactive tasks are available
           ansible.builtin.stat:
             path: ../../common_fragments/tasks/interactive/main.yml
-          register: sap_playbook_interactive_tasks_availability
+          register: __sap_playbook_register_interactive_tasks_availability
           ignore_errors: true
 
         - name: Execute collection of interactive inputs
           ansible.builtin.include_tasks:
             file: ../../common_fragments/tasks/interactive/main.yml
-          when: sap_playbook_interactive_tasks_availability.stat.exists
+          when: __sap_playbook_register_interactive_tasks_availability.stat.exists
 
 
 - name: Ansible Play to validate the variables
@@ -49,7 +49,8 @@
         that:
           - sap_vm_provision_iac_platform is defined
           - sap_vm_provision_iac_platform in
-            ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs', 'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
+            ['aws_ec2_vs', 'gcp_ce_vm', 'msazure_vm', 'ibmcloud_powervs', 'ibmcloud_vs',
+              'ibmpowervm_vm', 'kubevirt_vm', 'ovirt_vm', 'vmware_vm', 'existing_hosts']
         fail_msg: |
           The variable 'sap_vm_provision_iac_platform' is undefined or invalid.
           Available options: aws_ec2_vs, gcp_ce_vm, msazure_vm, ibmcloud_powervs, ibmcloud_vs, ibmpowervm_vm, kubevirt_vm, ovirt_vm, vmware_vm, existing_hosts
@@ -57,10 +58,10 @@
     # Ignore registered vars and sap_swpm hostnames which could contain hostvars.
     - name: Prepare list of SAP variables for validation  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        sap_playbook_dictionary_vars:
-          "{{ dict(sap_playbook_dictionary_vars | zip(lookup('ansible.builtin.vars', *sap_playbook_dictionary_vars))) }}"
+        __sap_playbook_fact_dictionary_vars:
+          "{{ dict(__sap_playbook_fact_dictionary_vars | zip(lookup('ansible.builtin.vars', *__sap_playbook_fact_dictionary_vars))) }}"
       vars:
-        sap_playbook_dictionary_vars:
+        __sap_playbook_fact_dictionary_vars:
           "{{ lookup('ansible.builtin.varnames', '^(__)?sap_', wantlist=true)
               | reject('search', '(^(__)?sap_swpm_.*_hostname$)|(.*_register$)')
               | reject('in', ['sap_swpm_db_host'])
@@ -70,12 +71,12 @@
 
     - name: Identify variables with placeholder values or empty passwords  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        sap_playbook_placeholder_vars:
-          "{{ sap_playbook_dictionary_vars | dict2items
+        __sap_playbook_fact_placeholder_vars:
+          "{{ __sap_playbook_fact_dictionary_vars | dict2items
               | selectattr('value', 'equalto', 'ENTER_STRING_VALUE_HERE') | map(attribute='key') | list }}"
 
-        sap_playbook_empty_password_vars:
-          "{{ sap_playbook_dictionary_vars | dict2items | selectattr('key', 'search', 'password')
+        __sap_playbook_fact_empty_password_vars:
+          "{{ __sap_playbook_fact_dictionary_vars | dict2items | selectattr('key', 'search', 'password')
               | selectattr('value', 'in', [none, '']) | map(attribute='key') | list }}"
       no_log: true
       ignore_errors: true
@@ -84,21 +85,21 @@
       ansible.builtin.fail:
         msg: |
           Please address the following issues before re-running the playbook:
-          {% if sap_playbook_placeholder_vars | length > 0 %}
+          {% if __sap_playbook_fact_placeholder_vars | length > 0 %}
           - Placeholder values found for variable(s):
-            {% for item in sap_playbook_placeholder_vars %}
+            {% for item in __sap_playbook_fact_placeholder_vars %}
             {{ item }}
             {% endfor %}
 
           {% endif %}
-          {% if sap_playbook_empty_password_vars | length > 0 %}
+          {% if __sap_playbook_fact_empty_password_vars | length > 0 %}
           - Empty or invalid values found for password variable(s):
-            {% for item in sap_playbook_empty_password_vars %}
+            {% for item in __sap_playbook_fact_empty_password_vars %}
             {{ item }}
             {% endfor %}
           {% endif %}
       when:
-        - sap_playbook_placeholder_vars | d([]) | length > 0 or sap_playbook_empty_password_vars | d([]) | length > 0
+        - __sap_playbook_fact_placeholder_vars | d([]) | length > 0 or __sap_playbook_fact_empty_password_vars | d([]) | length > 0
 
 
 #### Begin Infrastructure-as-Code provisioning ####
@@ -145,9 +146,11 @@
 
         - name: Create dynamic inventory group for Ansible Role sap_vm_provision
           ansible.builtin.add_host:
-            name: "{{ item }}"
+            name: "{{ host_item }}"
             group: sap_vm_provision_target_inventory_group
           loop: "{{ lookup('ansible.builtin.vars', __sap_playbook_host_dictionary_name)[sap_vm_provision_host_specification_plan].keys() }}"
+          loop_control:
+            loop_var: host_item
 
 
 # Ansible Play target hosts pattern, use Inventory Group created by previous Ansible Task (add_host)
@@ -159,14 +162,16 @@
     # Ensure that all sap_* or __sap_* variables set in Interactive Mode are appended to the target inventory Group
     - name: Assign all relevant facts from execution node before provisioning  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        "{{ item.key }}": "{{ item.value }}"
+        "{{ var_item.key }}": "{{ var_item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      loop_control:
+        loop_var: var_item
       when:
         - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
         - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
         - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
-        - vars[item.key] is undefined
+        - vars[var_item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -184,14 +189,16 @@
 
     - name: Assign all relevant facts from execution node after provisioning  # noqa: ignore-errors
       ansible.builtin.set_fact:
-        "{{ item.key }}": "{{ item.value }}"
+        "{{ var_item.key }}": "{{ var_item.value }}"
         cacheable: true
       loop: "{{ hostvars['localhost'] | dict2items | selectattr('key', 'match', '^(__)?sap_') | list }}"
+      loop_control:
+        loop_var: var_item
       when:
         - sap_playbook_interactive_product is defined and sap_playbook_interactive_product | length > 0
         - sap_playbook_interactive_database is defined and sap_playbook_interactive_database | length > 0
         - sap_playbook_interactive_layout is defined and sap_playbook_interactive_layout | length > 0
-        - vars[item.key] is undefined
+        - vars[var_item.key] is undefined
       no_log: true
       ignore_errors: true  # Ignore errors for variables defined later during runtime
 
@@ -205,7 +212,7 @@
   tasks:
 
     # Use inventory_hostname_short to retrieve host specification from the dictionary.
-    # While ansible_hostname will work for Ansible only, using Ansible>Terraform may see ansible_hostname as 'localhost' and fail
+    # While ansible_facts['hostname'] will work for Ansible only, using Ansible>Terraform may see ansible_facts['hostname'] as 'localhost' and fail
     - name: Execute Ansible Role sap_storage_setup
       ansible.builtin.include_role:
         name: community.sap_install.sap_storage_setup
@@ -254,7 +261,8 @@
       become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
-      register: sap_playbook_collection_list_output
+      register: __sap_playbook_register_collection_list_output
+      changed_when: false
 
     - name: Execute Ansible Role sap_software_download
       ansible.builtin.include_role:
@@ -264,34 +272,35 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: first
-        sap_software_download_files: "{{ sap_software_install_dictionary[sap_software_product]
-          ['softwarecenter_search_list_' ~ ansible_architecture] }}"
-      when: sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
+        sap_software_download_files: "{{ (
+          sap_software_install_dictionary[sap_software_product]['sap_software_list_' ~ ansible_facts['architecture']] | d([]) +
+          sap_software_install_dictionary[sap_software_product]['sap_software_list_independent'] | d([])) | unique }}"
+      when: __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad') | length > 0
 
 
     - name: Find SAP NetWeaver ASCS installation media
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_ascs_ha']['software_files_wildcard_list'] }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_ascs_ha']['sap_software_files_wildcard_list'] }}"
         recurse: true
-      register: sap_nwas_ascs_install_media_files
+      register: __sap_playbook_register_sap_nwas_ascs_install_media_files
 
     - name: Find SAP NetWeaver AAS installation media
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_aas']['software_files_wildcard_list'] }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['nwas_aas']['sap_software_files_wildcard_list'] }}"
         recurse: true
-      register: sap_nwas_aas_install_media_files
+      register: __sap_playbook_register_sap_nwas_aas_install_media_files
 
     - name: Find SAP AnyDB Secondary node installation media
       ansible.builtin.find:
         paths:
           - "{{ sap_install_media_detect_source_directory }}"
-        patterns: "{{ sap_software_install_dictionary[sap_software_product]['anydb_ha_secondary_ibmdb2']['software_files_wildcard_list'] }}"
+        patterns: "{{ sap_software_install_dictionary[sap_software_product]['anydb_ha_secondary_ibmdb2']['sap_software_files_wildcard_list'] }}"
         recurse: true
-      register: sap_anydb_secondary_install_media_files
+      register: __sap_playbook_register_sap_anydb_secondary_install_media_files
 
     - name: Prepare for file transfers, copy Private SSH Key from local
       ansible.builtin.copy:
@@ -322,8 +331,8 @@
         private_key: "/tmp/hosts_rsa"
         # set_remote_user: false
       vars:
-        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
-        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
 
 
 - name: Ansible Play for copying installation media to AnyDB Database Instance Secondary
@@ -337,7 +346,7 @@
       delegate_to: "{{ software_source_ip }}"
       remote_user: "root"
       ansible.posix.synchronize:
-        src: "{{ item }}"
+        src: "{{ file_item }}"
         dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
@@ -345,10 +354,12 @@
         verify_host: false
         private_key: "/tmp/hosts_rsa"
         # set_remote_user: false
-      loop: "{{ hostvars[software_source_hostname].sap_anydb_secondary_install_media_files.files | map(attribute='path') | list }}"
+      loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_anydb_secondary_install_media_files.files | map(attribute='path') | list }}"
+      loop_control:
+        loop_var: file_item
       vars:
-        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
-        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
 
 
 - name: Ansible Play for copying SAP NetWeaver ASCS installation media to host
@@ -362,7 +373,7 @@
       delegate_to: "{{ software_source_ip }}"
       remote_user: "root"
       ansible.posix.synchronize:
-        src: "{{ item }}"
+        src: "{{ file_item }}"
         dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
@@ -370,10 +381,12 @@
         verify_host: false
         private_key: "/tmp/hosts_rsa"
         # set_remote_user: false
-      loop: "{{ hostvars[software_source_hostname].sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
+      loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_nwas_ascs_install_media_files.files | map(attribute='path') | list }}"
+      loop_control:
+        loop_var: file_item
       vars:
-        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
-        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
 
 
 - name: Ansible Play for copying SAP NetWeaver AAS installation media to host
@@ -387,7 +400,7 @@
       delegate_to: "{{ software_source_ip }}"
       remote_user: "root"
       ansible.posix.synchronize:
-        src: "{{ item }}"
+        src: "{{ file_item }}"
         dest: "{{ sap_install_media_detect_source_directory | trim | regex_replace('//', '/') | regex_replace(' ', '') | regex_replace('\\/+$', '') + '/' }}"
         mode: "push"
         dest_port: 22
@@ -395,10 +408,12 @@
         verify_host: false
         private_key: "/tmp/hosts_rsa"
         # set_remote_user: false
-      loop: "{{ hostvars[software_source_hostname].sap_nwas_aas_install_media_files.files | map(attribute='path') | list }}"
+      loop: "{{ hostvars[software_source_hostname].__sap_playbook_register_sap_nwas_aas_install_media_files.files | map(attribute='path') | list }}"
+      loop_control:
+        loop_var: file_item
       vars:
-        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | default(none) }}"
-        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.nwas_pas[0] | d(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
 
 
 - name: Ansible Play to remove temporary files from SAP NetWeaver PAS
@@ -523,15 +538,16 @@
 
     - name: Register legacy module for DB2 (SLES 15)
       ansible.builtin.command:
-        cmd: "{{ 'SUSEConnect -p sle-module-legacy/' ~ ansible_distribution_version ~ '/x86_64' }}"
-      when: ansible_os_family == 'Suse' and ansible_distribution_major_version == "15"
+        cmd: "{{ 'SUSEConnect -p sle-module-legacy/' ~ ansible_facts['distribution_version'] ~ '/x86_64' }}"
+      when: ansible_facts['os_family'] == 'Suse' and ansible_facts['distribution_major_version'] == "15"
+      changed_when: true
 
     # Package 'net-tools-deprecated' requires module 'sle-module-legacy' on SLES 15
     - name: Install Korn Shell (KSH) and other dependencies for IBM DB2 LUW
       ansible.builtin.package:
         name:
-          "{{ base_packages + (redhat_packages if ansible_os_family == 'RedHat'
-            else (suse_packages if ansible_os_family == 'Suse' else [])) }}"
+          "{{ base_packages + (redhat_packages if ansible_facts['os_family'] == 'RedHat'
+            else (suse_packages if ansible_facts['os_family'] == 'Suse' else [])) }}"
         state: present
       vars:
         base_packages:
@@ -600,23 +616,28 @@
       become_user: db2{{ sap_system_anydb_sid | lower }}
       args:
         executable: /bin/csh
-      ansible.builtin.shell: |
-        set ibmdb2_sid="{{ sap_system_anydb_sid }}"
-        db2 update database cfg for "$ibmdb2_sid" using LOGARCHMETH1 "DISK:/db2/$ibmdb2_sid/log_archive"
+      ansible.builtin.shell:
+        cmd: |
+          set ibmdb2_sid="{{ sap_system_anydb_sid }}"
+          db2 update database cfg for "$ibmdb2_sid" using LOGARCHMETH1 "DISK:/db2/$ibmdb2_sid/log_archive"
+      changed_when: true
 
     # Use the IBM Db2 Command Line Processor
     # Note: 'db2 force application all' will force application connections to close, but connections may return if SAP NWAS PAS is active
-    # Note: if connections exist then will cause 'db2 backup database' error SQL1035N The operation failed because the specified database cannot be connected to in the mode requested. SQLSTATE=57019
-    - name: Terminate active connections, enforce all application connections to close, terminate active IBM Db2 CLP processes and deactivate IBM Db2 database services
+    # Note: if connections exist then will cause 'db2 backup database' error SQL1035N The operation failed
+    # because the specified database cannot be connected to in the mode requested. SQLSTATE=57019
+    - name: Terminate and force close all active connections, terminate active IBM Db2 CLP processes and deactivate IBM Db2 database services
       become: true
       become_user: db2{{ sap_system_anydb_sid | lower }}
       args:
         executable: /bin/csh
-      ansible.builtin.shell: |
-        set ibmdb2_sid="{{ sap_system_anydb_sid }}"
-        db2 terminate
-        db2 force application all
-        db2 deactivate database "$ibmdb2_sid"
+      ansible.builtin.shell:
+        cmd: |
+          set ibmdb2_sid="{{ sap_system_anydb_sid }}"
+          db2 terminate
+          db2 force application all
+          db2 deactivate database "$ibmdb2_sid"
+      changed_when: true
 
     # Use the IBM Db2 Command Line Processor
     - name: Perform IBM Db2 backup of Database Schema for SAP System
@@ -624,9 +645,11 @@
       become_user: db2{{ sap_system_anydb_sid | lower }}
       args:
         executable: /bin/csh
-      ansible.builtin.shell: |
-        set ibmdb2_sid="{{ sap_system_anydb_sid }}"
-        db2 -v backup database "$ibmdb2_sid" to "{{ sap_install_media_detect_source_directory }}/db2_db_backup_anydb_primary_node"
+      ansible.builtin.shell:
+        cmd: |
+          set ibmdb2_sid="{{ sap_system_anydb_sid }}"
+          db2 -v backup database "$ibmdb2_sid" to "{{ sap_install_media_detect_source_directory }}/db2_db_backup_anydb_primary_node"
+      changed_when: true
 
 
 - name: Ansible Play to add temporary files to SAP AnyDB Primary node
@@ -671,8 +694,8 @@
         private_key: "/tmp/hosts_rsa"
         # set_remote_user: false
       vars:
-        software_source_hostname: "{{ hostvars[inventory_hostname].groups.anydb_primary[0] | default(none) }}"
-        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | default(none) }}"
+        software_source_hostname: "{{ hostvars[inventory_hostname].groups.anydb_primary[0] | d(none) }}"
+        software_source_ip: "{{ hostvars[software_source_hostname].ansible_host | d(none) }}"
 
 
 - name: Ansible Play to remove temporary files from SAP AnyDB Primary node
@@ -710,10 +733,12 @@
     # DBT3507E The db2prereqcheck utility failed to find the following package or file: "net-tools-deprecated"
     # zypper search-packages net-tools-deprecated
     - name: Prepare Package Repositories when SLES
-      ansible.builtin.shell: |
-        SUSEConnect --product sle-module-legacy/{{ ansible_distribution_version }}/x86_64 && sleep 5
-        SUSEConnect --product sle-module-development-tools/{{ ansible_distribution_version }}/x86_64 && sleep 5
-      when: ansible_os_family == 'Suse'
+      ansible.builtin.shell:
+        cmd: |
+          SUSEConnect --product sle-module-legacy/{{ ansible_facts['distribution_version'] }}/x86_64 && sleep 5
+          SUSEConnect --product sle-module-development-tools/{{ ansible_facts['distribution_version'] }}/x86_64 && sleep 5
+      when: ansible_facts['os_family'] == 'Suse'
+      changed_when: true
 
     - name: Install Korn Shell (KSH) and other dependencies for IBM DB2 LUW
       ansible.builtin.package:
@@ -721,13 +746,13 @@
           - mksh # Korn Shell (KSH)
           - tcsh # C Shell
           - pam-devel
-          - "{{ ('libstdc++' if ansible_os_family == 'RedHat' else 'libstdc++6' if ansible_os_family == 'Suse') }}"
-          - "{{ ('libaio' if ansible_os_family == 'RedHat' else 'libaio1' if ansible_os_family == 'Suse') }}"
-          - "{{ 'pam-devel-32bit' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'libstdc++6-32bit' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'system-user-bin' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'net-tools-deprecated' if ansible_os_family == 'Suse' else omit }}"
-          - "{{ 'binutils' if ansible_os_family == 'Suse' else omit }}"
+          - "{{ ('libstdc++' if ansible_facts['os_family'] == 'RedHat' else 'libstdc++6' if ansible_facts['os_family'] == 'Suse') }}"
+          - "{{ ('libaio' if ansible_facts['os_family'] == 'RedHat' else 'libaio1' if ansible_facts['os_family'] == 'Suse') }}"
+          - "{{ 'pam-devel-32bit' if ansible_facts['os_family'] == 'Suse' else omit }}"
+          - "{{ 'libstdc++6-32bit' if ansible_facts['os_family'] == 'Suse' else omit }}"
+          - "{{ 'system-user-bin' if ansible_facts['os_family'] == 'Suse' else omit }}"
+          - "{{ 'net-tools-deprecated' if ansible_facts['os_family'] == 'Suse' else omit }}"
+          - "{{ 'binutils' if ansible_facts['os_family'] == 'Suse' else omit }}"
         state: present
 
     - name: Ensure rwx permissions for IBM DB2 unpack directory
@@ -764,17 +789,22 @@
   tasks:
 
     # Avoid error SQL2061N An attempt to access media is denied.
-    - name: Alter permissions after Database Backup directory is transferred
-      ansible.builtin.shell: |
-        chown -R db2{{ sap_system_anydb_sid | lower }}:db{{ sap_system_anydb_sid | lower }}adm {{ sap_install_media_detect_source_directory }}/db2_db_backup_anydb_primary_node
+    - name: Alter permissions after Database Backup directory is transferred  # noqa command-instead-of-shell
+      ansible.builtin.shell:
+        cmd: >-
+          chown -R db2{{ sap_system_anydb_sid | lower }}:db{{ sap_system_anydb_sid | lower }}adm
+          {{ sap_install_media_detect_source_directory }}/db2_db_backup_anydb_primary_node
+      changed_when: true
 
     # Avoid error SQL1051N The path does not exist or is not valid.
     # Avoid error SQL0293N Error accessing a table space container.
     - name: Create directories and permissions
-      ansible.builtin.shell: |
-        mkdir -p /db2/{{ sap_system_anydb_sid }}/sapdata{1..4}
-        mkdir -p /db2/{{ sap_system_anydb_sid }}/saptmp{1..4}
-        chown -R db2{{ sap_system_anydb_sid | lower }}:db{{ sap_system_anydb_sid | lower }}adm /db2/{{ sap_system_anydb_sid }}/
+      ansible.builtin.shell:
+        cmd: |
+          mkdir -p /db2/{{ sap_system_anydb_sid }}/sapdata{1..4}
+          mkdir -p /db2/{{ sap_system_anydb_sid }}/saptmp{1..4}
+          chown -R db2{{ sap_system_anydb_sid | lower }}:db{{ sap_system_anydb_sid | lower }}adm /db2/{{ sap_system_anydb_sid }}/
+      changed_when: true
 
     # Use the IBM Db2 Command Line Processor
     - name: Perform IBM Db2 backup restore of Database Schema for SAP System
@@ -782,10 +812,14 @@
       become_user: db2{{ sap_system_anydb_sid | lower }}
       args:
         executable: /bin/csh
-      ansible.builtin.shell: |
-        set ibmdb2_sid="{{ sap_system_anydb_sid }}"
-        db2start
-        db2 -v restore database "$ibmdb2_sid" from "{{ sap_install_media_detect_source_directory }}/db2_db_backup_anydb_primary_node" replace history file without prompting
+      ansible.builtin.shell:
+        cmd: |
+          set ibmdb2_sid="{{ sap_system_anydb_sid }}"
+          db2start
+          db2 -v restore database "$ibmdb2_sid" \
+           from "{{ sap_install_media_detect_source_directory }}/db2_db_backup_anydb_primary_node" \
+           replace history file without prompting
+      changed_when: true
 
       #  db2 activate database "$ibmdb2_sid"
 
@@ -796,9 +830,11 @@
       become_user: db2{{ sap_system_anydb_sid | lower }}
       args:
         executable: /bin/csh
-      ansible.builtin.shell: |
-        set ibmdb2_sid="{{ sap_system_anydb_sid }}"
-        db2 get db cfg for $ibmdb2_sid | grep 'Rollforward\|HADR'
+      ansible.builtin.shell:
+        cmd: |
+          set ibmdb2_sid="{{ sap_system_anydb_sid }}"
+          db2 get db cfg for $ibmdb2_sid | grep 'Rollforward\|HADR'
+      changed_when: true
 
     - name: Display IBM Db2 config
       ansible.builtin.debug:
@@ -810,8 +846,10 @@
 # See SAP Note 3100330 - DB6: Using Db2 HADR with Pacemaker Cluster Software
 # See SAP Note 3100287 - DB6: Db2 Support for Pacemaker Cluster Software
 # See IBM Db2 for SAP HADR reference document referred from sap.com - https://ibm.github.io/db2-hadr-wiki/
-# See Admin documentation for IBM Db2 with Integrated Cluster Manager (Linux Pacemaker) - https://www.ibm.com/docs/en/db2/11.5?topic=feature-integrated-solution-using-pacemaker
-# See Installation documentation for IBM Db2 with Integrated Cluster Manager (Linux Pacemaker) - https://www.ibm.com/docs/en/db2/11.5?topic=manager-installing-pacemaker-cluster
+# See Admin documentation for IBM Db2 with Integrated Cluster Manager (Linux Pacemaker)
+#   https://www.ibm.com/docs/en/db2/11.5?topic=feature-integrated-solution-using-pacemaker
+# See Installation documentation for IBM Db2 with Integrated Cluster Manager (Linux Pacemaker)
+#   https://www.ibm.com/docs/en/db2/11.5?topic=manager-installing-pacemaker-cluster
 
 - name: Ansible Play to instantiate IBM Db2 “Integrated Linux Pacemaker” HADR cluster
   hosts: anydb_primary, anydb_secondary
@@ -824,15 +862,15 @@
       ansible.builtin.include_role:
         name: community.sap_install.sap_ha_install_anydb_ibmdb2
       vars:
-        sap_ha_install_anydb_ibmdb2_hostname_primary: "{{ hostvars[inventory_hostname].groups.anydb_primary[0] | default(none) }}"
-        sap_ha_install_anydb_ibmdb2_hostname_secondary: "{{ hostvars[inventory_hostname].groups.anydb_secondary[0] | default(none) }}"
+        sap_ha_install_anydb_ibmdb2_hostname_primary: "{{ hostvars[inventory_hostname].groups.anydb_primary[0] | d(none) }}"
+        sap_ha_install_anydb_ibmdb2_hostname_secondary: "{{ hostvars[inventory_hostname].groups.anydb_secondary[0] | d(none) }}"
         sap_ha_install_anydb_ibmdb2_sid: "{{ sap_system_anydb_sid }}"
         sap_ha_install_anydb_ibmdb2_software_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_ha_install_anydb_ibmdb2_vip_primary_ip_address: "{{ sap_vm_provision_ha_vip_anydb_primary }}"
 
 
 #### ASCS/ERS cluster ####
-- name: Ansible Play for SAP NetWeaver Application Server installation - High Availability using ABAP Central Services (ASCS) and Enqueue Replication Service (ERS) with Standalone Enqueue Server 2 (ENSA2)
+- name: Ansible Play for SAP NetWeaver Application Server installation - High Availability using ASCS/ERS with Standalone Enqueue Server 2 (ENSA2)
   hosts: nwas_ascs, nwas_ers
   become: true
   any_errors_fatal: true
@@ -852,7 +890,7 @@
 
         sap_ha_pacemaker_cluster_vip_resource_group_name: vipnwasascs
 
-        sap_ha_pacemaker_cluster_nwas_sid: "{{ sap_system_sid | default('') }}"
+        sap_ha_pacemaker_cluster_nwas_sid: "{{ sap_system_sid | d('') }}"
         sap_ha_pacemaker_cluster_nwas_ascs_instance_nr: "{{ sap_system_nwas_abap_ascs_instance_nr }}"
         sap_ha_pacemaker_cluster_nwas_ers_instance_nr: "{{ sap_system_nwas_abap_ers_instance_nr }}"
 
