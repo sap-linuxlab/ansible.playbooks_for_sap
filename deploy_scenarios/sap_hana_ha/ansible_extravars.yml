@@ -27,7 +27,7 @@ sap_software_product: "ENTER_STRING_VALUE_HERE"
 ## Required for download using community.sap_launchpad
 # SAP ONE Support Launchpad credentials
 sap_id_user: "ENTER_STRING_VALUE_HERE"  # Your SAP S-user ID (String).
-sap_id_user_password: 'ENTER_STRING_VALUE_HERE'  # Your SAP S-user password (String).
+sap_id_user_password: ''  # Your SAP S-user password (String).
 
 # Directory with SAP installation media (e.g. /software) (String)
 sap_install_media_detect_source_directory: "ENTER_STRING_VALUE_HERE"
@@ -78,8 +78,8 @@ sap_hana_install_instance_nr: "{{ sap_system_hana_db_instance_nr }}"
 ## Virtual host names
 # See virtual hostname information in SAP Note 2279110 and 962955
 # Ensure this does not contain the local hostname, must use the Virtual Hostname for use with the Virtual IP (VIP)
-# sap_swpm_virtual_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ascs[0] | default(none) }}-ha"
-sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] | default(none) }}-ha" # Must be SAP HANA Virtual Hostname
+# sap_swpm_virtual_hostname: "{{ hostvars[inventory_hostname].groups.nwas_ascs[0] | d(none) }}-ha"
+sap_swpm_db_host: "{{ hostvars[inventory_hostname].groups.hana_primary[0] | d(none) }}-ha" # Must be SAP HANA Virtual Hostname
 
 ## SAP HANA System Replication (HSR) installation
 sap_ha_install_hana_hsr_sid: "{{ sap_system_hana_db_sid }}"
@@ -88,8 +88,10 @@ sap_ha_install_hana_hsr_db_system_password: "{{ sap_hana_install_master_password
 
 ## Infrastructure Platform - High Availability Virtual IPs (VIPs)
 # AWS:                  the VIP must be **outside** of any VPC Subnet ranges (e.g. 192.168.100.102/32)
-# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
-# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
+# GCP:                  the VIP must be within the VPC Subnetwork range attached to GCP Backend Service
+#                       for the Internal passthrough Network Load Balancer (e.g. 10.10.10.10/32)
+# IBM Cloud:            the VIP is within the VPC Subnet range and is statically defined
+#                       by the IBM Cloud Load Balancer [NLB L4 or ALB L7], variable should be commented out
 # IBM Cloud, Power VS:  the VIP must be within the IBM Power Infrastructure VLAN Subnet range (e.g. 192.168.4.4/26)
 # MS Azure:             the VIP must be within the VNet Subnet range attached to the Azure Load Balancer [NLB L4] (e.g. 10.10.10.10/22)
 # IBM PowerVM:          the VIP must be within the VLAN Subnet range
@@ -104,9 +106,9 @@ sap_system_hana_hacluster_user_password: 'clusterpass'  # Pacemaker cluster 'hac
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -114,55 +116,89 @@ sap_software_install_dictionary:
 
   sap_hana_2_sps08_install:
 
-    softwarecenter_search_list_x86_64:
+    # List of product specific software files that are architecture independent.
+    sap_software_list_independent: []
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Database Server
+      - 'IMDB_SERVER20_089_1-80002031.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002082.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004822.SAR'  # SAP Host Agent 7.22
+      # Tools
       - 'SAPCAR_1300-70007716.EXE'
-      - 'IMDB_SERVER20_085_0-80002031.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
-      - 'IMDB_CLIENT20_024_24-80002082.SAR' # SAP HANA CLIENT Version 2.24
-      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
 
-    softwarecenter_search_list_ppc64le:
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    sap_software_list_ppc64le:
+      # Database Server
+      - 'IMDB_SERVER20_089_1-80002046.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002095.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004831.SAR'  # SAP Host Agent 7.22
+      # Tools
       - 'SAPCAR_1300-70007726.EXE'
-      - 'IMDB_SERVER20_085_0-80002046.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
-      - 'IMDB_CLIENT20_024_24-80002095.SAR'  # SAP HANA CLIENT Version 2.24
-      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
 
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+    # This list assigned from shared dictionary, because it is same with other products or host types.
+    sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
 
 
   sap_hana_2_sps07_install:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
-    softwarecenter_search_list_x86_64:
+    sap_software_list_independent: []
+
+    sap_software_list_x86_64:
+      # Database Server
+      - 'IMDB_SERVER20_079_8-80002031.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002082.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004822.SAR'  # SAP Host Agent 7.22
+      # Tools
       - 'SAPCAR_1300-70007716.EXE'
-      - 'IMDB_SERVER20_077_0-80002031.SAR'
-      - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent 7.22
 
-    softwarecenter_search_list_ppc64le:
+    sap_software_list_ppc64le:
+      # Database Server
+      - 'IMDB_SERVER20_079_8-80002046.SAR'  # Revision 2.00.079.8 (SPS07) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002095.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
+      - 'SAPHOSTAGENT67_67-80004831.SAR'  # SAP Host Agent 7.22
+      # Tools
       - 'SAPCAR_1300-70007726.EXE'
-      - 'IMDB_SERVER20_077_0-80002046.SAR'
-      - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent 7.22
 
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+    sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
 
 
   sap_hana_2_sps06_install:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
+    sap_software_list_independent: []
+
+    sap_software_list_x86_64:
+      # Database Server
       - 'IMDB_SERVER20_067_4-80002031.SAR'
+      # Application Server
       - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    sap_software_list_ppc64le:
+      # Database Server
       - 'IMDB_SERVER20_067_4-80002046.SAR'
+      # Application Server
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
 
-    software_files_wildcard_list:
-      - 'SAPCAR*'
-      - 'IMDB_*'
-      - 'SAPHOSTAGENT*'
+    sap_software_files_hana_wildcard_list: "{{ sap_playbook_software_wildcards['hana'] }}"
+
+
+### Reusable dictionaries for SAP Playbooks ###
+
+# Dictionary of lists for software filename wildcard patterns that is used during rsync operations.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_software_wildcards:
+  hana:
+    - 'SAPCAR*'
+    - 'IMDB_*'
+    - 'SAPHOSTAGENT*'

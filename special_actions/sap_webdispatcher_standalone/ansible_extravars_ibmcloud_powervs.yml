@@ -51,7 +51,8 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 
     webdisp01: # Hostname, must be 13 characters or less
       sap_host_type: nwas_aas # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256"
       ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
       disable_ip_anti_spoofing: true
 
@@ -92,13 +93,14 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 #### Ansible dictionary for operating system images ####
 sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
   # Red Hat
-  rhel-8-8: ".*RHEL.*8.*8"
-  rhel-9-2: ".*RHEL.*9.*2"
+  rhel-8-10: ".*RHEL.*8.*10"
   rhel-9-4: ".*RHEL.*9.*4"
-  rhel-8-4-sap-ha: "RHEL8-SP4-SAP"
   rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
   rhel-8-8-sap-ha: ".*RHEL.*8.*8.*SAP$" # ensure string suffix using $
+  rhel-8-10-sap-ha: ".*RHEL.*8.*10.*SAP$" # ensure string suffix using $
   rhel-9-2-sap-ha: ".*RHEL.*9.*2.*SAP$" # ensure string suffix using $
+  rhel-9-4-sap-ha: ".*RHEL.*9.*4.*SAP$" # ensure string suffix using $
+  rhel-9-6-sap-ha: ".*RHEL.*9.*6.*SAP$" # ensure string suffix using $
   # rhel-8-4-sap-ha-byol: "RHEL8-SP4-SAP-BYOL"
   # rhel-8-6-sap-ha-byol: ".*RHEL.*8.*6.*SAP-BYOL$" # ensure string suffix using $
   # rhel-8-8-sap-ha-byol: ".*RHEL.*8.*8.*SAP-BYOL$" # ensure string suffix using $

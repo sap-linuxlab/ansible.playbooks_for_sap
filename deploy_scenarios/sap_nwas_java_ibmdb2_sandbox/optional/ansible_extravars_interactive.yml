@@ -26,7 +26,7 @@ sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
 
 # SAP NetWeaver JAVA Parameters
-sap_swpm_java_scs_instance_hostname: "{{ sap_hostname | d(ansible_hostname) }}"
+sap_swpm_java_scs_instance_hostname: "{{ sap_hostname | d(ansible_facts['hostname']) }}"
 sap_swpm_ume_instance_nr: "{{ sap_swpm_pas_instance_nr }}"
 sap_swpm_ume_j2ee_admin_password: "{{ sap_swpm_master_password }}"
 sap_swpm_ume_sapjsf_password: "{{ sap_swpm_master_password }}"
@@ -34,9 +34,9 @@ sap_swpm_ume_type: db # db, abap
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -70,21 +70,34 @@ sap_software_install_dictionary:
     sap_swpm_java_template_id_selected_list:
       - java_adobe_document_services
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
-      - 'SWPM10SP43_2-20009701.SAR'
-      - 'igsexe_13-80003187.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
-      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
-      - 'SAPJVM8_90-80000202.SAR' # SAP JVM 8.1
-      - '51055106' # SAP Netweaver 7.5 SP22 Java, ZIP. Contains JAVA_EXPORT (SAP:JEXPORT:750:SP22:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:750:SP22:*:SW-LABEL), JAVA_J2EE_OSINDEP (SAP:J2EE-CD:750:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:750:SP22:*:*), JAVA_J2EE_OSINDEP_UT (SAP:UT:750:SP22:*:*)
+    # List of product specific software files that are architecture independent.
+    # Independent files are not used, because it is not available for IBM Power Little Endian (ppc64le).
+    sap_software_list_independent: []
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Database Server
       - '51056772' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 LINUX x86_64, ZIP. See SAP Note 101809 - DB6: Supported Db2 Versions and Fix Pack Levels
       - '73554900102000002424' # IBM DB2 LUW 11.5 SAP OEM license (Note 816773), ZIP
       - '51056774' # IBM DB2 FOR LUW 11.5 MP8 FP0 SAP2 Client, ZIP
+      # Application Server
+      # Contains JAVA_EXPORT (SAP:JEXPORT:750:SP22:*:*), JAVA_EXPORT_JDMP (SAP:JDMP:750:SP22:*:SW-LABEL),
+      # JAVA_J2EE_OSINDEP (SAP:J2EE-CD:750:J2EE-CD:j2ee-cd:*), JAVA_J2EE_OSINDEP_J2EE_INST (SAP:J2EE-INST:750:SP22:*:*),
+      # JAVA_J2EE_OSINDEP_UT (SAP:UT:750:SP22:*:*)
+      - '51055106' # SAP Netweaver 7.5 SP22 Java, ZIP.
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002603.SAR' # Kernel Part II (753), IBM DB2
+      - 'SAPHOSTAGENT61_61-80004822.SAR' # SAP Host Agent 7.22
+      - 'SAPJVM8_90-80000202.SAR' # SAP JVM 8.1
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      - 'igshelper_17-10010245.sar'
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM10SP43_2-20009701.SAR'
 
-    softwarecenter_search_list_ppc64le:
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    # Not available for IBM Power Little Endian (ppc64le), leave code to keep similarity of code structure across all Ansible Playbooks for SAP
+    sap_software_list_ppc64le:
       - 'SAPCAR_1300-70007726.EXE'
 
 
@@ -128,10 +141,12 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -235,10 +250,12 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -380,10 +397,12 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -474,10 +493,12 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -717,10 +738,12 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -784,10 +807,12 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}

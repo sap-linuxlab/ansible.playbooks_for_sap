@@ -24,9 +24,9 @@ sap_swpm_templates_install_dictionary: "{{ sap_software_install_dictionary }}"
 
 
 #### Shared Ansible Facts ####
-sap_hostname: "{{ ansible_hostname }}"
-sap_domain: "{{ ansible_domain }}"
-sap_ip: "{{ ansible_default_ipv4.address }}"
+sap_hostname: "{{ ansible_facts['hostname'] }}"
+sap_domain: "{{ ansible_facts['domain'] }}"
+sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 
 
 #### Ansible dictionary for SAP Installation Media ####
@@ -44,155 +44,144 @@ sap_software_install_dictionary:
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2016.ERP608.HDB.PD
 
     # List of INI file sections to generate using sap_install.sap_swpm role (List).
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1
-      - swpm_installation_media_swpm1_exportfiles
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
+    # This list assigned from dictionary below, because it is same with other products or host types.
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
-      - 'IMDB_SERVER20_085_0-80002031.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
-      - 'IMDB_CLIENT20_024_24-80002082.SAR' # SAP HANA CLIENT Version 2.24
-      # - 'VCH202300_2085_0-70007416.SAR'  # Not mandatory
-      - 'SWPM10SP43_3-20009701.SAR'
-      - 'igsexe_5-80007786.sar' # IGS 7.54
+    # List of product specific software files that are architecture independent.
+    sap_software_list_independent:
+      # Application Media
+      - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
+      - '51050708_2'
+      - '51050708_3'
+      - '51050708_4'
+    #  - '51050610_1' # SAP ERP 6.0 EHP8 Language I 1/3, Self-extract RAR EXE
+    #  - '51050610_2'
+    #  - '51050610_3'
+    #  - '51050610_4' # SAP ERP 6.0 EHP8 Language II 1/2, Self-extract RAR EXE
+    #  - '51050610_5'
+    #  - '51050610_6' # SAP ERP 6.0 EHP8 Language III, ZIP
+    #  - '51050610_16' # SAP ERP 6.0 EHP8 SAP Components, ZIP
+    #  - '51050610_17' # BS7i2016 Java Components - NW 7.5, ZIP
+      # Application Server
       - 'igshelper_17-10010245.sar'
+      - 'SAPKD75090' # SPAM/SAINT Update - Version 750/0090
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Database Server
+      - 'IMDB_SERVER20_089_1-80002031.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002082.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
       - 'SAPEXE_500-80007612.SAR'  # Kernel Part I (754)
       - 'SAPEXEDB_500-80007611.SAR'  # Kernel Part II (754)
       - 'SAPHOSTAGENT67_67-80004822.SAR'  # SAP HOST AGENT 7.22 SP67
+      # - 'VCH202300_2085_0-70007416.SAR'  # Not mandatory
+      - 'igsexe_5-80007786.sar' # IGS 7.54
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM10SP43_3-20009701.SAR'
       - 'SUM20SP22_3-80002456.SAR' # SUM 2.0
-      - 'SAPKD75090' # SPAM/SAINT Update - Version 750/0090
-      - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
-      - '51050708_2'
-      - '51050708_3'
-      - '51050708_4'
-    #  - '51050610_1' # SAP ERP 6.0 EHP8 Language I 1/3, Self-extract RAR EXE
-    #  - '51050610_2'
-    #  - '51050610_3'
-    #  - '51050610_4' # SAP ERP 6.0 EHP8 Language II 1/2, Self-extract RAR EXE
-    #  - '51050610_5'
-    #  - '51050610_6' # SAP ERP 6.0 EHP8 Language III, ZIP
-    #  - '51050610_16' # SAP ERP 6.0 EHP8 SAP Components, ZIP
-    #  - '51050610_17' # BS7i2016 Java Components - NW 7.5, ZIP
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
-      - 'IMDB_SERVER20_085_0-80002046.SAR'  # Revision 2.00.085.0 (SPS08) for HANA DB 2.0
-      - 'IMDB_CLIENT20_024_24-80002095.SAR'  # SAP HANA CLIENT Version 2.24
-      # - 'VCH202300_2085_0-70007417.SAR'  # Not mandatory
-      - 'SWPM10SP43_3-70002492.SAR'
-      - 'igsexe_5-80007795.sar' # IGS 7.54
-      - 'igshelper_17-10010245.sar'
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    sap_software_list_ppc64le:
+      # Database Server
+      - 'IMDB_SERVER20_089_1-80002046.SAR'  # Revision 2.00.089.1 (SPS08) for HANA DB 2.0
+      - 'IMDB_CLIENT20_028_17-80002095.SAR'  # SAP HANA CLIENT Version 2.28
+      # Application Server
       - 'SAPEXE_500-80007669.SAR' # Kernel Part I (754)
       - 'SAPEXEDB_500-80007668.SAR' # Kernel Part II (754), SAP HANA
       - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP HOST AGENT 7.22 SP67
+      # - 'VCH202300_2085_0-70007417.SAR'  # Not mandatory
+      - 'igsexe_5-80007795.sar' # IGS 7.54
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'SWPM10SP43_3-70002492.SAR'
       - 'SUM20SP22_7-80002470.SAR' # SUM 2.0
-      - 'SAPKD75090' # SPAM/SAINT Update - Version 750/0083
-      - '51050708_1' # SAP ERP 6.0 EHP8 Installation Export 1/4, Self-extract RAR EXE
-      - '51050708_2'
-      - '51050708_3'
-      - '51050708_4'
-    #  - '51050610_1' # SAP ERP 6.0 EHP8 Language I 1/3, Self-extract RAR EXE
-    #  - '51050610_2'
-    #  - '51050610_3'
-    #  - '51050610_4' # SAP ERP 6.0 EHP8 Language II 1/2, Self-extract RAR EXE
-    #  - '51050610_5'
-    #  - '51050610_6' # SAP ERP 6.0 EHP8 Language III, ZIP
-    #  - '51050610_16' # SAP ERP 6.0 EHP8 SAP Components, ZIP
-    #  - '51050610_17' # BS7i2016 Java Components - NW 7.5, ZIP
+
 
   # SAP Business Suite 7i 2013 Support Release 2 > EHP7 for SAP ERP 6.0 ABAP Support Release 2
   # uses SAP NetWeaver 7.5
   sap_ecc6_ehp7_hana_sandbox:
+    # For detailed comments on each defined parameter, see first product in 'sap_software_install_dictionary'.
 
     sap_swpm_product_catalog_id: NW_ABAP_OneHost:BS2013SR2.ERP607SR2.HDB.PD
 
-    sap_swpm_inifile_sections_list:
-      - swpm_installation_media
-      - swpm_installation_media_swpm1
-      - swpm_installation_media_swpm1_exportfiles
-      - credentials
-      - credentials_hana
-      - db_config_hana
-      - db_connection_nw_hana
-      - nw_config_other
-      - nw_config_central_services_abap
-      - nw_config_primary_application_server_instance
-      - nw_config_ports
-      - nw_config_host_agent
-      - sap_os_linux_user
+    # List of INI file sections to generate using sap_install.sap_swpm role (List).
+    # This list assigned from dictionary below, because it is same with other products or host types.
+    sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['sandbox'] }}"
 
-    softwarecenter_search_list_x86_64:
-      - 'SAPCAR_1300-70007716.EXE'
+    sap_software_list_independent:
+      # Application Media
+      - '51050036_1' # SAP ERP 6.0 on HANA EHP7 Installation Export 1/18
+      - '51050036_2'
+      - '51050036_3'
+      - '51050036_4'
+      - '51050036_5'
+      - '51050036_6'
+      - '51050036_7'
+      - '51050036_8'
+      - '51050036_9'
+      - '51050036_10'
+      - '51050036_11'
+      - '51050036_12'
+      - '51050036_13'
+      - '51050036_14'
+      - '51050036_15'
+      - '51050036_16'
+      - '51050036_17'
+      - '51050036_18'
+      # Application Server
+      - 'igshelper_17-10010245.sar'
+      - 'SAPKD74083' # SPAM/SAINT Update - Version 740/0083
+
+    sap_software_list_x86_64:
+      # Database Server
       - 'IMDB_SERVER20_059_17-80002031.SAR'
       - 'IMDB_CLIENT20_021_31-80002082.SAR' # SAP HANA Client
-      - 'SWPM10SP43_2-20009701.SAR'
-      - 'igsexe_13-80003187.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
+      # Application Server
       - 'SAPEXE_1100-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002572.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
+      - 'igsexe_13-80003187.sar' # IGS 7.53
+      # Tools
+      - 'SAPCAR_1300-70007716.EXE'
+      - 'SWPM10SP43_2-20009701.SAR'
       - 'SUM11SP04_3-80006800.SAR' # SUM 1.1
-      - 'SAPKD74083' # SPAM/SAINT Update - Version 740/0083
-      - '51050036_1' # SAP ERP 6.0 on HANA EHP7 Installation Export 1/18
-      - '51050036_2'
-      - '51050036_3'
-      - '51050036_4'
-      - '51050036_5'
-      - '51050036_6'
-      - '51050036_7'
-      - '51050036_8'
-      - '51050036_9'
-      - '51050036_10'
-      - '51050036_11'
-      - '51050036_12'
-      - '51050036_13'
-      - '51050036_14'
-      - '51050036_15'
-      - '51050036_16'
-      - '51050036_17'
-      - '51050036_18'
 
-    softwarecenter_search_list_ppc64le:
-      - 'SAPCAR_1300-70007726.EXE'
+    sap_software_list_ppc64le:
+      # Database Server
       - 'IMDB_SERVER20_059_17-80002046.SAR'
       - 'IMDB_CLIENT20_021_31-80002095.SAR' # SAP HANA Client
-      - 'SWPM10SP43_2-70002492.SAR'
-      - 'igsexe_13-80003246.sar' # IGS 7.53
-      - 'igshelper_17-10010245.sar'
+      # Application Server
       - 'SAPEXE_1100-80002630.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1100-80002629.SAR' # Kernel Part II (753), SAP HANA
       - 'SAPHOSTAGENT61_61-80004831.SAR' # SAP Host Agent 7.22
+      - 'igsexe_13-80003246.sar' # IGS 7.53
+      # Tools
+      - 'SAPCAR_1300-70007726.EXE'
+      - 'SWPM10SP43_2-70002492.SAR'
       - 'SUM11SP04_3-80006861.SAR' # SUM 1.1
-      - 'SAPKD74083' # SPAM/SAINT Update - Version 740/0083
-      - '51050036_1' # SAP ERP 6.0 on HANA EHP7 Installation Export 1/18
-      - '51050036_2'
-      - '51050036_3'
-      - '51050036_4'
-      - '51050036_5'
-      - '51050036_6'
-      - '51050036_7'
-      - '51050036_8'
-      - '51050036_9'
-      - '51050036_10'
-      - '51050036_11'
-      - '51050036_12'
-      - '51050036_13'
-      - '51050036_14'
-      - '51050036_15'
-      - '51050036_16'
-      - '51050036_17'
-      - '51050036_18'
+
+
+### Reusable dictionaries for SAP Playbooks ###
+
+# Dictionary of lists for 'sap_swpm_inifile_sections' used across various products in 'sap_swpm' role.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_swpm_inifile_sections:
+  sandbox:
+    - swpm_installation_media
+    - swpm_installation_media_swpm1
+    - swpm_installation_media_swpm1_exportfiles
+    - credentials
+    - credentials_hana
+    - db_config_hana
+    - db_connection_nw_hana
+    - nw_config_other
+    - nw_config_central_services_abap
+    - nw_config_primary_application_server_instance
+    - nw_config_ports
+    - nw_config_host_agent
+    - sap_os_linux_user
 
 
 #### Interactive Prompt Control Variables ####
@@ -235,10 +224,12 @@ sap_vm_provision_aws_ec2_vs_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -352,10 +343,12 @@ sap_vm_provision_gcp_ce_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -472,7 +465,8 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 
     ecc01: # Hostname, must be 13 characters or less
       sap_host_type: hana_primary # hana_primary, hana_secondary, nwas_ascs, nwas_ers, nwas_pas, nwas_aas
-      virtual_machine_profile: "ush1-4x256" # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      # 32 vCPU x 256GB DRAM, alt: use custom SAP instance profile sizes using cnp-2x16 (2 Power Cores [16 vCPU] x 16GB) and above
+      virtual_machine_profile: "ush1-4x256"
       ibmcloud_powervs_hardware_machine_type: e980 # IBM Power hardware machine type (MT) used to host the Virtual Machine
       disable_ip_anti_spoofing: true
 
@@ -498,10 +492,12 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -517,7 +513,9 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
         - name: hana_shared
           mountpoint: /hana/shared
           disk_size: 256
-          disk_type: tier1               # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB
+          # to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          disk_type: tier1
           filesystem_type: xfs           # default: xfs
 
         # See SAP Note 1597355 - Swap-space recommendation for Linux
@@ -536,13 +534,14 @@ sap_vm_provision_ibmcloud_powervs_host_specifications_dictionary:
 #### Ansible dictionary for operating system images ####
 sap_vm_provision_ibmcloud_powervs_host_os_image_dictionary:
   # Red Hat
-  rhel-8-8: ".*RHEL.*8.*8"
-  rhel-9-2: ".*RHEL.*9.*2"
+  rhel-8-10: ".*RHEL.*8.*10"
   rhel-9-4: ".*RHEL.*9.*4"
-  rhel-8-4-sap-ha: "RHEL8-SP4-SAP"
   rhel-8-6-sap-ha: ".*RHEL.*8.*6.*SAP$" # ensure string suffix using $
   rhel-8-8-sap-ha: ".*RHEL.*8.*8.*SAP$" # ensure string suffix using $
+  rhel-8-10-sap-ha: ".*RHEL.*8.*10.*SAP$" # ensure string suffix using $
   rhel-9-2-sap-ha: ".*RHEL.*9.*2.*SAP$" # ensure string suffix using $
+  rhel-9-4-sap-ha: ".*RHEL.*9.*4.*SAP$" # ensure string suffix using $
+  rhel-9-6-sap-ha: ".*RHEL.*9.*6.*SAP$" # ensure string suffix using $
   # rhel-8-4-sap-ha-byol: "RHEL8-SP4-SAP-BYOL"
   # rhel-8-6-sap-ha-byol: ".*RHEL.*8.*6.*SAP-BYOL$" # ensure string suffix using $
   # rhel-8-8-sap-ha-byol: ".*RHEL.*8.*8.*SAP-BYOL$" # ensure string suffix using $
@@ -593,10 +592,12 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -612,7 +613,9 @@ sap_vm_provision_ibmcloud_vs_host_specifications_dictionary:
         - name: hana_shared
           mountpoint: /hana/shared
           disk_size: 320
-          disk_type: 10iops-tier         # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          # Does NOT use Burst IOPS storage. Approx same cost as 1TB at lower IOPS Tiers, use lower capacity and increase to 10IOPS/GB
+          # to ensure quicker DB Backup Restore from /hana/shared/<system_id>/HDB<instance_no>/backup/data/DB_<suffix>
+          disk_type: 10iops-tier
           filesystem_type: xfs           # default: xfs
 
         - name: usr_sap
@@ -700,10 +703,12 @@ sap_vm_provision_ibmpowervm_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -763,10 +768,12 @@ sap_vm_provision_msazure_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -1007,10 +1014,12 @@ sap_vm_provision_ovirt_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}
@@ -1074,10 +1083,12 @@ sap_vm_provision_vmware_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}

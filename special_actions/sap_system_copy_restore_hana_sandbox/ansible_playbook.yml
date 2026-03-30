@@ -9,63 +9,65 @@
 
   vars_prompt:
 
-    - name: ansible_prompt_sap_install_media_detect_directory
+    - name: __prompt_sap_install_media_detect_directory
       prompt: Please enter the directory path (on target) to scan for SAP Software (e.g. /software)
       private: false
 
-    - name: ansible_prompt_sap_hana_backup_file_directory
-      prompt: Please enter the directory path (on target) containing the SAP HANA Complete Data Backup files (e.g. /software/backup_files). Ensure no trailing forward slash.
+    - name: __prompt_sap_hana_backup_file_directory
+      prompt: >-
+        Please enter the directory path (on target) containing the SAP HANA Complete Data Backup files (e.g. /software/backup_files).
+        Ensure no trailing forward slash.
       private: false
 
-    - name: ansible_prompt_sap_hana_backup_file_prefix
+    - name: __prompt_sap_hana_backup_file_prefix
       prompt: Please enter the prefix of the SAP HANA Complete Data Backup files (e.g. COMPLETE_DATA_BACKUP)
       private: false
 
-    - name: ansible_prompt_sap_hana_backup_db_schema
+    - name: __prompt_sap_hana_backup_db_schema
       prompt: Please enter the Database Schema name contained in the SAP HANA Complete Data Backup files (e.g. SAPABAP1)
       private: false
 
-    - name: ansible_prompt_sap_password_override
+    - name: __prompt_sap_password_override
       prompt: Please enter the password to use for SAP HANA and SAP NetWeaver default users during the installation.
       private: true
 
-    - name: ansible_prompt_sap_password_backup_ddic000
+    - name: __prompt_sap_password_backup_ddic000
       prompt: Please enter the SAP NetWeaver Data Dictionary (DDIC) user password in Client 000 of the Database Schema. Password is determined by backup file
       private: true
 
-    - name: ansible_prompt_sap_password_backup_system_hana_tenant
+    - name: __prompt_sap_password_backup_system_hana_tenant
       prompt: Please enter the SAP NetWeaver Password of user 'SYSTEM' inside the SAP HANA Tenant Database Schema. Password is determined by backup file
       private: true
 
-    - name: ansible_prompt_sap_password_backup_schema
+    - name: __prompt_sap_password_backup_schema
       prompt: Please enter the SAP HANA Password of the database schema used in the backup file. Password is determined by backup file
       private: true
 
-    - name: ansible_prompt_sap_system_type_to_restore
+    - name: __prompt_sap_system_type_to_restore
       prompt: Please enter the SAP System type to restore from SAP HANA Complete Data Backup (saps4hana, sapecc)
       private: false
 
-    - name: ansible_prompt_sap_system_version_to_restore
+    - name: __prompt_sap_system_version_to_restore
       prompt: Please enter the SAP System version to restore from SAP HANA Complete Data Backup (1909, 2020, 2021, 2022, 2023, 6_ehp7, 6_ehp8)
       private: false
 
-    - name: ansible_prompt_sap_system_id_db
+    - name: __prompt_sap_system_id_db
       prompt: Please enter desired SAP System ID for SAP HANA Database Server instance (e.g. H01)
       private: false
 
-    - name: ansible_prompt_sap_system_id_instance_db
+    - name: __prompt_sap_system_id_instance_db
       prompt: Please enter desired Instance Number for SAP HANA Database Server instance (e.g. 90)
       private: false
 
-    - name: ansible_prompt_sap_system_id
+    - name: __prompt_sap_system_id
       prompt: Please enter desired SAP System ID for the SAP System such as SAP ECC or SAP S/4HANA (e.g. S01)
       private: false
 
-    - name: ansible_prompt_sap_system_id_instance_nwas_ascs
+    - name: __prompt_sap_system_id_instance_nwas_ascs
       prompt: Please enter desired Instance Number for SAP NetWeaver Application Server ASCS instance (e.g. 00)
       private: false
 
-    - name: ansible_prompt_sap_system_id_instance_nwas_pas
+    - name: __prompt_sap_system_id_instance_nwas_pas
       prompt: Please enter desired Instance Number for SAP NetWeaver Application Server PAS instance (e.g. 01)
       private: false
 
@@ -76,34 +78,34 @@
 
     - name: Set facts for all hosts
       ansible.builtin.set_fact:
-        sap_install_media_detect_directory: "{{ ansible_prompt_sap_install_media_detect_directory }}"
+        sap_install_media_detect_directory: "{{ __prompt_sap_install_media_detect_directory }}"
 
-        sap_hana_install_master_password: "{{ ansible_prompt_sap_password_override }}"
-        sap_swpm_master_password: "{{ ansible_prompt_sap_password_override }}"
-        sap_swpm_db_sidadm_password: "{{ ansible_prompt_sap_password_override }}"
-        sap_swpm_db_system_password: "{{ ansible_prompt_sap_password_override }}"
-        sap_swpm_db_systemdb_password: "{{ ansible_prompt_sap_password_override }}"
+        sap_hana_install_master_password: "{{ __prompt_sap_password_override }}"
+        sap_swpm_master_password: "{{ __prompt_sap_password_override }}"
+        sap_swpm_db_sidadm_password: "{{ __prompt_sap_password_override }}"
+        sap_swpm_db_system_password: "{{ __prompt_sap_password_override }}"
+        sap_swpm_db_systemdb_password: "{{ __prompt_sap_password_override }}"
 
-        sap_swpm_ddic_000_password: "{{ ansible_prompt_sap_password_backup_ddic000 }}"
-        sap_swpm_backup_system_password: "{{ ansible_prompt_sap_password_backup_system_hana_tenant }}"
-        sap_swpm_db_schema_abap_password: "{{ ansible_prompt_sap_password_backup_schema }}"
+        sap_swpm_ddic_000_password: "{{ __prompt_sap_password_backup_ddic000 }}"
+        sap_swpm_backup_system_password: "{{ __prompt_sap_password_backup_system_hana_tenant }}"
+        sap_swpm_db_schema_abap_password: "{{ __prompt_sap_password_backup_schema }}"
 
-        sap_swpm_backup_location: "{{ ansible_prompt_sap_hana_backup_file_directory }}"
+        sap_swpm_backup_location: "{{ __prompt_sap_hana_backup_file_directory }}"
         sap_swpm_backup_prefix: "{{ sap_hana_backup_filename_prefix }}"
-        sap_swpm_db_schema_abap: "{{ ansible_prompt_sap_hana_backup_db_schema }}"
+        sap_swpm_db_schema_abap: "{{ __prompt_sap_hana_backup_db_schema }}"
 
-        sap_hana_install_sid: "{{ ansible_prompt_sap_system_id_db }}"
-        sap_swpm_db_sid: "{{ ansible_prompt_sap_system_id_db }}"
-        sap_hana_install_instance_number: "{{ ansible_prompt_sap_system_id_instance_db }}"
-        sap_swpm_db_instance_nr: "{{ ansible_prompt_sap_system_id_instance_db }}"
-        sap_swpm_sid: "{{ ansible_prompt_sap_system_id }}"
-        sap_swpm_ascs_instance_nr: "{{ ansible_prompt_sap_system_id_instance_nwas_ascs }}"
-        sap_swpm_pas_instance_nr: "{{ ansible_prompt_sap_system_id_instance_nwas_pas }}"
+        sap_hana_install_sid: "{{ __prompt_sap_system_id_db }}"
+        sap_swpm_db_sid: "{{ __prompt_sap_system_id_db }}"
+        sap_hana_install_instance_number: "{{ __prompt_sap_system_id_instance_db }}"
+        sap_swpm_db_instance_nr: "{{ __prompt_sap_system_id_instance_db }}"
+        sap_swpm_sid: "{{ __prompt_sap_system_id }}"
+        sap_swpm_ascs_instance_nr: "{{ __prompt_sap_system_id_instance_nwas_ascs }}"
+        sap_swpm_pas_instance_nr: "{{ __prompt_sap_system_id_instance_nwas_pas }}"
 
-        sap_swpm_fqdn: "{{ ansible_domain }}"
+        sap_swpm_fqdn: "{{ ansible_facts['domain'] }}"
         sap_swpm_update_etchosts: false
-        sap_swpm_db_host: "{{ ansible_hostname }}"
-        sap_swpm_ascs_instance_hostname: "{{ ansible_hostname }}"
+        sap_swpm_db_host: "{{ ansible_facts['hostname'] }}"
+        sap_swpm_ascs_instance_hostname: "{{ ansible_facts['hostname'] }}"
 
     - name: Execute Ansible Role sap_general_preconfigure
       ansible.builtin.include_role:
@@ -142,14 +144,14 @@
         sap_install_media_detect_kernel: true
         sap_install_media_detect_webdisp: false
         sap_install_media_detect_db_client: "saphana"
-        sap_install_media_detect_export: "{{ ansible_prompt_sap_system_type_to_restore }}"
+        sap_install_media_detect_export: "{{ __prompt_sap_system_type_to_restore }}"
 
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
       vars:
-        sap_swpm_templates_product_input: "{{ ansible_prompt_sap_system_type_to_restore + '_' + ansible_prompt_sap_system_version_to_restore + '_sandbox_system_copy' }}"
-
+        sap_swpm_templates_product_input:
+          "{{ __prompt_sap_system_type_to_restore + '_' + __prompt_sap_system_version_to_restore + '_sandbox_system_copy' }}"
 
 
     # - name: Execute Ansible Role sap_profile_update to update Profile for ICM HTTPS

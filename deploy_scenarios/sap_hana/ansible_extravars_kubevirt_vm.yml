@@ -22,8 +22,8 @@ sap_vm_provision_kubevirt_api_key: "ENTER_STRING_VALUE_HERE"  # Cluster API key 
 sap_vm_provision_kubevirt_target_namespace: "ENTER_STRING_VALUE_HERE"  # Target namespace (String).
 sap_vm_provision_kubevirt_vm_host_os_image_url: "ENTER_STRING_VALUE_HERE" # Image URL (String). "docker://registry.redhat.io/rhel8/rhel-guest-image:8.6.0"
 # Optional, create OS User and Password. Otherwise only 'root' will exist using the SSH Key
-sap_vm_provision_kubevirt_os_user: "ENTER_STRING_VALUE_HERE"  # Optional OS user name (String).
-sap_vm_provision_kubevirt_os_user_password: "ENTER_STRING_VALUE_HERE"  # Optional OS user password (String).
+# sap_vm_provision_kubevirt_vm_os_user: "ENTER_STRING_VALUE_HERE"  # Optional OS user name (String).
+# sap_vm_provision_kubevirt_vm_os_user_password: ''  # Optional OS user password (String).
 
 sap_vm_provision_dns_root_domain: "ENTER_STRING_VALUE_HERE"  # Root domain for DNS entries (e.g., example.com) (String).
 
@@ -65,10 +65,12 @@ sap_vm_provision_kubevirt_vm_host_specifications_dictionary:
           # lvm_lv_stripes: 2             # default: null, number of disks to stripe over
           # lvm_lv_stripe_size: 128K      # default: 64K, defined by the OS. Akin to Virtualized Block Size
           # lvm_vg_name:                  # default: vg_<element name>
-          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
+          # lvm_vg_options:               # default: none, additional LVM VG options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM VG Physical Extent)
           # lvm_vg_physical_extent_size:  # default: 4, uses 4 MiB default and difficult to change once set. Akin to Physical Block Size
-          # lvm_pv_device:                # default: discovered ansible_devices matching the target size
-          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
+          # lvm_pv_device:                # default: discovered ansible_facts['devices'] matching the target size
+          # lvm_pv_options:               # default: none, additional LVM PV options as string in LVM options syntax
+          #                               # (e.g. "--dataalignment XX ..." to override MiB offset from disk start before first LVM PV Physical Extent)
           # nfs_path:                     # subdirectory path on the NFS server
           # nfs_server:                   # NFS server and parent directory (e.g. nfs.com:/share1). default: {{ sap_storage_setup_nfs_server }}
           # nfs_filesystem_type:          # default: {{ sap_storage_setup_nfs_filesystem_type }}

@@ -10,14 +10,14 @@
         prompt: |
           Enter your SAP S-User ID.
           Example: S0001234567
-      register: sap_id_user_register
+      register: __sap_playbook_register_sap_id_user
       when: sap_id_user is not defined
 
     - name: Prompt for SAP S-User Password
       ansible.builtin.pause:
         prompt: |
           Enter your SAP S-User password.
-      register: sap_id_user_password_register
+      register: __sap_playbook_register_sap_id_user_password
       when: sap_id_user_password is not defined
       no_log: true
 
@@ -27,7 +27,7 @@
           Please enter the CPU Architecture of the SAP Software installation media to download.
           Available options: x86_64, ppc64le
           Press enter to skip and use the default value ('x86_64').
-      register: sap_software_cpu_architecture_register
+      register: __sap_playbook_register_sap_software_cpu_architecture
       when: sap_software_cpu_architecture is not defined
 
     - name: Prompt for SAP software product
@@ -38,7 +38,7 @@
           {{ key }}
           {% endfor %}
           Products are defined in the 'sap_software_install_dictionary' variable.
-      register: sap_software_product_register
+      register: __sap_playbook_register_sap_software_product
       when: sap_software_product is not defined
 
     - name: Prompt for SAP Software Download path
@@ -46,7 +46,7 @@
         prompt: |
           Please enter the software directory on the target host.
           Press enter to skip and use the default value ('/software').
-      register: sap_software_target_directory_register
+      register: __sap_playbook_register_sap_software_target_directory
       when: sap_software_target_directory is not defined
 
 
@@ -56,16 +56,16 @@
 
     - name: Set facts for all hosts
       ansible.builtin.set_fact:
-        sap_id_user: "{{ sap_id_user | d(sap_id_user_register.user_input) }}"
-        sap_id_user_password: "{{ sap_id_user_password | d(sap_id_user_password_register.user_input) }}"
+        sap_id_user: "{{ sap_id_user | d(__sap_playbook_register_sap_id_user.user_input) }}"
+        sap_id_user_password: "{{ sap_id_user_password | d(__sap_playbook_register_sap_id_user_password.user_input) }}"
         sap_software_cpu_architecture: "{{ sap_software_cpu_architecture |
-          d(sap_software_cpu_architecture_register.user_input
-          if sap_software_cpu_architecture_register.user_input | length > 0
+          d(__sap_playbook_register_sap_software_cpu_architecture.user_input
+          if __sap_playbook_register_sap_software_cpu_architecture.user_input | length > 0
           else 'x86_64') }}"
-        sap_software_product: "{{ sap_software_product | d(sap_software_product_register.user_input) }}"
+        sap_software_product: "{{ sap_software_product | d(__sap_playbook_register_sap_software_product.user_input) }}"
         sap_software_target_directory: "{{ sap_software_target_directory |
-          d(sap_software_target_directory_register.user_input
-          if sap_software_target_directory_register.user_input | length > 0
+          d(__sap_playbook_register_sap_software_target_directory.user_input
+          if __sap_playbook_register_sap_software_target_directory.user_input | length > 0
           else '/software') }}"
 
     # SAP software download will only occur if the 'community.sap_launchpad' collection is installed.
@@ -75,7 +75,8 @@
       become: false  # Enables usage of Python VENV
       ansible.builtin.command:
         cmd: ansible-galaxy collection list
-      register: sap_playbook_collection_list_output
+      register: __sap_playbook_register_collection_list_output
+      changed_when: false
 
     - name: Execute Ansible Role sap_software_download
       ansible.builtin.include_role:
@@ -85,9 +86,11 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_software_target_directory }}"
         sap_software_download_deduplicate: first
-        sap_software_download_files: "{{ sap_software_install_dictionary[item]
+        sap_software_download_files: "{{ sap_software_install_dictionary[product_item]
           ['softwarecenter_search_list_' ~ sap_software_cpu_architecture] }}"
       loop: "{{ sap_software_product.split(',') }}"
+      loop_control:
+        loop_var: product_item
       when:
-        - sap_playbook_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
-        - item in sap_software_install_dictionary.keys()
+        - __sap_playbook_register_collection_list_output.stdout_lines | select('search', 'community.sap_launchpad')
+        - product_item in sap_software_install_dictionary.keys()

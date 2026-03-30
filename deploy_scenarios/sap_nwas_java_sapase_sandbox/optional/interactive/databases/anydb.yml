@@ -1,3 +1,4 @@
+# SPDX-License-Identifier: Apache-2.0
 ---
 # Interactive prompts - Scenario - AnyDB (SAP ASE, IBM DB2, Oracle DB, SAP MaxDB)
 
@@ -20,14 +21,14 @@
           Enter the Oracle DB installation method.
           Available options: minimal, responsefile
           Press enter to skip and use the default value ('minimal').
-      register: sap_anydb_install_oracle_method_register
+      register: __sap_playbook_register_sap_anydb_install_oracle_method
       when: sap_anydb_install_oracle_method is not defined
 
     - name: Set fact for sap_anydb_install_oracle_method
       ansible.builtin.set_fact:
         sap_anydb_install_oracle_method:
-          "{{ sap_anydb_install_oracle_method_register.user_input
-            if sap_anydb_install_oracle_method_register.user_input | length > 0
+          "{{ __sap_playbook_register_sap_anydb_install_oracle_method.user_input
+            if __sap_playbook_register_sap_anydb_install_oracle_method.user_input | length > 0
             else 'minimal' }}"
       when: sap_anydb_install_oracle_method is not defined
 
@@ -35,7 +36,7 @@
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_anydb_install_oracle_method': '{{ sap_anydb_install_oracle_method }}'
-          {% if sap_anydb_install_oracle_method_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_anydb_install_oracle_method.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -51,14 +52,14 @@
         prompt: |
           Enter the Oracle DB base path.
           Press enter to skip and use the default value ('/oracle').
-      register: sap_anydb_install_oracle_base_register
+      register: __sap_playbook_register_sap_anydb_install_oracle_base
       when: sap_anydb_install_oracle_base is not defined
 
     - name: Set fact for sap_anydb_install_oracle_base
       ansible.builtin.set_fact:
         sap_anydb_install_oracle_base:
-          "{{ sap_anydb_install_oracle_base_register.user_input
-            if sap_anydb_install_oracle_base_register.user_input | length > 0
+          "{{ __sap_playbook_register_sap_anydb_install_oracle_base.user_input
+            if __sap_playbook_register_sap_anydb_install_oracle_base.user_input | length > 0
             else '/oracle' }}"
       when: sap_anydb_install_oracle_base is not defined
 
@@ -66,7 +67,7 @@
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_anydb_install_oracle_base': '{{ sap_anydb_install_oracle_base }}'
-          {% if sap_anydb_install_oracle_base_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_anydb_install_oracle_base.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -84,14 +85,14 @@
         prompt: |
           Enter the Oracle DB data path.
           Press enter to skip and use the default value ('/oradata').
-      register: sap_anydb_install_oracle_filesystem_storage_register
+      register: __sap_playbook_register_sap_anydb_install_oracle_filesystem_storage
       when: sap_anydb_install_oracle_filesystem_storage is not defined
 
     - name: Set fact for sap_anydb_install_oracle_filesystem_storage
       ansible.builtin.set_fact:
         sap_anydb_install_oracle_filesystem_storage:
-          "{{ sap_anydb_install_oracle_filesystem_storage_register.user_input
-            if sap_anydb_install_oracle_filesystem_storage_register.user_input | length > 0
+          "{{ __sap_playbook_register_sap_anydb_install_oracle_filesystem_storage.user_input
+            if __sap_playbook_register_sap_anydb_install_oracle_filesystem_storage.user_input | length > 0
             else '/oradata' }}"
       when: sap_anydb_install_oracle_filesystem_storage is not defined
 
@@ -99,7 +100,7 @@
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_anydb_install_oracle_filesystem_storage': '{{ sap_anydb_install_oracle_filesystem_storage }}'
-          {% if sap_anydb_install_oracle_filesystem_storage_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_anydb_install_oracle_filesystem_storage.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -117,14 +118,14 @@
         prompt: |
           Enter the Oracle DB inventory path.
           Press enter to skip and use the default value ('/oraInventory').
-      register: sap_anydb_install_oracle_inventory_central_register
+      register: __sap_playbook_register_sap_anydb_install_oracle_inventory_central
       when: sap_anydb_install_oracle_inventory_central is not defined
 
     - name: Set fact for sap_anydb_install_oracle_inventory_central
       ansible.builtin.set_fact:
         sap_anydb_install_oracle_inventory_central:
-          "{{ sap_anydb_install_oracle_inventory_central_register.user_input
-            if sap_anydb_install_oracle_inventory_central_register.user_input | length > 0
+          "{{ __sap_playbook_register_sap_anydb_install_oracle_inventory_central.user_input
+            if __sap_playbook_register_sap_anydb_install_oracle_inventory_central.user_input | length > 0
             else '/oraInventory' }}"
       when: sap_anydb_install_oracle_inventory_central is not defined
 
@@ -132,7 +133,7 @@
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_anydb_install_oracle_inventory_central': '{{ sap_anydb_install_oracle_inventory_central }}'
-          {% if sap_anydb_install_oracle_inventory_central_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_anydb_install_oracle_inventory_central.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -149,18 +150,18 @@
       ansible.builtin.pause:
         prompt: |
           Enter the Oracle DB System Password.
-      register: sap_anydb_install_oracle_system_password_register
+      register: __sap_playbook_register_sap_anydb_install_oracle_system_password
       when: sap_anydb_install_oracle_system_password is not defined
 
     - name: Set fact for sap_anydb_install_oracle_system_password
       ansible.builtin.set_fact:
-        sap_anydb_install_oracle_system_password: "{{ sap_anydb_install_oracle_system_password_register.user_input }}"
+        sap_anydb_install_oracle_system_password: "{{ __sap_playbook_register_sap_anydb_install_oracle_system_password.user_input }}"
 
     - name: Fail if sap_anydb_install_oracle_system_password is invalid
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_anydb_install_oracle_system_password': '{{ sap_anydb_install_oracle_system_password }}'
-          {% if sap_anydb_install_oracle_system_password_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_anydb_install_oracle_system_password.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -179,14 +180,14 @@
           Enter the path for Oracle DB Installation Software.
           Default is based on 'sap_install_media_detect_source_directory'.
           Press enter to skip and use the default value ('{{ sap_install_media_detect_source_directory }}').
-      register: sap_anydb_install_oracle_extract_path_register
+      register: __sap_playbook_register_sap_anydb_install_oracle_extract_path
       when: sap_anydb_install_oracle_extract_path is not defined
 
     - name: Set fact for sap_anydb_install_oracle_extract_path
       ansible.builtin.set_fact:
         sap_anydb_install_oracle_extract_path:
-          "{{ sap_anydb_install_oracle_extract_path_register.user_input
-            if sap_anydb_install_oracle_extract_path_register.user_input | length > 0
+          "{{ __sap_playbook_register_sap_anydb_install_oracle_extract_path.user_input
+            if __sap_playbook_register_sap_anydb_install_oracle_extract_path.user_input | length > 0
             else sap_install_media_detect_source_directory }}"
       when: sap_anydb_install_oracle_extract_path is not defined
 
@@ -194,7 +195,7 @@
       ansible.builtin.fail:
         msg: |
           Invalid value for variable 'sap_anydb_install_oracle_extract_path': '{{ sap_anydb_install_oracle_extract_path }}'
-          {% if sap_anydb_install_oracle_extract_path_register.user_input is not defined -%}
+          {% if __sap_playbook_register_sap_anydb_install_oracle_extract_path.user_input is not defined -%}
             Correct this variable in extra vars or remove it from extra vars to enable interactive prompt.
           {% else -%}
             Re-run the playbook and provide a valid input.
@@ -211,15 +212,15 @@
     - name: Check if interactive task file is available - SAP AnyDB - HA
       ansible.builtin.stat:
         path: "optional/interactive/db_anydb_ha.yml"
-      register: sap_playbook_interactive_tasks_anydb_availability
+      register: __sap_playbook_register_interactive_tasks_anydb_availability
       ignore_errors: true
 
     - name: Execute interactive task file - SAP AnyDB - HA
       ansible.builtin.include_tasks:
         file: "optional/interactive/db_anydb_ha.yml"
-      when: sap_playbook_interactive_tasks_anydb_availability.stat.exists
+      when: __sap_playbook_register_interactive_tasks_anydb_availability.stat.exists
 
     - name: Skip if interactive file was not found - SAP AnyDB - HA
       ansible.builtin.debug:
         msg: Interactive task file 'optional/interactive/db_anydb_ha.yml' was not found. Skipping.
-      when: not sap_playbook_interactive_tasks_anydb_availability.stat.exists
+      when: not __sap_playbook_register_interactive_tasks_anydb_availability.stat.exists

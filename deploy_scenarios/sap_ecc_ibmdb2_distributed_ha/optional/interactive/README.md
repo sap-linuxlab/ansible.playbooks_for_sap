@@ -88,13 +88,13 @@ Interactive Prompts are the first play in a deployment scenario, and they run if
         - name: Check if interactive tasks are available
           ansible.builtin.stat:
             path: optional/tasks/interactive/main.yml
-          register: sap_playbook_interactive_tasks_availability
+          register: __sap_playbook_register_interactive_tasks_availability
           ignore_errors: true
 
         - name: Execute collection of interactive inputs
           ansible.builtin.include_tasks:
             file: optional/tasks/interactive/main.yml
-          when: sap_playbook_interactive_tasks_availability.stat.exists
+          when: __sap_playbook_register_interactive_tasks_availability.stat.exists
 ```
 
 ### Execution Flow
