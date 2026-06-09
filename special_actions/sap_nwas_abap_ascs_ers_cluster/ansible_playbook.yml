@@ -176,6 +176,39 @@
   max_fail_percentage: 0
   tasks:
 
+    - name: Block to prepare /etc/hosts entries for all hosts
+      when:
+        - sap_vm_provision_iac_platform == 'existing_hosts'
+        - sap_domain | d('') | length > 0 or ansible_facts['domain'] | d('') | length > 0
+      block:
+
+        - name: Execute Ansible Role sap_maintain_etc_hosts for existing_hosts  # noqa: no-tabs
+          ansible.builtin.import_role:
+            name: community.sap_install.sap_maintain_etc_hosts
+          vars:
+            sap_maintain_etc_hosts_delimiter: "\t"
+            sap_maintain_etc_hosts_domain: "{{ sap_domain }}"
+            sap_maintain_etc_hosts_list: >-
+              {%- set my_list = [] -%}
+              {%- for host in ansible_play_hosts_all -%}
+                {%- if hostvars[host] is defined and hostvars[host]['ansible_host'] is defined -%}
+                  {%- set _ = my_list.append({'node_name': host, 'node_ip': hostvars[host]['ansible_host']}) -%}
+                {%- endif -%}
+              {%- endfor -%}
+              {{ my_list }}
+
+        - name: Execute Ansible Role sap_maintain_etc_hosts for existing_hosts - HA  # noqa: no-tabs
+          ansible.builtin.import_role:
+            name: community.sap_install.sap_maintain_etc_hosts
+          vars:
+            sap_maintain_etc_hosts_delimiter: "\t"
+            sap_maintain_etc_hosts_domain: "{{ sap_domain }}"
+            sap_maintain_etc_hosts_list:
+              - node_name: "{{ sap_swpm_ascs_instance_hostname }}"
+                node_ip: "{{ sap_vm_provision_ha_vip_nwas_abap_ascs | regex_replace('/\\d+$', '') }}"
+              - node_name: "{{ sap_swpm_ers_instance_hostname }}"
+                node_ip: "{{ sap_vm_provision_ha_vip_nwas_abap_ers | regex_replace('/\\d+$', '') }}"
+
     - name: Install rsync
       ansible.builtin.package:
         name: rsync
@@ -207,7 +240,7 @@
         sap_software_download_suser_id: "{{ sap_id_user }}"
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
-        sap_software_download_deduplicate: first
+        sap_software_download_deduplicate: last
         sap_software_download_files: "{{ (
           sap_software_install_dictionary[sap_software_product]['sap_software_list_' ~ ansible_facts['architecture']] | d([]) +
           sap_software_install_dictionary[sap_software_product]['sap_software_list_independent'] | d([])) | unique }}"
@@ -239,7 +272,7 @@
   tasks:
 
     - name: Transfer SAP NetWeaver ERS installation media to host
-      delegate_to: "{{ software_source_ip }}"
+      delegate_to: "{{ software_source_ip if sap_vm_provision_iac_platform != 'existing_hosts' else software_source_hostname }}"
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ file_item }}"
