@@ -300,6 +300,10 @@
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
         sap_software_download_deduplicate: last
+        # Enables broader search for known files, not just the bugfix versions.
+        # Example: Helps with downloading higher HANA revision version within same SPS level.
+        sap_software_download_find_upgrades: true
+        sap_software_download_upgrade_relationships: true
         sap_software_download_files: "{{ (
           sap_software_install_dictionary[sap_software_product]['sap_software_list_' ~ ansible_facts['architecture']] | d([]) +
           sap_software_install_dictionary[sap_software_product]['sap_software_list_independent'] | d([])) | unique }}"
