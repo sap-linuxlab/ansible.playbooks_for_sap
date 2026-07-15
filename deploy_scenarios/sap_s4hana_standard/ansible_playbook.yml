@@ -269,7 +269,11 @@
         sap_software_download_suser_id: "{{ sap_id_user }}"
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
-        sap_software_download_deduplicate: first
+        sap_software_download_deduplicate: last
+        # Enables broader search for known files, not just the bugfix versions.
+        # Example: Helps with downloading higher HANA revision version within same SPS level.
+        sap_software_download_find_upgrades: true
+        sap_software_download_upgrade_relationships: true
         sap_software_download_files: "{{ (
           sap_software_install_dictionary[sap_software_product]['sap_software_list_' ~ ansible_facts['architecture']] | d([]) +
           sap_software_install_dictionary[sap_software_product]['sap_software_list_independent'] | d([])) | unique }}"
@@ -301,7 +305,7 @@
   tasks:
 
     - name: Transfer SAP HANA installation media to SAP HANA Primary
-      delegate_to: "{{ software_source_ip }}"
+      delegate_to: "{{ software_source_ip if sap_vm_provision_iac_platform != 'existing_hosts' else software_source_hostname }}"
       remote_user: "root"
       ansible.posix.synchronize:
         src: "{{ file_item }}"
