@@ -46,8 +46,8 @@ sap_software_install_dictionary:
     sap_software_list_x86_64:
       # Database Server
       # - '51054410_2' # CD Media for MaxDB 7.9 - SP10 Build 04 Linux on x86_64 64bit
-      - 'MAXDB7911_10-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
-      - 'MAXDBART7911_10-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
+      - 'MAXDB7911_15-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
+      - 'MAXDBART7911_15-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
       # Application Server
       - '51051806_1' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 1/2, RAR
       - '51051806_2' # NetWeaver AS ABAP 7.52 Innovation Pkg - Installation Exp 2/2, RAR
@@ -80,8 +80,8 @@ sap_software_install_dictionary:
     sap_software_list_x86_64:
       # Database Server
       # - '51054410_2' # CD Media for MaxDB 7.9 - SP10 Build 04 Linux on x86_64 64bit
-      - 'MAXDB7911_10-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
-      - 'MAXDBART7911_10-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
+      - 'MAXDB7911_15-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
+      - 'MAXDBART7911_15-20009119.SAR'  # MAXDB 7.9 64-BIT Linux on x86_64 64bit
       # Application Server
       - '51050829_3' # SAP Netweaver 7.5 Installation Export, ZIP
       # - '51050829_4' # NW 7.5 Language 1/2
