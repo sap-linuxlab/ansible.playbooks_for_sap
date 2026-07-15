@@ -15,12 +15,12 @@ The Ansible Playbooks for SAP offer several key benefits:
 - **Corporate-Ready:** Licensed for corporate use by SAP Customers, SAP Service Partners, and SAP Technology Partners.
 
 
-## Supported Configurations
-### Supported Operating Systems
-- SUSE Linux Enterprise Server for SAP Applications (SLES4SAP)
-- Red Hat Enterprise Linux for SAP (RHEL4SAP)
+## Available Configurations
+### Compatible Operating Systems
+- Red Hat Enterprise Linux for SAP Solutions: 8.x, 9.x, 10.x
+- SUSE Linux Enterprise Server for SAP applications: 15 SP5, 15 SP6, 15 SP7, 16
 
-### Supported Infrastructure Platforms
+### Compatible Infrastructure Platforms
 - AWS EC2 Virtual Server instances
 - Google Cloud Compute Engine Virtual Machines
 - IBM Cloud, Intel Virtual Servers
@@ -43,7 +43,7 @@ The reliability issues with the Ansible Collection for Microsoft Azure are due t
 - MS Azure API behavior is not globally uniform or predictable. The same playbook and variables may yield different results across different MS Azure regions due to localized API versions or resource provider constraints.
   - This is specific to Ansible Modules from `azure.azcollection` calling MS Azure API and you can see different behavior when using Azure CLI.
 
-### Supported Deployment Scenarios
+### Available Deployment Scenarios
 | SAP Product | Versions | Deployment Topology | Database |
 | --- | --- | --- | --- |
 | SAP HANA | 2.0 SPS 08<br> 2.0 SPS 07<br> 2.0 SPS 06 | Sandbox<br> Scale-Out <br> Scale-Up High Availability | SAP HANA |
@@ -72,7 +72,7 @@ The explanation of Deployment Topologies:
 | Scale-Out | An Scale-Out system, that consists of an SAP Application instances running on a dedicated host, and an SAP HANA database server running as a scale-out cluster across multiple hosts. |
 
 
-### Supported Special Playbooks
+### Available Special Playbooks
 - SAP Web Dispatcher, Standalone (with SAP Kernel Part II for SAP HANA)
 - SAP SolMan Diagnostics Agent (SDA) `[Experimental]`
 - Download SAP Software installation media

@@ -9,8 +9,8 @@ A highly available SAP HANA Scale-Up system, as defined by SAP, consists of a pr
 This configuration provides high availability through SAP HANA System Replication and is ideal for production environments or scenarios requiring database-level redundancy and failover.
 
 
-## Supported Infrastructure Platforms
-This Ansible Playbook supports the deployment on the following infrastructure platforms:
+## Compatible Infrastructure Platforms
+This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
@@ -18,16 +18,17 @@ This Ansible Playbook supports the deployment on the following infrastructure pl
 - IBM Cloud, IBM Power Virtual Servers
 - Microsoft Azure (MS Azure)
 - IBM PowerVM
-- OVirt
-- VMware
+- OVirt `Experimental`
+- VMware `Experimental`
 
 
-## Supported SAP Software
-This playbook includes support for the following software versions:
+## Included SAP Software Versions
+The playbook is pre-configured with the following SAP software versions:
+- SAP HANA 2.0 SPS08
 - SAP HANA 2.0 SPS07
 - SAP HANA 2.0 SPS06
 
-Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
+> You can easily extend compatibility to other versions by adding new entries to the `sap_software_install_dictionary` variable in your extravars file.
 
 
 ## System Architecture
