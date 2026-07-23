@@ -9,26 +9,26 @@ A distributed SAP system, as defined by SAP, separates the SAP NetWeaver Applica
 This configuration, often referred to as a Multi-Tier Architecture, is ideal for production environments, or for scenarios requiring scalability and resource separation.  
 
 
-## Supported Infrastructure Platforms
-This Ansible Playbook supports the deployment on the following infrastructure platforms:
+## Compatible Infrastructure Platforms
+This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
 - IBM Cloud
 - Microsoft Azure (MS Azure)
-- OVirt
-- VMware
+- OVirt `Experimental`
+- VMware `Experimental`
 
 ### Considerations for ppc64le
 This Ansible Playbook is not available for IBM Power Little Endian (ppc64le).
 - All prior SAP Software without SAP HANA was for IBM Power Big Endian (ppc64) only.
 
 
-## Supported SAP Software
-This playbook includes support for the following software versions:
+## Included SAP Software Versions
+The playbook is pre-configured with the following SAP software versions:
 - EHP8 for SAP ERP 6.0
 
-Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
+> You can easily extend compatibility to other versions by adding new entries to the `sap_software_install_dictionary` variable in your extravars file.
 
 
 ## System Architecture
