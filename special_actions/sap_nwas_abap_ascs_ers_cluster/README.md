@@ -12,6 +12,22 @@ This deployment incorporates the following High Availability features:
 **This Ansible Playbook does not install fully functional SAP System, but rather focuses on installation of SAP ASCS/ERS Cluster for testing purpose.**
 
 
+### High Availability Pacemaker Cluster Behavior and Re-run Notice
+This playbook utilizes the Ansible role `sap_install.sap_ha_pacemaker_cluster` to configure the High Availability Pacemaker cluster.
+
+To maintain idempotency safely, the role constructs and validates the cluster configuration inside a **Shadow CIB** (Cluster Information Base) using `pcs` or `crmsh`.<br>
+Once the staged configuration is fully generated and verified, the updated CIB is committed to the live cluster state.
+
+- **First-Time Executions:**
+  - Safe to run during initial cluster setup on new target hosts.
+- **Re-runs / Existing Systems:**
+  - Changes are safely staged and validated in the Shadow CIB before being committed.However, re-running the playbook will apply the generated CIB state to the live cluster, updating active cluster properties, resource definitions, and constraints.
+  - **Additionally, any manual cluster customizations made directly on the nodes outside of Ansible will be overwritten and lost during the CIB commit.**
+
+> **NOTE:** Exercise caution when re-running against active production environments.<br>
+> While Shadow CIB validation prevents syntax and structural configuration errors from reaching the cluster, committing CIB updates can still trigger resource re-evaluations or service restarts if live cluster parameters differ from the playbook state.
+
+
 ## Compatible Infrastructure Platforms
 This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 
