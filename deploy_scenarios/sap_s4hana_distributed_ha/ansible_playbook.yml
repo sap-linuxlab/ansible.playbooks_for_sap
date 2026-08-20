@@ -669,6 +669,26 @@
   max_fail_percentage: 0
   tasks:
 
+    # SAFETY CHECK: SWPM Database Load Detection
+    # Pure DB Load products (e.g. NW_ABAP_DB) create no local instance files,
+    # preventing the 'sap_swpm' role from detecting existing installations.
+    # Running SWPM against an existing DB WILL DROP the schema user (DATA LOSS).
+    #
+    # We search /sapmnt/<SID>/profile for any PAS profile matching <SID>_D<NR>_*
+    # regardless of actual or virtual hostname used.
+    # - First run: PAS profile missing and 'sap_swpm_db_load_force' is set to 'true'.
+    #
+    # - Re-run: PAS profile present -> 'sap_swpm_db_load_force' is set to 'false',
+    #   causing 'sap_swpm' to fail immediately and protect the database.
+
+    - name: Check if PAS instance profile exists in shared /sapmnt
+      ansible.builtin.find:
+        paths: "/sapmnt/{{ sap_swpm_sid | upper }}/profile"
+        patterns: "{{ sap_swpm_sid | upper }}_D{{ sap_swpm_pas_instance_nr }}_*"
+      register: __sap_playbook_register_pas_profile_find
+
+    # NOTE: This task could be skipped if files are found,
+    # but 'sap_swpm' variables would need to be exposed in extravars files (e.g. 'sap_swpm_path').
     - name: Execute Ansible Role sap_install_media_detect
       ansible.builtin.include_role:
         name: community.sap_install.sap_install_media_detect
@@ -687,6 +707,11 @@
       vars:
         sap_swpm_templates_product_input: "nwas_pas_dbload_ha"
         sap_swpm_virtual_hostname: "{{ sap_swpm_pas_instance_hostname }}"
+        # WARN: This is a override for the Database Load products and should be used with caution.
+        # Set to 'true' on clean target hosts (PAS profile absent).
+        # Set to 'false' on re-runs (PAS profile present), causing sap_swpm to fail 100% and protect the DB.
+        sap_swpm_db_load_force:
+          "{{ true if __sap_playbook_register_pas_profile_find.matched | d(0) == 0 else false }}"
 
 
 - name: Ansible Play for SAP NetWeaver Application Server - Primary Application Server (PAS)
