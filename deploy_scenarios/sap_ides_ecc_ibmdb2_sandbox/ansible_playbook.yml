@@ -324,6 +324,16 @@
               - net-tools-deprecated  # Part of sle-module-legacy
               - libstdc++6-32bit
 
+        - name: Remove Port 5912 from {{ __etc_services_path }} for default IBM DB2 service and client communications (set as 'fis' by IANA) - SUSE
+          ansible.builtin.lineinfile:
+            path: "{{ __etc_services_path }}"
+            regexp: ".*Flight Information Services.*"
+            state: absent
+          vars:
+            __etc_services_path:
+              "{{ '/usr/etc/services' if ansible_facts['distribution_major_version'] == '16' else '/etc/services' }}"
+
+
     - name: Block for Red Hat
       when: ansible_facts['os_family'] == 'RedHat'
       block:
@@ -337,11 +347,11 @@
               - libaio
             state: present
 
-    - name: Remove Port 5912 from /etc/services for default IBM DB2 service and client communications, set as 'fis' by IANA
-      ansible.builtin.lineinfile:
-        path: /etc/services
-        regexp: ".*Flight Information Services.*"
-        state: absent
+        - name: Remove Port 5912 from /etc/services for default IBM DB2 service and client communications (set as 'fis' by IANA) - Red Hat
+          ansible.builtin.lineinfile:
+            path: /etc/services
+            regexp: ".*Flight Information Services.*"
+            state: absent
 
 
 #### Begin SAP software installations ####
