@@ -504,6 +504,78 @@
         name: community.sap_infrastructure.sap_vm_temp_vip
 
 
+- name: Ansible Play for operating system prerequisites for IBM Db2 Database Server
+  hosts: anydb_primary, anydb_secondary
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    - name: Block for SUSE
+      when: ansible_facts['os_family'] == 'Suse'
+      block:
+        - name: Register SUSEConnect modules for DB2 (SLES 15)
+          ansible.builtin.command:
+            cmd: "SUSEConnect -p {{ module_item }}/{{ ansible_facts['distribution_version'] }}/x86_64"
+          loop:
+            - sle-module-legacy
+            - sle-module-development-tools
+          loop_control:
+            loop_var: module_item
+          when: ansible_facts['distribution_major_version'] == "15"
+          changed_when: true  # SUSEConnect does not differentiate already activated modules.
+
+        # Legacy packages are not present on SLES 16.
+        - name: Install required packages for IBM DB2 LUW - SUSE
+          ansible.builtin.package:
+            name:
+              "{{ base_packages
+                + (legacy_packages if ansible_facts['distribution_major_version'] == '15' else []) }}"
+            state: present
+          vars:
+            base_packages:
+              - ksh
+              - mksh
+              - pam-devel
+              - libstdc++6
+              - libaio1
+              - system-user-bin
+              - binutils
+            legacy_packages:
+              - pam-devel-32bit  # Part of sle-module-development-tools
+              - net-tools-deprecated  # Part of sle-module-legacy
+              - libstdc++6-32bit
+
+        - name: Remove Port 5912 from {{ __etc_services_path }} for default IBM DB2 service and client communications (set as 'fis' by IANA) - SUSE
+          ansible.builtin.lineinfile:
+            path: "{{ __etc_services_path }}"
+            regexp: ".*Flight Information Services.*"
+            state: absent
+          vars:
+            __etc_services_path:
+              "{{ '/usr/etc/services' if ansible_facts['distribution_major_version'] == '16' else '/etc/services' }}"
+
+
+    - name: Block for Red Hat
+      when: ansible_facts['os_family'] == 'RedHat'
+      block:
+        - name: Install required packages for IBM DB2 LUW - Red Hat
+          ansible.builtin.package:
+            name:
+              - ksh
+              - mksh
+              - pam-devel
+              - libstdc++
+              - libaio
+            state: present
+
+        - name: Remove Port 5912 from /etc/services for default IBM DB2 service and client communications (set as 'fis' by IANA) - Red Hat
+          ansible.builtin.lineinfile:
+            path: /etc/services
+            regexp: ".*Flight Information Services.*"
+            state: absent
+
+
 #### Begin SAP software installations ####
 - name: Ansible Play for SAP NetWeaver Application Server installation - ABAP Central Services (ASCS) for HA
   hosts: nwas_ascs
@@ -562,6 +634,36 @@
   max_fail_percentage: 0
   tasks:
 
+    # SAFETY CHECK: SWPM Database Load Detection (DB2)
+    # Pure DB Load products (e.g. NW_ABAP_DB) create no local instance files,
+    # preventing the 'sap_swpm' role from detecting existing installations.
+    # Running SWPM against an existing DB WILL DROP the schema user (DATA LOSS).
+    #
+    # We search /db2 for any SAP files, not just empty directories, to ensure the DB Load is not re-run.
+    # - First run: No files are found and 'sap_swpm_db_load_force' is set to 'true'.
+    #
+    # - Re-run: Any files are present -> 'sap_swpm_db_load_force' is set to 'false',
+    #   causing 'sap_swpm' to fail immediately and protect the database.
+
+    # Depth of 8 finds files that are not hidden, while hidden 'true' finds files start with a dot in the name.
+    # NOTE: Depth of 8 on ECC can still find over 17 thousand files, taking approximately 8 seconds to complete.
+    # Examples with hidden files starting at depth 4, while depth 7 finds regular files.
+    # /db2/DB2/sapdata4/db2db2/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/DB2/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/DB2/T0000000/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/DB2/T0000000/C0000003.CAT
+    - name: Check if DB2 instance or database exists in /db2
+      ansible.builtin.find:
+        paths: "/db2"
+        file_type: file
+        recurse: true
+        hidden: true
+        depth: 8
+      register: __sap_playbook_register_db2_files_find_primary
+
+    # NOTE: This task could be skipped if files are found,
+    # but 'sap_swpm' variables would need to be exposed in extravars files (e.g. 'sap_swpm_cd_ibmdb2_path').
     - name: Execute Ansible Role sap_install_media_detect
       ansible.builtin.include_role:
         name: community.sap_install.sap_install_media_detect
@@ -575,36 +677,7 @@
         sap_install_media_detect_db_client: "ibmdb2"
         sap_install_media_detect_export: "sapecc"
 
-    - name: Register legacy module for DB2 (SLES 15)
-      ansible.builtin.command:
-        cmd: "{{ 'SUSEConnect -p sle-module-legacy/' ~ ansible_facts['distribution_version'] ~ '/x86_64' }}"
-      when: ansible_facts['os_family'] == 'Suse' and ansible_facts['distribution_major_version'] == "15"
-      changed_when: true
-
-    # Package 'net-tools-deprecated' requires module 'sle-module-legacy' on SLES 15
-    - name: Install Korn Shell (KSH) and other dependencies for IBM DB2 LUW
-      ansible.builtin.package:
-        name:
-          "{{ base_packages + (redhat_packages if ansible_facts['os_family'] == 'RedHat'
-            else (suse_packages if ansible_facts['os_family'] == 'Suse' else [])) }}"
-        state: present
-      vars:
-        base_packages:
-          - ksh
-          - mksh
-          - pam-devel
-        redhat_packages:
-          - libstdc++
-          - libaio
-        suse_packages:
-          - libstdc++6
-          - libaio1
-          - pam-devel-32bit
-          - libstdc++6-32bit
-          - system-user-bin
-          - net-tools-deprecated
-          - binutils
-
+    # 'sap_swpm_cd_ibmdb2_path' is defined in the 'sap_install.sap_install_media_detect' role, not in extravars.
     - name: Ensure rwx permissions for IBM DB2 unpack directory
       ansible.builtin.file:
         path: "{{ sap_swpm_cd_ibmdb2_path }}"
@@ -612,13 +685,6 @@
         mode: '0755'
         recurse: true
 
-    - name: Remove Port 5912 from /etc/services for default IBM DB2 service and client communications, set as 'fis' by IANA
-      ansible.builtin.lineinfile:
-        path: /etc/services
-        regexp: ".*Flight Information Services.*"
-        state: absent
-
-    # Execute R3load etc. in about 120 minutes
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm
@@ -626,6 +692,18 @@
         sap_swpm_templates_product_input: "anydb_ha_primary_ibmdb2"
         sap_swpm_generic: true # tech debt, force override of the SAP NetWeaver install media files detection by sap_swpm itself
         sap_swpm_virtual_hostname: "{{ sap_swpm_db_host }}"
+        # WARN: This is a override for the Database Load products and should be used with caution.
+        # Set to 'true' on clean target hosts (no files are found).
+        # Set to 'false' on re-runs (any files were found), causing sap_swpm to fail 100% and protect the DB.
+        sap_swpm_db_load_force: >-
+          {{
+            true
+            if (__sap_playbook_register_db2_files_find_primary.files | d([])
+             | selectattr('path', 'search', 'sapdata')
+             | list
+             | length) == 0
+            else false
+          }}
 
 
 - name: Ansible Play to trigger SAP AnyDB Primary node Database Copy method for Homogeneous System Copy of the SAP System
@@ -757,6 +835,36 @@
   max_fail_percentage: 0
   tasks:
 
+    # SAFETY CHECK: SWPM Database Load Detection (DB2)
+    # Pure DB Load products (e.g. NW_ABAP_DB) create no local instance files,
+    # preventing the 'sap_swpm' role from detecting existing installations.
+    # Running SWPM against an existing DB WILL DROP the schema user (DATA LOSS).
+    #
+    # We search /db2 for any SAP files, not just empty directories, to ensure the DB Load is not re-run.
+    # - First run: No files are found and 'sap_swpm_db_load_force' is set to 'true'.
+    #
+    # - Re-run: Any files are present -> 'sap_swpm_db_load_force' is set to 'false',
+    #   causing 'sap_swpm' to fail immediately and protect the database.
+
+    # Depth of 8 finds files that are not hidden, while hidden 'true' finds files start with a dot in the name.
+    # NOTE: Depth of 8 on ECC can still find over 17 thousand files, taking approximately 8 seconds to complete.
+    # Examples with hidden files starting at depth 4, while depth 7 finds regular files.
+    # /db2/DB2/sapdata4/db2db2/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/DB2/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/DB2/T0000000/.SQLCRT.FLG
+    # /db2/DB2/sapdata4/db2db2/NODE0000/DB2/T0000000/C0000003.CAT
+    - name: Check if DB2 instance or database exists in /db2
+      ansible.builtin.find:
+        paths: "/db2"
+        file_type: file
+        recurse: true
+        hidden: true
+        depth: 8
+      register: __sap_playbook_register_db2_files_find_secondary
+
+    # NOTE: This task could be skipped if files are found,
+    # but 'sap_swpm' variables would need to be exposed in extravars files (e.g. 'sap_swpm_cd_ibmdb2_path').
     - name: Execute Ansible Role sap_install_media_detect
       ansible.builtin.include_role:
         name: community.sap_install.sap_install_media_detect
@@ -769,43 +877,13 @@
         sap_install_media_detect_db: "ibmdb2"
         sap_install_media_detect_db_client: "ibmdb2"
 
-    # DBT3507E The db2prereqcheck utility failed to find the following package or file: "net-tools-deprecated"
-    # zypper search-packages net-tools-deprecated
-    - name: Prepare Package Repositories when SLES
-      ansible.builtin.shell:
-        cmd: |
-          SUSEConnect --product sle-module-legacy/{{ ansible_facts['distribution_version'] }}/x86_64 && sleep 5
-          SUSEConnect --product sle-module-development-tools/{{ ansible_facts['distribution_version'] }}/x86_64 && sleep 5
-      when: ansible_facts['os_family'] == 'Suse'
-      changed_when: true
-
-    - name: Install Korn Shell (KSH) and other dependencies for IBM DB2 LUW
-      ansible.builtin.package:
-        name:
-          - mksh # Korn Shell (KSH)
-          - tcsh # C Shell
-          - pam-devel
-          - "{{ ('libstdc++' if ansible_facts['os_family'] == 'RedHat' else 'libstdc++6' if ansible_facts['os_family'] == 'Suse') }}"
-          - "{{ ('libaio' if ansible_facts['os_family'] == 'RedHat' else 'libaio1' if ansible_facts['os_family'] == 'Suse') }}"
-          - "{{ 'pam-devel-32bit' if ansible_facts['os_family'] == 'Suse' else omit }}"
-          - "{{ 'libstdc++6-32bit' if ansible_facts['os_family'] == 'Suse' else omit }}"
-          - "{{ 'system-user-bin' if ansible_facts['os_family'] == 'Suse' else omit }}"
-          - "{{ 'net-tools-deprecated' if ansible_facts['os_family'] == 'Suse' else omit }}"
-          - "{{ 'binutils' if ansible_facts['os_family'] == 'Suse' else omit }}"
-        state: present
-
+    # 'sap_swpm_cd_ibmdb2_path' is defined in the 'sap_install.sap_install_media_detect' role, not in extravars.
     - name: Ensure rwx permissions for IBM DB2 unpack directory
       ansible.builtin.file:
         path: "{{ sap_swpm_cd_ibmdb2_path }}"
         state: directory
         mode: '0755'
         recurse: true
-
-    - name: Remove Port 5912 from /etc/services for default IBM DB2 service and client communications, set as 'fis' by IANA
-      ansible.builtin.lineinfile:
-        path: /etc/services
-        regexp: ".*Flight Information Services.*"
-        state: absent
 
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
@@ -814,6 +892,18 @@
         sap_swpm_templates_product_input: "anydb_ha_syscopy_import_secondary"
         sap_swpm_generic: true # tech debt, force override of the SAP NetWeaver install media files detection by sap_swpm itself
         sap_swpm_virtual_hostname: "{{ sap_swpm_db_host }}"
+        # WARN: This is a override for the Database Load products and should be used with caution.
+        # Set to 'true' on clean target hosts (no files are found).
+        # Set to 'false' on re-runs (any files were found), causing sap_swpm to fail 100% and protect the DB.
+        sap_swpm_db_load_force: >-
+          {{
+            true
+            if (__sap_playbook_register_db2_files_find_secondary.files | d([])
+             | selectattr('path', 'search', 'sapdata')
+             | list
+             | length) == 0
+            else false
+          }}
 
 
 # Additional Debug commands:

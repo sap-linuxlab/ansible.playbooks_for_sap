@@ -11,6 +11,21 @@ This configuration, often referred to as a Multi-Tier Architecture, is ideal for
 **NOTE:** A key distinction of this playbook is its use of the SAP Maintenance Planner to download SAP Installation Media, instead of a file list, as used in the `sap_s4hana_distributed` scenario.  
 
 
+### Database Load Safety and Re-run Protection
+This playbook executes SWPM with a Database Load product (`NW_ABAP_DB`).<br>
+Pure database load products create no local SAP instance files, which prevents the `sap_swpm` role from automatically detecting an existing installation on empty target hosts.
+
+To support fresh deployments while protecting existing systems, this playbook dynamically evaluates the required `sap_swpm_db_load_force` variable by checking for the presence of the Primary Application Server (PAS) instance profile in `/sapmnt/<SID>/profile/`:
+
+- **First-Time Executions:**
+  - If no PAS instance profile is found, `sap_swpm_db_load_force` is set to `true`, allowing the database load to proceed cleanly on new target hosts.
+- **Re-runs / Existing Systems:**
+  - If a PAS instance profile already exists, `sap_swpm_db_load_force` is set to `false` and the `sap_swpm` role will **fail automatically**, preventing accidental re-execution against an active database.
+
+> **NOTE:** Do NOT manually force `sap_swpm_db_load_force: true` on an existing system!<br>
+> Executing SWPM with a Database Load product (`NW_ABAP_DB`) against an active database **WILL DROP and recreate the database schema user**, causing **PERMANENT DATA LOSS**.
+
+
 ## Compatible Infrastructure Platforms
 This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 

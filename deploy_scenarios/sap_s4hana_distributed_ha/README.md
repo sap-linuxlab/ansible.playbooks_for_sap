@@ -15,6 +15,37 @@ This deployment incorporates the following High Availability features:
 - A load balancer for virtual IP addresses and hostnames (when `sap_vm_provision_iac_type` is not `existing_hosts`).  
 
 
+### Database Load Safety and Re-run Protection
+This playbook executes SWPM with a Database Load product (`NW_ABAP_DB`).<br>
+Pure database load products create no local SAP instance files, which prevents the `sap_swpm` role from automatically detecting an existing installation on empty target hosts.
+
+To support fresh deployments while protecting existing systems, this playbook dynamically evaluates the required `sap_swpm_db_load_force` variable by checking for the presence of the Primary Application Server (PAS) instance profile in `/sapmnt/<SID>/profile/`:
+
+- **First-Time Executions:**
+  - If no PAS instance profile is found, `sap_swpm_db_load_force` is set to `true`, allowing the database load to proceed cleanly on new target hosts.
+- **Re-runs / Existing Systems:**
+  - If a PAS instance profile already exists, `sap_swpm_db_load_force` is set to `false` and the `sap_swpm` role will **fail automatically**, preventing accidental re-execution against an active database.
+
+> **NOTE:** Do NOT manually force `sap_swpm_db_load_force: true` on an existing system!<br>
+> Executing SWPM with a Database Load product (`NW_ABAP_DB`) against an active database **WILL DROP and recreate the database schema user**, causing **PERMANENT DATA LOSS**.
+
+
+### High Availability Pacemaker Cluster Behavior and Re-run Notice
+This playbook utilizes the Ansible role `sap_install.sap_ha_pacemaker_cluster` to configure the High Availability Pacemaker cluster.
+
+To maintain idempotency safely, the role constructs and validates the cluster configuration inside a **Shadow CIB** (Cluster Information Base) using `pcs` or `crmsh`.<br>
+Once the staged configuration is fully generated and verified, the updated CIB is committed to the live cluster state.
+
+- **First-Time Executions:**
+  - Safe to run during initial cluster setup on new target hosts.
+- **Re-runs / Existing Systems:**
+  - Changes are safely staged and validated in the Shadow CIB before being committed.However, re-running the playbook will apply the generated CIB state to the live cluster, updating active cluster properties, resource definitions, and constraints.
+  - **Additionally, any manual cluster customizations made directly on the nodes outside of Ansible will be overwritten and lost during the CIB commit.**
+
+> **NOTE:** Exercise caution when re-running against active production environments.<br>
+> While Shadow CIB validation prevents syntax and structural configuration errors from reaching the cluster, committing CIB updates can still trigger resource re-evaluations or service restarts if live cluster parameters differ from the playbook state.
+
+
 ## Compatible Infrastructure Platforms
 This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 

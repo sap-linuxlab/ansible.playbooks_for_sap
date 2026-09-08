@@ -24,6 +24,12 @@ This Ansible Playbook is not available for IBM Power Little Endian (ppc64le).
 - All prior SAP Software without SAP HANA was for IBM Power Big Endian (ppc64) only.
 
 
+## Compatible Operating Systems
+Refer to the [IBM DB2 System Requirements](https://www.ibm.com/support/pages/system-requirements-ibm-db2-linux-unix-and-windows) for a full list of supported operating systems.
+
+For version-specific details, check the documentation directly (e.g., [DB2 v12.1 System Requirements for Linux](https://www.ibm.com/docs/en/db2/12.1.x?topic=servers-linux)).
+
+
 ## Included SAP Software Versions
 The playbook is pre-configured with the following SAP software versions:
 - SAP NetWeaver 7.50 SP22
