@@ -111,7 +111,6 @@ sap_software_install_dictionary:
         - nw_config_anydb
         - nw_config_other
         - nw_config_central_services_abap
-        - nw_config_primary_application_server_instance
         - nw_config_ports
         - nw_config_host_agent
         - sap_os_linux_user
@@ -145,7 +144,6 @@ sap_software_install_dictionary:
         - db_connection_nw_anydb_ibmdb2
         - nw_config_anydb
         - nw_config_other
-        - nw_config_central_services_abap
         - nw_config_primary_application_server_instance
         - nw_config_ports
         - nw_config_host_agent

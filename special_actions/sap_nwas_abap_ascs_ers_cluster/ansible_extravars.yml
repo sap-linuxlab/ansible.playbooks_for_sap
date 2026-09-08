@@ -119,6 +119,55 @@ sap_ip: "{{ ansible_facts['default_ipv4'].address }}"
 #### Ansible dictionary for SAP Installation Media ####
 sap_software_install_dictionary:
 
+  sap_s4hana_2025_distributed:
+
+    # List of product specific software files that are architecture independent.
+    sap_software_list_independent:
+      # Application Server
+      - 'igshelper_17-10010245.sar'
+
+    # List of product specific software files that are architecture dependent - Linux on x86_64 64bit.
+    sap_software_list_x86_64:
+      # Application Server
+      - 'SAPEXE_50-70008102.SAR' # Kernel Part I (916)
+      - 'SAPEXEDB_50-70008101.SAR' # Kernel Part II (916)
+      - 'SAPHOSTAGENT70_70-80004822.SAR' # SAP HOST AGENT 7.22 SP70
+      - 'igsexe_0-70008564.sar'  # Installation for SAP IGS integrated in SAP Kernel
+      # Tools
+      - 'SAPCAR_1400-70007716.EXE'
+      - 'SWPM20SP23_2-80003424.SAR'
+
+    # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
+    sap_software_list_ppc64le:
+      # Application Server
+      - 'SAPEXE_50-70008127.SAR' # Kernel Part I (916)
+      - 'SAPEXEDB_50-70008126.SAR' # Kernel Part II (916)
+      - 'SAPHOSTAGENT70_70-80004831.SAR' # SAP HOST AGENT 7.22 SP70
+      - 'igsexe_0-70008566.sar'  # Installation for SAP IGS integrated in SAP Kernel
+      # Tools
+      - 'SAPCAR_1400-70007726.EXE'
+      - 'SWPM20SP23_2-80003426.SAR'
+
+    nwas_ascs_ha:
+
+      # SWPM product catalog ID for the installation (String).
+      sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2025.CORE.HDB.ABAPHA
+
+      # List of INI file sections to generate using sap_install.sap_swpm role (List).
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs'] }}"
+
+      sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['ascs_ers'] }}"
+
+    nwas_ers_ha:
+
+      # Product ID for New Installation
+      sap_swpm_product_catalog_id: NW_ERS:S4HANA2025.CORE.HDB.ABAPHA
+
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ers'] }}"
+
+      sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['ascs_ers'] }}"
+
+
   sap_s4hana_2023_distributed:
 
     # List of product specific software files that are architecture independent.
@@ -134,8 +183,8 @@ sap_software_install_dictionary:
       - 'SAPHOSTAGENT67_67-80004822.SAR' # SAP Host Agent
       - 'igsexe_4-70005417.sar' # IGS 7.81
       # Tools
-      - 'SAPCAR_1300-70007716.EXE'
-      - 'SWPM20SP20_1-80003424.SAR'
+      - 'SAPCAR_1400-70007716.EXE'
+      - 'SWPM20SP23_2-80003424.SAR'
 
     # List of product specific software files that are architecture dependent - Linux on Power LE 64bit.
     sap_software_list_ppc64le:
@@ -145,8 +194,8 @@ sap_software_install_dictionary:
       - 'SAPHOSTAGENT67_67-80004831.SAR' # SAP Host Agent
       - 'igsexe_4-70005446.sar' # IGS 7.81
       # Tools
-      - 'SAPCAR_1300-70007726.EXE'
-      - 'SWPM20SP20_1-80003426.SAR'
+      - 'SAPCAR_1400-70007726.EXE'
+      - 'SWPM20SP23_2-80003426.SAR'
 
     nwas_ascs_ha:
 
@@ -154,43 +203,50 @@ sap_software_install_dictionary:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2023.CORE.HDB.ABAPHA
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
-      sap_swpm_inifile_sections_list:
-        - swpm_installation_media
-        - swpm_installation_media_swpm2_hana
-        - credentials
-        - credentials_hana=
-        - nw_config_other
-        - nw_config_central_services_abap
-        - nw_config_ports
-        - nw_config_host_agent
-        - sap_os_linux_user
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs'] }}"
 
-      sap_software_files_wildcard_list:
-        - 'SAPCAR*'
-        - 'SWPM20*'
-        - 'igsexe_*'
-        - 'igshelper_*'
-        - 'SAPEXE_*' # Kernel Part I (785)
-        - 'SAPEXEDB_*' # Kernel Part I (785)
-        - 'SAPHOSTAGENT*'
+      sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['ascs_ers'] }}"
 
     nwas_ers_ha:
 
       # Product ID for New Installation
       sap_swpm_product_catalog_id: NW_ERS:S4HANA2023.CORE.HDB.ABAPHA
 
-      sap_swpm_inifile_sections_list:
-        - swpm_installation_media
-        - credentials
-        - nw_config_other
-        - nw_config_ers
-        - sap_os_linux_user
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ers'] }}"
 
-      sap_software_files_wildcard_list:
-        - 'SAPCAR*'
-        - 'SWPM20*'
-        - 'igsexe_*'
-        - 'igshelper_*'
-        - 'SAPEXE_*' # Kernel Part I (785)
-        - 'SAPEXEDB_*' # Kernel Part I (785)
-        - 'SAPHOSTAGENT*'
+      sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['ascs_ers'] }}"
+
+
+### Reusable dictionaries for SAP Playbooks ###
+
+# Dictionary of lists for 'sap_swpm_inifile_sections' used across various products in 'sap_swpm' role.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_swpm_inifile_sections:
+  ascs:
+    - swpm_installation_media
+    - swpm_installation_media_swpm2_hana
+    - credentials
+    - credentials_hana=
+    - nw_config_other
+    - nw_config_central_services_abap
+    - nw_config_ports
+    - nw_config_host_agent
+    - sap_os_linux_user
+  ers:
+    - swpm_installation_media
+    - credentials
+    - nw_config_other
+    - nw_config_ers
+    - sap_os_linux_user
+
+# Dictionary of lists for software filename wildcard patterns that is used during rsync operations.
+# Customizations can be made here for all products or directly within a product's host type.
+sap_playbook_software_wildcards:
+  ascs_ers:
+    - 'SAPCAR*'
+    - 'SWPM20*'
+    - 'igsexe_*'
+    - 'igshelper_*'
+    - 'SAPEXE_*' # Kernel Part I (785)
+    - 'SAPEXEDB_*' # Kernel Part I (785)
+    - 'SAPHOSTAGENT*'

@@ -69,7 +69,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
 
       sap_swpm_inifile_dictionary:
 
@@ -92,7 +92,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
 
       sap_swpm_inifile_dictionary:
 
@@ -115,7 +115,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
 
       sap_swpm_inifile_dictionary:
 
@@ -138,7 +138,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
 
       sap_swpm_inifile_dictionary:
 
@@ -168,7 +168,7 @@ sap_software_install_dictionary:
 
     nwas_ascs:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2023.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -181,7 +181,7 @@ sap_software_install_dictionary:
 
     nwas_pas_dbload:
       sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2023.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -194,7 +194,7 @@ sap_software_install_dictionary:
 
     nwas_pas:
       sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2023.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -207,7 +207,7 @@ sap_software_install_dictionary:
 
     nwas_aas:
       sap_swpm_product_catalog_id: NW_DI:S4HANA2023.CORE.HDB.PD
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
       sap_swpm_inifile_dictionary:
         # Product ID suffix is not .ABAP, therefore set variables manually for sap_swpm Ansible Role to populate inifile.params
         sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
@@ -232,7 +232,7 @@ sap_software_install_dictionary:
 
     nwas_ascs:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2022.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -245,7 +245,7 @@ sap_software_install_dictionary:
 
     nwas_pas_dbload:
       sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2022.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -259,7 +259,7 @@ sap_software_install_dictionary:
     nwas_pas:
 
       sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2022.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -272,7 +272,7 @@ sap_software_install_dictionary:
 
     nwas_aas:
       sap_swpm_product_catalog_id: NW_DI:S4HANA2022.CORE.HDB.PD
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
       sap_swpm_inifile_dictionary:
 
         # Product ID suffix is not .ABAP, therefore set variables manually for sap_swpm Ansible Role to populate inifile.params
@@ -298,7 +298,7 @@ sap_software_install_dictionary:
 
     nwas_ascs:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2021.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -311,7 +311,7 @@ sap_software_install_dictionary:
 
     nwas_pas_dbload:
       sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2021.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -324,7 +324,7 @@ sap_software_install_dictionary:
 
     nwas_pas:
       sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2021.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_swpm_inifile_dictionary:
         # SAP SWPM using SAP Maintenance Planner Stack XML
         # sap_swpm_mp_stack_path: "" # This triggers search of MP Stack XML and alters SAP SWPM execution, use sap_install_media_detect to identify instead
@@ -337,7 +337,7 @@ sap_software_install_dictionary:
 
     nwas_aas:
       sap_swpm_product_catalog_id: NW_DI:S4HANA2021.CORE.HDB.PD
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
       sap_swpm_inifile_dictionary:
         # Product ID suffix is not .ABAP, therefore set variables manually for sap_swpm Ansible Role to populate inifile.params
         sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
@@ -355,7 +355,7 @@ sap_software_install_dictionary:
 # Dictionary of lists for 'sap_swpm_inifile_sections' used across various products in 'sap_swpm' role.
 # Customizations can be made here for all products or directly within a product's host type.
 sap_playbook_swpm_inifile_sections:
-  ascs_pas:
+  nwas_ascs:
     - swpm_installation_media
     - swpm_installation_media_swpm2_hana
     - credentials
@@ -363,27 +363,42 @@ sap_playbook_swpm_inifile_sections:
     - db_config_hana
     - db_connection_nw_hana
     - nw_config_other
-    - nw_config_central_services_abap
-    - nw_config_primary_application_server_instance
     - nw_config_ports
     - nw_config_host_agent
     - sap_os_linux_user
+    - nw_config_central_services_abap
     - maintenance_plan_stack_tms_config
     - maintenance_plan_stack_spam_config
     - maintenance_plan_stack_sum_config
 
-  aas:
+  nwas_pas:
     - swpm_installation_media
     - swpm_installation_media_swpm2_hana
     - credentials
     - credentials_hana
     - db_config_hana
     - db_connection_nw_hana
-    - nw_config_ports
     - nw_config_other
-    - nw_config_additional_application_server_instance
+    - nw_config_ports
     - nw_config_host_agent
     - sap_os_linux_user
+    - nw_config_primary_application_server_instance
+    - maintenance_plan_stack_tms_config
+    - maintenance_plan_stack_spam_config
+    - maintenance_plan_stack_sum_config
+
+  nwas_aas:
+    - swpm_installation_media
+    - swpm_installation_media_swpm2_hana
+    - credentials
+    - credentials_hana
+    - db_config_hana
+    - db_connection_nw_hana
+    - nw_config_other
+    - nw_config_ports
+    - nw_config_host_agent
+    - sap_os_linux_user
+    - nw_config_additional_application_server_instance
 
 # Dictionary of lists for software filename wildcard patterns that is used during rsync operations.
 # Customizations can be made here for all products or directly within a product's host type.

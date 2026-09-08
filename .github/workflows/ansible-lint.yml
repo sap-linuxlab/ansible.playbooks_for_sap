@@ -3,9 +3,9 @@
 name: Ansible Lint
 
 on:
-  # Runs at 10:10 on every Monday
+  #  Friday at 02:17 UTC (~3:17 AM CET / 4:17 AM CEST). Actual start time depends on GitHub load.
   schedule:
-    - cron: '10 10 * * 1'
+    - cron: '17 2 * * 5'
 
   # Validate open pull requests
   pull_request:
@@ -41,9 +41,9 @@ jobs:
             echo "REQUIREMENTS_PATH=./common_fragments/ansible_requirements.yml" >> $GITHUB_ENV
           fi
 
-        # Use @v25 to automatically track the latest release from the year 2025.
-        # ansible-lint uses Calendar Versioning (e.g., v25.9.0 -> YYYY.MM.PATCH).
+        # Use @vXX to automatically track the latest release from the year 20XX. Example: @v26 for 2026.
+        # ansible-lint uses Calendar Versioning (e.g., v26.0.0 -> YYYY.MM.PATCH).
         # Avoid using @main, which can introduce breaking changes unexpectedly.
-      - uses: ansible/ansible-lint@v25
+      - uses: ansible/ansible-lint@v26
         with:
           requirements_file: ${{ env.REQUIREMENTS_PATH }}

@@ -254,7 +254,11 @@
         sap_software_download_suser_id: "{{ sap_id_user }}"
         sap_software_download_suser_password: "{{ sap_id_user_password }}"
         sap_software_download_directory: "{{ sap_install_media_detect_source_directory }}"
-        sap_software_download_deduplicate: first
+        sap_software_download_deduplicate: last
+        # Enables broader search for known files, not just the bugfix versions.
+        # Example: Helps with downloading higher HANA revision version within same SPS level.
+        sap_software_download_find_upgrades: true
+        sap_software_download_upgrade_relationships: true
         sap_software_download_files: "{{ (
           sap_software_install_dictionary[sap_software_product]['sap_software_list_' ~ ansible_facts['architecture']] | d([]) +
           sap_software_install_dictionary[sap_software_product]['sap_software_list_independent'] | d([])) | unique }}"
@@ -278,6 +282,78 @@
         name: community.sap_install.sap_netweaver_preconfigure
 
 
+- name: Ansible Play for operating system prerequisites for IBM Db2 Database Server
+  hosts: nwas_pas
+  become: true
+  any_errors_fatal: true
+  max_fail_percentage: 0
+  tasks:
+
+    - name: Block for SUSE
+      when: ansible_facts['os_family'] == 'Suse'
+      block:
+        - name: Register SUSEConnect modules for DB2 (SLES 15)
+          ansible.builtin.command:
+            cmd: "SUSEConnect -p {{ module_item }}/{{ ansible_facts['distribution_version'] }}/x86_64"
+          loop:
+            - sle-module-legacy
+            - sle-module-development-tools
+          loop_control:
+            loop_var: module_item
+          when: ansible_facts['distribution_major_version'] == "15"
+          changed_when: true  # SUSEConnect does not differentiate already activated modules.
+
+        # Legacy packages are not present on SLES 16.
+        - name: Install required packages for IBM DB2 LUW - SUSE
+          ansible.builtin.package:
+            name:
+              "{{ base_packages
+                + (legacy_packages if ansible_facts['distribution_major_version'] == '15' else []) }}"
+            state: present
+          vars:
+            base_packages:
+              - ksh
+              - mksh
+              - pam-devel
+              - libstdc++6
+              - libaio1
+              - system-user-bin
+              - binutils
+            legacy_packages:
+              - pam-devel-32bit  # Part of sle-module-development-tools
+              - net-tools-deprecated  # Part of sle-module-legacy
+              - libstdc++6-32bit
+
+        - name: Remove Port 5912 from {{ __etc_services_path }} for default IBM DB2 service and client communications (set as 'fis' by IANA) - SUSE
+          ansible.builtin.lineinfile:
+            path: "{{ __etc_services_path }}"
+            regexp: ".*Flight Information Services.*"
+            state: absent
+          vars:
+            __etc_services_path:
+              "{{ '/usr/etc/services' if ansible_facts['distribution_major_version'] == '16' else '/etc/services' }}"
+
+
+    - name: Block for Red Hat
+      when: ansible_facts['os_family'] == 'RedHat'
+      block:
+        - name: Install required packages for IBM DB2 LUW - Red Hat
+          ansible.builtin.package:
+            name:
+              - ksh
+              - mksh
+              - pam-devel
+              - libstdc++
+              - libaio
+            state: present
+
+        - name: Remove Port 5912 from /etc/services for default IBM DB2 service and client communications (set as 'fis' by IANA) - Red Hat
+          ansible.builtin.lineinfile:
+            path: /etc/services
+            regexp: ".*Flight Information Services.*"
+            state: absent
+
+
 #### Begin SAP software installations ####
 - name: Ansible Play for IBM Db2 Database Server and SAP NetWeaver Application Server installation - ABAP Central Services (ASCS) and Primary Application Server (PAS)  # noqa yaml[line-length]
   hosts: nwas_pas
@@ -299,36 +375,6 @@
         sap_install_media_detect_db_client: "ibmdb2"
         sap_install_media_detect_export: "sapnwas_abap"
 
-    - name: Register legacy module for DB2 (SLES 15)
-      ansible.builtin.command:
-        cmd: "{{ 'SUSEConnect -p sle-module-legacy/' ~ ansible_facts['distribution_version'] ~ '/x86_64' }}"
-      when: ansible_facts['os_family'] == 'Suse' and ansible_facts['distribution_major_version'] == "15"
-      changed_when: true
-
-    # Package 'net-tools-deprecated' requires module 'sle-module-legacy' on SLES 15
-    - name: Install Korn Shell (KSH) and other dependencies for IBM DB2 LUW
-      ansible.builtin.package:
-        name:
-          "{{ base_packages + (redhat_packages if ansible_facts['os_family'] == 'RedHat'
-            else (suse_packages if ansible_facts['os_family'] == 'Suse' else [])) }}"
-        state: present
-      vars:
-        base_packages:
-          - ksh
-          - mksh
-          - pam-devel
-        redhat_packages:
-          - libstdc++
-          - libaio
-        suse_packages:
-          - libstdc++6
-          - libaio1
-          - pam-devel-32bit
-          - libstdc++6-32bit
-          - system-user-bin
-          - net-tools-deprecated
-          - binutils
-
     - name: Ensure rwx permissions for IBM DB2 unpack directory
       ansible.builtin.file:
         path: "{{ sap_swpm_cd_ibmdb2_path }}"
@@ -336,13 +382,6 @@
         mode: '0755'
         recurse: true
 
-    - name: Remove Port 5912 from /etc/services for default IBM DB2 service and client communications, set as 'fis' by IANA
-      ansible.builtin.lineinfile:
-        path: /etc/services
-        regexp: ".*Flight Information Services.*"
-        state: absent
-
-    # Install IBM Db2 and SAP NetWeaver via Ansible Role sap_swpm
     - name: Execute Ansible Role sap_swpm
       ansible.builtin.include_role:
         name: community.sap_install.sap_swpm

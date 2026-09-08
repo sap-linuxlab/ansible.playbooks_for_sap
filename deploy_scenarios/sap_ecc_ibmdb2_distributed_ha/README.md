@@ -17,8 +17,39 @@ This deployment incorporates the following High Availability features:
 This Ansible Playbook is using Ansible Roles in `experimental` state (`sap_ha_install_anydb_ibmdb2`).
 
 
-## Supported Infrastructure Platforms
-This Ansible Playbook supports the deployment on the following infrastructure platforms:
+### Database Load Safety and Re-run Protection
+This playbook executes SWPM with a Database Load product (`NW_ABAP_DB`).<br>
+Pure database load products create no local SAP instance files, which prevents the `sap_swpm` role from automatically detecting an existing installation on empty target hosts.
+
+To support fresh deployments while protecting existing systems, this playbook dynamically evaluates the required `sap_swpm_db_load_force` variable by checking for the presence of the Primary Application Server (PAS) instance profile in `/sapmnt/<SID>/profile/`:
+
+- **First-Time Executions:**
+  - If no PAS instance profile is found, `sap_swpm_db_load_force` is set to `true`, allowing the database load to proceed cleanly on new target hosts.
+- **Re-runs / Existing Systems:**
+  - If a PAS instance profile already exists, `sap_swpm_db_load_force` is set to `false` and the `sap_swpm` role will **fail automatically**, preventing accidental re-execution against an active database.
+
+> **NOTE:** Do NOT manually force `sap_swpm_db_load_force: true` on an existing system!<br>
+> Executing SWPM with a Database Load product (`NW_ABAP_DB`) against an active database **WILL DROP and recreate the database schema user**, causing **PERMANENT DATA LOSS**.
+
+
+### High Availability Pacemaker Cluster Behavior and Re-run Notice
+This playbook utilizes the Ansible role `sap_install.sap_ha_pacemaker_cluster` to configure the High Availability Pacemaker cluster.
+
+To maintain idempotency safely, the role constructs and validates the cluster configuration inside a **Shadow CIB** (Cluster Information Base) using `pcs` or `crmsh`.<br>
+Once the staged configuration is fully generated and verified, the updated CIB is committed to the live cluster state.
+
+- **First-Time Executions:**
+  - Safe to run during initial cluster setup on new target hosts.
+- **Re-runs / Existing Systems:**
+  - Changes are safely staged and validated in the Shadow CIB before being committed.However, re-running the playbook will apply the generated CIB state to the live cluster, updating active cluster properties, resource definitions, and constraints.
+  - **Additionally, any manual cluster customizations made directly on the nodes outside of Ansible will be overwritten and lost during the CIB commit.**
+
+> **NOTE:** Exercise caution when re-running against active production environments.<br>
+> While Shadow CIB validation prevents syntax and structural configuration errors from reaching the cluster, committing CIB updates can still trigger resource re-evaluations or service restarts if live cluster parameters differ from the playbook state.
+
+
+## Compatible Infrastructure Platforms
+This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
@@ -30,11 +61,17 @@ This Ansible Playbook is not available for IBM Power Little Endian (ppc64le).
 - All prior SAP Software without SAP HANA was for IBM Power Big Endian (ppc64) only.
 
 
-## Supported SAP Software
-This playbook includes support for the following software versions:
+## Compatible Operating Systems
+Refer to the [IBM DB2 System Requirements](https://www.ibm.com/support/pages/system-requirements-ibm-db2-linux-unix-and-windows) for a full list of supported operating systems.
+
+For version-specific details, check the documentation directly (e.g., [DB2 v12.1 System Requirements for Linux](https://www.ibm.com/docs/en/db2/12.1.x?topic=servers-linux)).
+
+
+## Included SAP Software Versions
+The playbook is pre-configured with the following SAP software versions:
 - EHP8 for SAP ERP 6.0
 
-Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
+> You can easily extend compatibility to other versions by adding new entries to the `sap_software_install_dictionary` variable in your extravars file.
 
 
 ## System Architecture

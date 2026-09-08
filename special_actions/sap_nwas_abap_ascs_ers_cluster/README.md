@@ -12,8 +12,24 @@ This deployment incorporates the following High Availability features:
 **This Ansible Playbook does not install fully functional SAP System, but rather focuses on installation of SAP ASCS/ERS Cluster for testing purpose.**
 
 
-## Supported Infrastructure Platforms
-This Ansible Playbook supports the deployment on the following infrastructure platforms:
+### High Availability Pacemaker Cluster Behavior and Re-run Notice
+This playbook utilizes the Ansible role `sap_install.sap_ha_pacemaker_cluster` to configure the High Availability Pacemaker cluster.
+
+To maintain idempotency safely, the role constructs and validates the cluster configuration inside a **Shadow CIB** (Cluster Information Base) using `pcs` or `crmsh`.<br>
+Once the staged configuration is fully generated and verified, the updated CIB is committed to the live cluster state.
+
+- **First-Time Executions:**
+  - Safe to run during initial cluster setup on new target hosts.
+- **Re-runs / Existing Systems:**
+  - Changes are safely staged and validated in the Shadow CIB before being committed.However, re-running the playbook will apply the generated CIB state to the live cluster, updating active cluster properties, resource definitions, and constraints.
+  - **Additionally, any manual cluster customizations made directly on the nodes outside of Ansible will be overwritten and lost during the CIB commit.**
+
+> **NOTE:** Exercise caution when re-running against active production environments.<br>
+> While Shadow CIB validation prevents syntax and structural configuration errors from reaching the cluster, committing CIB updates can still trigger resource re-evaluations or service restarts if live cluster parameters differ from the playbook state.
+
+
+## Compatible Infrastructure Platforms
+This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
@@ -21,15 +37,16 @@ This Ansible Playbook supports the deployment on the following infrastructure pl
 - IBM Cloud, IBM Power Virtual Servers
 - Microsoft Azure (MS Azure)
 - IBM PowerVM
-- OVirt
-- VMware
+- OVirt `Experimental`
+- VMware `Experimental`
 
 
-## Supported SAP Software
-This playbook includes support for the following software versions:
+## Included SAP Software Versions
+The playbook is pre-configured with the following SAP software versions:
+- SAP S/4HANA 2025
 - SAP S/4HANA 2023
 
-Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
+> You can easily extend compatibility to other versions by adding new entries to the `sap_software_install_dictionary` variable in your extravars file.
 
 
 ## System Architecture

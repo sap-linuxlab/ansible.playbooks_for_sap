@@ -9,8 +9,8 @@ An SAP BW/4HANA Standard (Scale-Out) system, as defined by SAP, consists of an S
 This configuration, often referred to as a Three-Tier Architecture or DualHost, is ideal for production environments, or for scenarios requiring high availability and scalability.
 
 
-## Supported Infrastructure Platforms
-This Ansible Playbook supports the deployment on the following infrastructure platforms:
+## Compatible Infrastructure Platforms
+This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
@@ -18,16 +18,16 @@ This Ansible Playbook supports the deployment on the following infrastructure pl
 - IBM Cloud, IBM Power Virtual Servers
 - Microsoft Azure (MS Azure)
 - IBM PowerVM
-- OVirt
-- VMware
+- OVirt `Experimental`
+- VMware `Experimental`
 
 
-## Supported SAP Software
-This playbook includes support for the following software versions:
+## Included SAP Software Versions
+The playbook is pre-configured with the following SAP software versions:
 - SAP BW/4HANA 2023
 - SAP BW/4HANA 2021
 
-Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
+> You can easily extend compatibility to other versions by adding new entries to the `sap_software_install_dictionary` variable in your extravars file.
 
 
 ## System Architecture

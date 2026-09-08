@@ -8,8 +8,8 @@ A single-host system, as defined by SAP, consolidates all SAP Database and SAP A
 This configuration, often referred to as a Two-Tier Architecture, OneHost, or Central System, is ideal for development, testing, and demonstration purposes.
 
 
-## Supported Infrastructure Platforms
-This Ansible Playbook supports the deployment on the following infrastructure platforms:
+## Compatible Infrastructure Platforms
+This Ansible Playbook is designed for and compatible with the following infrastructure platforms:
 
 - Amazon Web Services (AWS)
 - Google Cloud Platform (GCP)
@@ -17,18 +17,19 @@ This Ansible Playbook supports the deployment on the following infrastructure pl
 - IBM Cloud, IBM Power Virtual Servers
 - Microsoft Azure (MS Azure)
 - IBM PowerVM
-- OVirt
-- VMware
+- OVirt `Experimental`
+- VMware `Experimental`
 
 
-## Supported SAP Software
-This playbook includes support for the following software versions:
+## Included SAP Software Versions
+The playbook is pre-configured with the following SAP software versions:
+- SAP S/4HANA 2025
 - SAP S/4HANA 2023
 - SAP S/4HANA 2022
 - SAP S/4HANA 2021
 - SAP S/4HANA 2020
 
-Additional versions can be supported by adding new entries to the `sap_software_install_dictionary` variable in the extravars file.
+> You can easily extend compatibility to other versions by adding new entries to the `sap_software_install_dictionary` variable in your extravars file.
 
 
 ## System Architecture
