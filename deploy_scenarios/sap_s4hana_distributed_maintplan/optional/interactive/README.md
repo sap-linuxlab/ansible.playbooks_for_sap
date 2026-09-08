@@ -31,8 +31,8 @@ Changing these variables can result in execution without all required variables.
 - **Example:** `distributed_ha`
 
 
-## Supported scenarios
-This table lists the supported combinations of SAP products, databases, and layouts, along with the corresponding Ansible groups.
+## Available Scenarios
+This table lists the available scenarios that support interactive execution.
 
 | Scenario                               | Product    | Database   | Layout            | Ansible Groups |
 | -------------------------------------- | ---------- | ---------- | ----------------- | --- |

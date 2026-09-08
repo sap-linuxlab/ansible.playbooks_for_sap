@@ -133,7 +133,7 @@ sap_software_install_dictionary:
       - 'SAPEXE_1000-80002573.SAR' # Kernel Part I (753)
       - 'SAPEXEDB_1000-80002616.SAR' # Kernel Part II (753), SAP ASE 16.0 FOR BUS. SUITE
       - 'SAPHOSTAGENT51_51-20009394.SAR' # SAP Host Agent 7.21
-      - 'SYBCTRL_1440-80002616.SAR'
+      - 'SYBCTRL_1532-80002616.SAR'
       - 'igsexe_13-80003187.sar' # IGS 7.53
       - 'igshelper_17-10010245.sar'
       # Tools

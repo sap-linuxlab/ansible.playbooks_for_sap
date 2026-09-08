@@ -138,7 +138,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
 
       # List of file name patterns relevant to host type.
       # This list assigned from shared dictionary, because it is same with other products or host types.
@@ -151,7 +151,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ers'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ers'] }}"
 
       # List of file name patterns relevant to host type.
       # This list assigned from shared dictionary, because it is same with other products or host types.
@@ -164,7 +164,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
 
       # List of file name patterns relevant to host type.
       # This list assigned from shared dictionary, because it is same with other products or host types.
@@ -177,7 +177,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
 
       # List of file name patterns relevant to host type.
       # This list assigned from shared dictionary, because it is same with other products or host types.
@@ -190,7 +190,7 @@ sap_software_install_dictionary:
 
       # List of INI file sections to generate using sap_install.sap_swpm role (List).
       # This list assigned from shared dictionary, because it is same with other products or host types.
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
 
       sap_swpm_inifile_dictionary:
 
@@ -282,27 +282,27 @@ sap_software_install_dictionary:
 
     nwas_ascs_ha:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2023.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_ers_ha:
       sap_swpm_product_catalog_id: NW_ERS:S4HANA2023.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ers'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ers'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_pas_dbload_ha:
       sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2023.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['dbload'] }}"
 
     nwas_pas:
       sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2023.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_aas:
       sap_swpm_product_catalog_id: NW_DI:S4HANA2023.CORE.HDB.PD
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
       sap_swpm_inifile_dictionary:
         sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
@@ -389,27 +389,27 @@ sap_software_install_dictionary:
 
     nwas_ascs_ha:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2022.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_ers_ha:
       sap_swpm_product_catalog_id: NW_ERS:S4HANA2022.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ers'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ers'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_pas_dbload_ha:
       sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2022.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['dbload'] }}"
 
     nwas_pas:
       sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2022.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_aas:
       sap_swpm_product_catalog_id: NW_DI:S4HANA2022.CORE.HDB.PD
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
       sap_swpm_inifile_dictionary:
         sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
@@ -488,27 +488,27 @@ sap_software_install_dictionary:
 
     nwas_ascs_ha:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2021.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_ers_ha:
       sap_swpm_product_catalog_id: NW_ERS:S4HANA2021.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ers'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ers'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_pas_dbload_ha:
       sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2021.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['dbload'] }}"
 
     nwas_pas:
       sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2021.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_aas:
       sap_swpm_product_catalog_id: NW_DI:S4HANA2021.CORE.HDB.PD
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
       sap_swpm_inifile_dictionary:
         sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
@@ -583,27 +583,27 @@ sap_software_install_dictionary:
 
     nwas_ascs_ha:
       sap_swpm_product_catalog_id: NW_ABAP_ASCS:S4HANA2020.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ascs'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_ers_ha:
       sap_swpm_product_catalog_id: NW_ERS:S4HANA2020.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ers'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_ers'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_pas_dbload_ha:
       sap_swpm_product_catalog_id: NW_ABAP_DB:S4HANA2020.CORE.HDB.ABAPHA
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['dbload'] }}"
 
     nwas_pas:
       sap_swpm_product_catalog_id: NW_ABAP_CI:S4HANA2020.CORE.HDB.ABAP
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['ascs_pas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_pas'] }}"
       sap_software_files_wildcard_list: "{{ sap_playbook_software_wildcards['netweaver'] }}"
 
     nwas_aas:
       sap_swpm_product_catalog_id: NW_DI:S4HANA2020.CORE.HDB.PD
-      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['aas'] }}"
+      sap_swpm_inifile_sections_list: "{{ sap_playbook_swpm_inifile_sections['nwas_aas'] }}"
       sap_swpm_inifile_dictionary:
         sap_swpm_db_schema: "{{ sap_swpm_db_schema_abap }}"
         sap_swpm_db_schema_password: "{{ sap_swpm_db_schema_abap_password }}"
@@ -616,7 +616,7 @@ sap_software_install_dictionary:
 # Dictionary of lists for 'sap_swpm_inifile_sections' used across various products in 'sap_swpm' role.
 # Customizations can be made here for all products or directly within a product's host type.
 sap_playbook_swpm_inifile_sections:
-  ascs_pas:
+  nwas_ascs:
     - swpm_installation_media
     - swpm_installation_media_swpm2_hana
     - credentials
@@ -624,31 +624,43 @@ sap_playbook_swpm_inifile_sections:
     - db_config_hana
     - db_connection_nw_hana
     - nw_config_other
-    - nw_config_central_services_abap
-    - nw_config_primary_application_server_instance
     - nw_config_ports
     - nw_config_host_agent
     - sap_os_linux_user
+    - nw_config_central_services_abap
 
-  ers:
+  nwas_ers:
     - swpm_installation_media
     - credentials
     - nw_config_other
     - nw_config_ers
     - sap_os_linux_user
 
-  aas:
+  nwas_pas:
     - swpm_installation_media
     - swpm_installation_media_swpm2_hana
     - credentials
     - credentials_hana
     - db_config_hana
     - db_connection_nw_hana
-    - nw_config_ports
     - nw_config_other
-    - nw_config_additional_application_server_instance
+    - nw_config_ports
     - nw_config_host_agent
     - sap_os_linux_user
+    - nw_config_primary_application_server_instance
+
+  nwas_aas:
+    - swpm_installation_media
+    - swpm_installation_media_swpm2_hana
+    - credentials
+    - credentials_hana
+    - db_config_hana
+    - db_connection_nw_hana
+    - nw_config_other
+    - nw_config_ports
+    - nw_config_host_agent
+    - sap_os_linux_user
+    - nw_config_additional_application_server_instance
 
 # Dictionary of lists for software filename wildcard patterns that is used during rsync operations.
 # Customizations can be made here for all products or directly within a product's host type.
